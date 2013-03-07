@@ -1,0 +1,4 @@
+syntax: glob
+*.pyc
+*.dll
+_8154_initial.txt
