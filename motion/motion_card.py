@@ -1,17 +1,17 @@
 # -- coding: utf-8 --
 
-# Title          : motion.py
+# Title          : motion_card.py
 # Description    : motion abstract class
 # Author         : Stan Liu
 # Date           : 20130307
 # Dependency     : 
-# usage          : class some_motion(motion):
+# usage          : class SomeMotion(Motion):
 #                    pass
 # notes          : 
 
 from abc import ABCMeta, abstractmethod
 
-class motion(metaclass=ABCMeta):
+class Motion(metaclass=ABCMeta):
     @abstractmethod
     def initial(self, manual_id):
         pass

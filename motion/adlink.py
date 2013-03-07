@@ -4,18 +4,18 @@
 # Description    : calling functions in 8154.dll and 8158.dll of ADLink
 # Author         : Stan Liu
 # Date           : 20130301
-# Dependency     : 8154.dll 8158.dll adlink_error_table.py
+# Dependency     : 8154.dll 8158.dll adlink_table.py
 # usage          : import adlink
 # notes          : the library detects 8154 or 8158 card automatically
 
-from masbot.motion.motion import *
+from masbot.motion.motion_card import *
 from masbot.motion.adlink_table import *
 from ctypes import *
 from time import sleep
 
 # loaded shared libraries
-pci_8154 = WinDLL('dlls/8154.dll')
-pci_8158 = WinDLL('dlls/8158.dll')
+pci_8154 = WinDLL(__file__ + '/../../dlls/8154.dll')
+pci_8158 = WinDLL(__file__ + '/../../dlls/8158.dll')
 
 # define the argument and return type for the functions
 pci_8154._8154_initial.restype = c_short
@@ -136,7 +136,7 @@ pci_8154._8154_set_home_config.argtypes = [c_short, c_short, c_short, c_short, c
 pci_8158._8158_set_home_config.restype = c_short
 pci_8158._8158_set_home_config.argtypes = [c_short, c_short, c_short, c_short, c_short, c_short]
 
-class adlink_motion(motion):
+class ADLinkMotion(Motion):
     def __init__(self, cards_config=[]):
         self.mode = 'pci8154'
         #self.mode = 'default'

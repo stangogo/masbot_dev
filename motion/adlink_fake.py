@@ -8,10 +8,10 @@
 # usage          : import adlink_fake
 # notes          : 
 
-from masbot.motion.motion import *
+from masbot.motion.motion_card import *
 from time import sleep
 
-class adlink_motion(motion):
+class ADLinkMotion(Motion):
     def __init__(self, cards_config=[]):
         self.mode = 'pci8158'
 
