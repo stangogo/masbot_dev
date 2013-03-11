@@ -136,6 +136,21 @@ pci_8154._8154_set_home_config.argtypes = [c_short, c_short, c_short, c_short, c
 pci_8158._8158_set_home_config.restype = c_short
 pci_8158._8158_set_home_config.argtypes = [c_short, c_short, c_short, c_short, c_short, c_short]
 
+pci_8154._8154_start_sa_line2.restype = c_short
+pci_8154._8154_start_sa_line2.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+pci_8158._8158_start_sa_line2.restype = c_short
+pci_8158._8158_start_sa_line2.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+
+pci_8154._8154_start_sa_line3.restype = c_short
+pci_8154._8154_start_sa_line3.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+pci_8158._8158_start_sa_line3.restype = c_short
+pci_8158._8158_start_sa_line3.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+
+pci_8154._8154_start_sa_line4.restype = c_short
+pci_8154._8154_start_sa_line4.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+pci_8158._8158_start_sa_line4.restype = c_short
+pci_8158._8158_start_sa_line4.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+
 class ADLinkMotion(Motion):
     def __init__(self, cards_config=[]):
         self.mode = 'pci8154'
@@ -209,7 +224,7 @@ class ADLinkMotion(Motion):
                 pci_8154._8154_db51_HSL_auto_start(0)
                 pci_8154._8154_db51_HSL_set_scan_condition(0, 0, 0)
                 pci_8154._8154_db51_HSL_slave_live(0, num, live)
-                print('8154 card No.%d start' % num)
+                print('8154 card No.{} start'.format(num))
                 if type == 'DO_CARD':
                     self.do_cards_index.append(num)
                 elif type == 'DI_CARD':
@@ -220,7 +235,7 @@ class ADLinkMotion(Motion):
                 pci_8158._8158_db51_HSL_auto_start(0)
                 pci_8158._8158_db51_HSL_set_scan_condition(0, 0, 0)
                 pci_8158._8158_db51_HSL_slave_live(0, num, live)
-                print('8158 card No.%d start' % num)
+                print('8158 card No.{} start'.format(num))
                 if type == 'DO_CARD':
                     self.do_cards_index.append(num)
                 elif type == 'DI_CARD':
@@ -251,7 +266,8 @@ class ADLinkMotion(Motion):
             card_num = self.do_cards_index[card_order]
             port = port % 32
         else:
-            return '[DO port is out of range]: port = %d, total cards = %d' % (port, len(self.do_cards_index))
+            return '[DO port is out of range]: port = {}, total cards = {}'.format(
+                port, len(self.do_cards_index))
         if self.mode == 'pci8154':
             ret = pci_8154._8154_db51_HSL_D_write_channel_output(0, card_num, port, state)
         elif self.mode == 'pci8158':
@@ -259,7 +275,7 @@ class ADLinkMotion(Motion):
         else:
             return -1
 
-        return get_msg(ret)
+        return error_table[ret]
 
     def DO_read(self, port):
         """ read DO signal
@@ -269,7 +285,8 @@ class ADLinkMotion(Motion):
             card_num = self.do_cards_index[card_order]
             port = port % 32
         else:
-            return '[DO port is out of range]: port = %d, total cards = %d' % (port, len(self.do_cards_index))
+            return '[DO port is out of range]: port = {}, total cards = {}'.format(
+                port, len(self.do_cards_index))
         state = pointer(c_ulong(0))
         if self.mode == 'pci8154':
             pci_8154._8154_db51_HSL_D_read_output(0, card_num, state)
@@ -291,7 +308,7 @@ class ADLinkMotion(Motion):
             card_num = self.di_cards_index[card_order]
             port = port % 32
         else:
-            return '[DI port is out of range]: port = %d, total cards = %d' % (port, len(self.di_cards_index))
+            return '[DI port is out of range]: port = {}, total cards = {}'.format(port, len(self.di_cards_index))
         state = pointer(c_ushort(0))
         if self.mode == 'pci8154':
             pci_8154._8154_db51_HSL_D_read_channel_input(0, card_num, port, state)
@@ -369,7 +386,7 @@ class ADLinkMotion(Motion):
         else:
             return -1
 
-        return get_msg(ret)
+        return error_table[ret]
 
     def get_position(self, axis):
         """ Get the value of feedback position counter
@@ -394,7 +411,7 @@ class ADLinkMotion(Motion):
         else:
             return -1
 
-        return get_msg(ret)
+        return error_table[ret]
 
     def get_command(self, axis):
         """ Get the value of command position counter
@@ -419,7 +436,7 @@ class ADLinkMotion(Motion):
         else:
             return -1
 
-        return get_msg(ret)
+        return error_table[ret]
 
     def emg_stop(self, axis):
         """ emergency stop
@@ -431,33 +448,75 @@ class ADLinkMotion(Motion):
         else:
             return -1
 
-        return get_msg(ret)
+        return error_table[ret]
         
     def single_rmove(self, axis, distance, speed, Tacc=0.3, Tdec=0.3, SVacc=0.75, SVdec=0.75):
         """ single axis move relatively
         """
         start_vel = speed / 10
         if self.mode == 'pci8154':
-            ret = pci_8154._8158_start_sr_move(axis, distance, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
+            ret = pci_8154._8154_start_sr_move(axis, distance, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
         elif self.mode == 'pci8158':
             ret = pci_8158._8158_start_sr_move(axis, distance, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
         else:
             return -1
 
-        return get_msg(ret)
+        return error_table[ret]
 
     def single_amove(self, axis, distance, speed, Tacc=0.3, Tdec=0.3, SVacc=0.75, SVdec=0.75):
         """ single axis move absolutely
         """
         start_vel = speed / 10
         if self.mode == 'pci8154':
-            ret = pci_8154._8158_start_sa_move(axis, distance, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
+            ret = pci_8154._8154_start_sa_move(axis, distance, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
         elif self.mode == 'pci8158':
             ret = pci_8158._8158_start_sa_move(axis, distance, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
         else:
             return -1
 
-        return get_msg(ret)
+        return error_table[ret]
+
+    def absolute_move(self, axis_list, speed, Tacc=0.3, Tdec=0.3, SVacc=0.75, SVdec=0.75):
+        """ single/multiple axis move absolutely
+        """
+        start_vel = speed / 10
+        axis_count = len(axis_list)
+        axis_id_array = (c_short * axis_count)()
+        position_array = (c_double * axis_count)()
+        for index, axis in enumerate(axis_list):
+            axis_id_array[index] = axis.axis_id
+            position_array[index] = axis.position
+        
+        if axis_count == 1:
+            argv_list = [axis_id_array[0], position_array[0], start_vel,
+                        speed, Tacc, Tdec, SVacc, SVdec]
+        else:
+            argv_list = [axis_id_array, position_array, start_vel,
+                        speed, Tacc, Tdec, SVacc, SVdec]
+        
+        # 8154 mode
+        if (self.mode == 'pci8154' and axis_count == 1):
+            ret = pci_8154._8154_start_sa_move(*argv_list)
+        elif (self.mode == 'pci8154' and axis_count == 2):
+            ret = pci_8154._8154_start_sa_line2(*argv_list)
+        elif (self.mode == 'pci8154' and axis_count == 3):
+            ret = pci_8154._8154_start_sa_line3(*argv_list)
+        elif (self.mode == 'pci8154' and axis_count == 4):
+            ret = pci_8154._8154_start_sa_line4(*argv_list)
+        # 8158 mode
+        elif (self.mode == 'pci8158' and axis_count == 1):
+            ret = pci_8158._8158_start_sa_move(*argv_list)
+        elif (self.mode == 'pci8158' and axis_count == 2):
+            ret = pci_8158._8158_start_sa_line2(*argv_list)
+        elif (self.mode == 'pci8158' and axis_count == 3):
+            ret = pci_8158._8158_start_sa_line3(*argv_list)
+        elif (self.mode == 'pci8158' and axis_count == 4):
+            ret = pci_8158._8158_start_sa_line4(*argv_list)
+        else:
+            return '[absolute_move() Error] mode = {} axis_count = {}'.format(
+                self.mode, axis_count)
+        #print(cast(position_array, POINTER(c_double)))
+        return error_table[ret]
 
     def set_home_config(self, axis, home_mode=1, org_logic=1, ez_logic=0, ez_count=0, erc_out=0):
         """ Set the configuration for home return move motion
@@ -469,7 +528,7 @@ class ADLinkMotion(Motion):
         else:
             return -1
 
-        return get_msg(ret)
+        return error_table[ret]
 
     def home_search(self, axis, speed, acc_time, ORG_offset):
         """ Perform an auto search home
@@ -497,18 +556,24 @@ class ADLinkMotion(Motion):
         else:
             return -1
 
-        return get_msg(ret)
+        return error_table[ret]
 
-    def sync_position(self, axis, ABSM, ABSR, TLC, DO1, ZSP):
+    def sync_position(self, axis_info):
         """ update position
         """
+        ABSM = axis_info['ABSM']
+        ABSR = axis_info['ABSR']
+        TLC = axis_info['TLC']
+        DO1 = axis_info['DO1']
+        ZSP = axis_info['ZSP']
+        
         if self.DO(ABSM, 1):
             self.DO(ABSM, 0)
-            return 'ABSM error: DO port = %d' % ABSM
+            return 'ABSM error: DO port = {}'.format(ABSM)
         sleep(0.05)
         if self.DI(TLC):
             self.DO(ABSM, 0)
-            return 'TLC error: DI port = %d' % TLC
+            return 'TLC error: DI port = {}'.format(TLC)
         sum = [0, 0]
         for i in range(0, 31, 2):
             self.DO(ABSR, 1)

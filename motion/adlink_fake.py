@@ -116,6 +116,9 @@ class ADLinkMotion(Motion):
     def single_amove(self, axis, distance, speed, Tacc=0.3, Tdec=0.3, SVacc=0.75, SVdec=0.75):
         return 0
 
+    def absolute_move(self, axis_list, speed, Tacc=0.3, Tdec=0.3, SVacc=0.75, SVdec=0.75):
+        return 0
+
     def set_home_config(self, axis, home_mode=1, org_logic=1, ez_logic=0, ez_count=0, erc_out=0):
         return 0
 
