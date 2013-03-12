@@ -592,36 +592,45 @@ class ADLinkMotion(Motion):
         if self.DO(ABSM, 1):
             self.DO(ABSM, 0)
             return 'ABSM error: DO port = {}'.format(ABSM)
-        sleep(0.05)
+        interval = 0.02
+        sleep(interval)
         if self.DI(TLC) == 0:
             self.DO(ABSM, 0)
             return 'TLC error: DI port = {}'.format(TLC)
-        sum = [0, 0]
+        sum = [0, 0, 0, 0]
         for i in range(0, 31, 2):
             self.DO(ABSR, 1)
-            sleep(0.02)
-            DO1_buf = self.DI(DO1)
-            ZSP_buf = self.DI(ZSP)
-            sleep(0.02)
-            sum[0] = DO1_buf * (1<<i) + ZSP_buf * (1<<(i+1)) + sum[1]
-            sum[1] = sum[0]
-            self.DO(ABSR, 0)
-            sleep(0.02)
+            sleep(interval)
+            if self.DI(TLC) == 0:
+                DO1_buf = self.DI(DO1)
+                ZSP_buf = self.DI(ZSP)
+                sleep(interval)
+                sum[0] = DO1_buf * (1<<i) + ZSP_buf * (1<<(i+1)) + sum[1]
+                sum[1] = sum[0]
+                self.DO(ABSR, 0)
+                sleep(interval)
         for i in range(0, 5, 2):
             self.DO(ABSR, 1)
             sleep(0.02)
             DO1_buf = self.DI(DO1)
             ZSP_buf = self.DI(ZSP)
             sleep(0.02)
-            sum[2] = DO1_Buf * (1<<i) + ZSP_Buf * (1<<(i+1)) + sum[3];
+            sum[2] = DO1_buf * (1<<i) + ZSP_buf * (1<<(i+1)) + sum[3];
             sum[3] = sum[2]
             self.DO(ABSR, 0)
             sleep(0.02)
-        sleep(0.02)
+        self.DO(ABSR, 0)
+        sleep(interval)
+        self.DO(ABSM, 0)
+        sleep(interval)
         
         axis_id = axis_info['axis_id']
-        self.set_command(axis_id, sum[0])
-        self.set_position(axis_id, sum[0])
+        ret = self.set_command(axis_id, sum[0])
+        if ret:
+            return ret
+        ret = self.set_position(axis_id, sum[0])
+        if ret:
+            return ret
         return 0
         
     def set_inp(self, axis, inp_enable, inp_logic=0):

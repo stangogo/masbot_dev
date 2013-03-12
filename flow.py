@@ -24,10 +24,6 @@ def single_rmove(axis_info, distance, speed=50, acc_time=0.3):
     relative_pulse = distance * proportion
     speed = speed * proportion
     ret = motion.single_rmove(axis_id, relative_pulse, speed, acc_time, acc_time)
-    for i in range(15):
-        stat()
-        sleep(0.05)
-    
     return ret
 
 def stat():
@@ -46,6 +42,7 @@ def servo_off():
     motion.servo_on_off(axis_x, 0)
 
 #servo_on()
+stat()
 if __name__ == "__main__":
     #motion.DO(0, 1)
     servo_on()
