@@ -607,6 +607,16 @@ class ADLinkMotion(Motion):
             sum[1] = sum[0]
             self.DO(ABSR, 0)
             sleep(0.02)
+        for i in range(0, 5, 2):
+            self.DO(ABSR, 1)
+            sleep(0.02)
+            DO1_buf = self.DI(DO1)
+            ZSP_buf = self.DI(ZSP)
+            sleep(0.02)
+            sum[2] = DO1_Buf * (1<<i) + ZSP_Buf * (1<<(i+1)) + sum[3];
+            sum[3] = sum[2]
+            self.DO(ABSR, 0)
+            sleep(0.02)
         sleep(0.02)
         
         axis_id = axis_info['axis_id']
