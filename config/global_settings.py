@@ -16,10 +16,10 @@ motion_cfg = [
     (3, 'DI_CARD'),
     (5, 'DI_CARD'),
     (7, 'DI_CARD'), 
+    (9, 'DO_CARD'),
     (11, 'DO_CARD'),
     (13, 'DO_CARD'),
-    (15, 'DO_CARD'),
-    (17, 'DO_CARD')
+    (15, 'DO_CARD')
 ]
 
 axis_cfg = [

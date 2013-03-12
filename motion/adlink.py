@@ -190,13 +190,15 @@ class ADLinkMotion(Motion):
             return -1
             
         if ret_8154 == 0:
-            pci_8154._8154_config_from_file()
+            ret = pci_8154._8154_config_from_file()
+            print('8154 read config...ret= {}'.format(ret))
             self.mode == 'pci8154'
             print('8154 initial')
             self.join_io_cards()
             return 0
         elif ret_8158 == 0:
-            pci_8158._8158_config_from_file()
+            ret = pci_8158._8158_config_from_file()
+            print('8158 read config...ret= {}'.format(ret))
             self.mode == 'pci8158'
             print('8158 initial')
             self.join_io_cards()
@@ -319,13 +321,14 @@ class ADLinkMotion(Motion):
 
         return state[0]
 
-    def servo_on_off(self, axis, on_off):
+    def servo_on_off(self, axis_info, on_off):
         """ motor servo on/off
         """
+        axis_id = axis_info['axis_id']
         if self.mode == 'pci8154':
-            ret = pci_8154._8154_set_servo(axist, on_off)
+            ret = pci_8154._8154_set_servo(axis_id, on_off)
         elif self.mode == 'pci8158':
-            ret = pci_8158._8158_set_servo(axis, on_off)
+            ret = pci_8158._8158_set_servo(axis_id, on_off)
         else:
             return -1
             
@@ -380,13 +383,14 @@ class ADLinkMotion(Motion):
             
         """
         if self.mode == 'pci8154':
-            ret = pci_8154._8154_motion_done(axis, status)
+            ret = pci_8154._8154_motion_done(axis)
         elif self.mode == 'pci8158':
-            ret = pci_8158._8158_motion_done(axis, status)
+            ret = pci_8158._8158_motion_done(axis)
         else:
             return -1
 
-        return error_table[ret]
+        print('get motion status... ret = {}'.format(ret))
+        return ret
 
     def get_position(self, axis):
         """ Get the value of feedback position counter
@@ -450,23 +454,33 @@ class ADLinkMotion(Motion):
 
         return error_table[ret]
         
-    def single_rmove(self, axis, distance, speed, Tacc=0.3, Tdec=0.3, SVacc=0.75, SVdec=0.75):
+    def single_rmove(self, axis, pulse, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
         """ single axis move relatively
         """
         start_vel = speed / 10
+        if SVacc == -1:
+            SVacc = speed / 4
+        if SVdec == -1:
+            SVdec = speed / 4
+        #print('model = {}, axis_id = {}, pulse = {}, speed = {}, Tacc = {}, Tdec = {}, SVacc = {}, SVdec = {}'.format(
+        #    self.mode, axis, pulse, speed, Tacc, Tdec, SVacc, SVdec))
         if self.mode == 'pci8154':
-            ret = pci_8154._8154_start_sr_move(axis, distance, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
+            ret = pci_8154._8154_start_sr_move(axis, pulse, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
         elif self.mode == 'pci8158':
-            ret = pci_8158._8158_start_sr_move(axis, distance, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
+            ret = pci_8158._8158_start_sr_move(axis, pulse, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
         else:
             return -1
 
         return error_table[ret]
 
-    def single_amove(self, axis, distance, speed, Tacc=0.3, Tdec=0.3, SVacc=0.75, SVdec=0.75):
+    def single_amove(self, axis, distance, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
         """ single axis move absolutely
         """
         start_vel = speed / 10
+        if SVacc == -1:
+            SVacc = speed / 4
+        if SVdec == -1:
+            SVdec = speed / 4
         if self.mode == 'pci8154':
             ret = pci_8154._8154_start_sa_move(axis, distance, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
         elif self.mode == 'pci8158':
@@ -476,10 +490,14 @@ class ADLinkMotion(Motion):
 
         return error_table[ret]
 
-    def absolute_move(self, axis_list, speed, Tacc=0.3, Tdec=0.3, SVacc=0.75, SVdec=0.75):
+    def absolute_move(self, axis_list, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
         """ single/multiple axis move absolutely
         """
         start_vel = speed / 10
+        if SVacc == -1:
+            SVacc = speed / 4
+        if SVdec == -1:
+            SVdec = speed / 4
         axis_count = len(axis_list)
         axis_id_array = (c_short * axis_count)()
         position_array = (c_double * axis_count)()
@@ -571,7 +589,7 @@ class ADLinkMotion(Motion):
             self.DO(ABSM, 0)
             return 'ABSM error: DO port = {}'.format(ABSM)
         sleep(0.05)
-        if self.DI(TLC):
+        if self.DI(TLC) == 0:
             self.DO(ABSM, 0)
             return 'TLC error: DI port = {}'.format(TLC)
         sum = [0, 0]
@@ -587,5 +605,7 @@ class ADLinkMotion(Motion):
             sleep(0.02)
         sleep(0.02)
         
-        self.set_command(sum[0])
-        self.set_position(sum[0])
+        axis_id = axis_info['axis_id']
+        self.set_command(axis_id, sum[0])
+        self.set_position(axis_id, sum[0])
+        return 0
