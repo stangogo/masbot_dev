@@ -35,5 +35,18 @@ axis_cfg = [
         'ZSP': 123,
         'scope_min': 5,
         'scope_max': 400
+    },
+    {
+        'axis_name': 'Y',
+        'axis_id': 1,
+        'proportion': 200,
+        'accelerative_time': 0.3,
+        'ABSM': 125,
+        'ABSR': 126,
+        'TLC': 127,
+        'DO1': 125,
+        'ZSP': 126,
+        'scope_min': 5,
+        'scope_max': 400
     }
 ]

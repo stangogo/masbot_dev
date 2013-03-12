@@ -5,16 +5,23 @@ from masbot.motion.adlink import ADLinkMotion as Motion
 from time import sleep
 
 motion = Motion(motion_cfg)
-axis_x = axis_cfg[0]
 
-def single_amove(axis_info, position, speed=50, acc_time=0.3):
+def move_xy(x, y, speed=50, acc_time=0.3):
     axis_list = []
-    axis_id = axis_info["axis_id"]
-    proportion = axis_info["proportion"]
-    pulse = position * proportion
-    speed = speed * proportion
-    axis_list.append(AxisInfo(axis_id, pulse))
-    ret = motion.absolute_move(axis_list, speed)
+    position = []
+    position.append(y)
+    position.append(x)
+    for axis in axis_cfg:
+        axis_id = axis["axis_id"]
+        proportion = axis["proportion"]
+        pulse = position.pop() * proportion
+        speed = speed * proportion
+        axis_list.append(AxisInfo(axis_id, pulse))
+    
+    ret = 0
+    #ret = motion.absolute_move(axis_list, speed, acc_time, acc_time)
+    print(axis_list)
+    print(speed)
     stat()
     return ret
 
@@ -27,19 +34,23 @@ def single_rmove(axis_info, distance, speed=50, acc_time=0.3):
     return ret
 
 def stat():
-    pulse = motion.get_position(axis_x['axis_id'])
-    position = pulse / axis_x['proportion']
-    print("axis {}: pulse = {}, position = {}".format(axis_x["axis_name"], pulse, position))
-    print("motion  = {}".format(motion.get_motion_status(0)))
-    print("io  = {}".format(motion.get_io_status(0)))
+    for axis in axis_cfg:
+        pulse = motion.get_position(axis['axis_id'])
+        position = pulse / axis['proportion']
+        print("axis {}: pulse = {}, position = {}".format(axis["axis_name"], pulse, position))
+        print("motion = {}".format(motion.get_motion_status(axis["axis_id"])))
+    print("io status = {}".format(motion.get_io_status(0)))
 
 def servo_on():
-    motion.servo_on_off(axis_x, 1)
-    ret = motion.sync_position(axis_x)
+    for axis in axis_cfg:
+        motion.servo_on_off(axis, 1)
+        ret = motion.sync_position(axis)
     stat()
 
 def servo_off():
-    motion.servo_on_off(axis_x, 0)
+    for axis in axis_cfg:
+        motion.servo_on_off(axis, 0)
+        ret = motion.sync_position(axis)
 
 #servo_on()
 stat()
