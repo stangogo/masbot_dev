@@ -611,14 +611,14 @@ class ADLinkMotion(Motion):
                 sleep(interval)
         for i in range(0, 5, 2):
             self.DO(ABSR, 1)
-            sleep(0.02)
+            sleep(interval)
             DO1_buf = self.DI(DO1)
             ZSP_buf = self.DI(ZSP)
-            sleep(0.02)
+            sleep(interval)
             sum[2] = DO1_buf * (1<<i) + ZSP_buf * (1<<(i+1)) + sum[3];
             sum[3] = sum[2]
             self.DO(ABSR, 0)
-            sleep(0.02)
+            sleep(interval)
         self.DO(ABSR, 0)
         sleep(interval)
         self.DO(ABSM, 0)

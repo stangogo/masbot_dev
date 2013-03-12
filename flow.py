@@ -15,13 +15,9 @@ def move_xy(x, y, speed=50, acc_time=0.3):
         axis_id = axis["axis_id"]
         proportion = axis["proportion"]
         pulse = position.pop() * proportion
-        speed = speed * proportion
         axis_list.append(AxisInfo(axis_id, pulse))
-    
-    ret = 0
-    #ret = motion.absolute_move(axis_list, speed, acc_time, acc_time)
-    print(axis_list)
-    print(speed)
+    speed = speed * proportion
+    ret = motion.absolute_move(axis_list, speed, acc_time, acc_time)
     stat()
     return ret
 
@@ -50,7 +46,6 @@ def servo_on():
 def servo_off():
     for axis in axis_cfg:
         motion.servo_on_off(axis, 0)
-        ret = motion.sync_position(axis)
 
 #servo_on()
 stat()
