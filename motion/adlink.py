@@ -151,6 +151,11 @@ pci_8154._8154_start_sa_line4.argtypes = [POINTER(c_short), POINTER(c_double), c
 pci_8158._8158_start_sa_line4.restype = c_short
 pci_8158._8158_start_sa_line4.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
 
+pci_8154._8154_set_inp.restype = c_short
+pci_8154._8154_set_inp.argtypes = [c_short, c_short, c_short]
+pci_8158._8158_set_inp.restype = c_short
+pci_8158._8158_set_inp.argtypes = [c_short, c_short, c_short]
+
 class ADLinkMotion(Motion):
     def __init__(self, cards_config=[]):
         self.mode = 'pci8154'
@@ -188,17 +193,17 @@ class ADLinkMotion(Motion):
         
         if ret_8154 and ret_8158:
             return -1
-            
+        
+        ret = pci_8154._8154_config_from_file()
+        print('8154 read config...ret = {}'.format(ret))
+        ret = pci_8158._8158_config_from_file()
+        print('8158 read config...ret = {}'.format(ret))
         if ret_8154 == 0:
-            ret = pci_8154._8154_config_from_file()
-            print('8154 read config...ret= {}'.format(ret))
             self.mode == 'pci8154'
             print('8154 initial')
             self.join_io_cards()
             return 0
         elif ret_8158 == 0:
-            ret = pci_8158._8158_config_from_file()
-            print('8158 read config...ret= {}'.format(ret))
             self.mode == 'pci8158'
             print('8158 initial')
             self.join_io_cards()
@@ -221,10 +226,10 @@ class ADLinkMotion(Motion):
         live = pointer(c_short(0))
         
         if self.mode == 'pci8154':
+            pci_8154._8154_db51_HSL_initial(0)
+            pci_8154._8154_db51_HSL_auto_start(0)
+            pci_8154._8154_db51_HSL_set_scan_condition(0, 0, 0)
             for num, type in self.cards_config:
-                pci_8154._8154_db51_HSL_initial(0)
-                pci_8154._8154_db51_HSL_auto_start(0)
-                pci_8154._8154_db51_HSL_set_scan_condition(0, 0, 0)
                 pci_8154._8154_db51_HSL_slave_live(0, num, live)
                 print('8154 card No.{} start'.format(num))
                 if type == 'DO_CARD':
@@ -232,10 +237,10 @@ class ADLinkMotion(Motion):
                 elif type == 'DI_CARD':
                     self.di_cards_index.append(num)
         elif self.mode == 'pci8158':
+            pci_8158._8158_db51_HSL_initial(0)
+            pci_8158._8158_db51_HSL_auto_start(0)
+            pci_8158._8158_db51_HSL_set_scan_condition(0, 0, 0)
             for num, type in self.cards_config:
-                pci_8158._8158_db51_HSL_initial(0)
-                pci_8158._8158_db51_HSL_auto_start(0)
-                pci_8158._8158_db51_HSL_set_scan_condition(0, 0, 0)
                 pci_8158._8158_db51_HSL_slave_live(0, num, live)
                 print('8158 card No.{} start'.format(num))
                 if type == 'DO_CARD':
@@ -389,7 +394,6 @@ class ADLinkMotion(Motion):
         else:
             return -1
 
-        print('get motion status... ret = {}'.format(ret))
         return ret
 
     def get_position(self, axis):
@@ -609,3 +613,9 @@ class ADLinkMotion(Motion):
         self.set_command(axis_id, sum[0])
         self.set_position(axis_id, sum[0])
         return 0
+        
+    def set_inp(self, axis, inp_enable, inp_logic=0):
+        if self.mode == 'pci8154':
+            pci_8154._8154_set_inp(axis, inp_enable, inp_logic)
+        elif self.mode == 'pci8158':
+            pci_8158._8158_set_inp(axis, inp_enable, inp_logic)
