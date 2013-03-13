@@ -18,7 +18,6 @@ def move_xy(x, y, speed=50, acc_time=0.3):
         axis_list.append(AxisInfo(axis_id, pulse))
     speed = speed * proportion
     ret = motion.absolute_move(axis_list, speed, acc_time, acc_time)
-    stat()
     return ret
 
 def single_rmove(axis_info, distance, speed=50, acc_time=0.3):
@@ -42,11 +41,12 @@ def servo_on():
         motion.servo_on_off(axis, 1)
         ret = motion.sync_position(axis)
     stat()
+    return ret
 
 def servo_off():
     for axis in axis_cfg:
-        motion.servo_on_off(axis, 0)
-
+        ret = motion.servo_on_off(axis, 0)
+    return ret
 #servo_on()
 stat()
 if __name__ == "__main__":
