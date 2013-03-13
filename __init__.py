@@ -1,2 +1,0 @@
-def funcA():
-    print("aa")

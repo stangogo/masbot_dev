@@ -171,7 +171,7 @@ class ADLinkMotion(Motion):
         self.close()
 
     def initial(self, manual_id = 0):
-        """ detect cardtype automatically, and inital pci card
+        """ detect cardtype automatically, and initial pci card
         
         Example:
             

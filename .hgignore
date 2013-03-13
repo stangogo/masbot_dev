@@ -1,4 +1,5 @@
 syntax: glob
 *.pyc
-*.dll
+config/global_settings.py
 _8154_initial.txt
+temp
