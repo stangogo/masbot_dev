@@ -1,7 +1,7 @@
 # -- coding: utf-8 --
 
 from masbot.config.global_settings import *
-from masbot.motion.adlink_fake import ADLinkMotion as Motion
+from masbot.motion.adlink import ADLinkMotion as Motion
 from time import sleep
 from masbot.actor.piston import Piston
 
@@ -49,10 +49,21 @@ def servo_off():
 
 motion = Motion(motion_cfg)
 stat()
-piston_cfg = {'action': 0, 'on_sensor': 0, 'off_sensor': 1}
-test_piston = Piston(motion, piston_cfg)
 
 if __name__ == "__main__":
     #motion.DO(0, 1)
     #servo_on()
-    test_piston.ask({'msg': 'down_action'})
+    piston1_cfg = {'action': 0, 'on_sensor': 0, 'off_sensor': 1}
+    piston1 = Piston.start(motion, piston1_cfg)
+
+    piston2_cfg = {'action': 3, 'on_sensor': 0, 'off_sensor': 1}
+    piston2 = Piston.start(motion, piston2_cfg)
+
+    print("ready to run 2 pistons down")
+    sleep(0.5)
+    piston1.tell({'command': 'down_no_wait'})
+    piston2.tell({'command': 'down_no_wait'})
+    print("ready to run 2 pistons down")
+    sleep(0.5)
+    piston1.tell({'command': 'up_no_wait'})
+    piston2.tell({'command': 'up_no_wait'})
