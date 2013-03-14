@@ -2,4 +2,5 @@ syntax: glob
 *.pyc
 config/global_settings.py
 _8154_initial.txt
+log
 temp
