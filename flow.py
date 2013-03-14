@@ -7,13 +7,13 @@ from masbot.actor.piston import Piston
 
 def move_xy(x, y, speed=50, acc_time=0.3):
     axis_list = []
-    position = []
-    position.append(y)
-    position.append(x)
+    position = {}
+    position['axis_x'] = x
+    position['axis_y'] = y
     for key, axis in axis_cfg.items():
         axis_id = axis["axis_id"]
         proportion = axis["proportion"]
-        pulse = position.pop() * proportion
+        pulse = position[key] * proportion
         axis_list.append(AxisInfo(axis_id, pulse))
     speed = speed * proportion
     ret = motion.absolute_move(axis_list, speed, acc_time, acc_time)
