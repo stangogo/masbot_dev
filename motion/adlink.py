@@ -491,7 +491,7 @@ class ADLinkMotion(Motion):
             return ret
         return 0
 
-    def _int32(x):
+    def _int32(self, x):
         """ to fit the 32 bits format
         """
         if x > 0xFFFFFFFF:
