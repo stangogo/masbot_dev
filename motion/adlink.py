@@ -315,7 +315,7 @@ class ADLinkMotion(Motion):
 
         return error_table[ret]
         
-    def single_rmove(self, axis, pulse, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
+    def single_rmove(self, axis_id, pulse, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
         """ single axis move relatively
         """
         start_vel = speed / 10
@@ -323,32 +323,19 @@ class ADLinkMotion(Motion):
             SVacc = speed / 4
         if SVdec == -1:
             SVdec = speed / 4
-        #print('model = {}, axis_id = {}, pulse = {}, speed = {}, Tacc = {}, Tdec = {}, SVacc = {}, SVdec = {}'.format(
-        #    self.mode, axis, pulse, speed, Tacc, Tdec, SVacc, SVdec))
+
         if self.mode == 'pci8154':
-            ret = pci_8154._8154_start_sr_move(axis, pulse, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
+            ret = pci_8154._8154_start_sr_move(axis_id, pulse, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
         elif self.mode == 'pci8158':
-            ret = pci_8158._8158_start_sr_move(axis, pulse, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
+            ret = pci_8158._8158_start_sr_move(axis_id, pulse, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
         else:
             return -1
 
-        return error_table[ret]
+        if ret:
+            return ret
 
-    def single_amove(self, axis, distance, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
-        """ single axis move absolutely
-        """
-        start_vel = speed / 10
-        if SVacc == -1:
-            SVacc = speed / 4
-        if SVdec == -1:
-            SVdec = speed / 4
-        if self.mode == 'pci8154':
-            ret = pci_8154._8154_start_sa_move(axis, distance, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
-        elif self.mode == 'pci8158':
-            ret = pci_8158._8158_start_sa_move(axis, distance, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
-        else:
-            return -1
-
+        timeout = 5000
+        ret = wait_motion_ready(axis_id, timeout)
         return error_table[ret]
 
     def absolute_move(self, axis_list, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
@@ -394,8 +381,43 @@ class ADLinkMotion(Motion):
         else:
             return '[absolute_move() Error] mode = {} axis_count = {}'.format(
                 self.mode, axis_count)
-        #print(cast(position_array, POINTER(c_double)))
+        
+        if ret:
+            return ret
+
+        timeout = 5000
+        ret = wait_motion_ready(axis_id, timeout)
         return error_table[ret]
+
+    def wait_motion_ready(self, axis_id, timeout=None, interval=10):
+        """ check if motion status is ready
+        
+        Example:
+            wait_motion_ready(0, 2000, 10)
+            
+        Args:
+            axis(integer): axis id
+            timeout(integer): timeout (ms)
+            interval(integer): sleep time (ms)
+        
+        Returns:
+            0: ready
+            timeout message
+
+        Raises:
+            
+        """
+        count = 0
+        interval = interval / 1000
+        while True:
+            ret = self.get_motion_status(axis_id)
+            if ret:
+                count = count + interval
+            else:
+                return ret
+            if timeout and count >= timeout:
+                return ret
+            sleep(interval)
 
     def set_home_config(self, axis, home_mode=1, org_logic=1, ez_logic=0, ez_count=0, erc_out=0):
         """ Set the configuration for home return move motion
