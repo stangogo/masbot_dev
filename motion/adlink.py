@@ -335,7 +335,7 @@ class ADLinkMotion(Motion):
             return ret
 
         timeout = 5000
-        ret = wait_motion_ready(axis_id, timeout)
+        ret = self.wait_motion_ready(axis_id, timeout)
         return error_table[ret]
 
     def absolute_move(self, axis_list, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
@@ -386,7 +386,10 @@ class ADLinkMotion(Motion):
             return ret
 
         timeout = 5000
-        ret = wait_motion_ready(axis_id, timeout)
+        for axis_id in axis_id_array:
+            ret = self.wait_motion_ready(axis_id, timeout)
+            if ret:
+                break
         return error_table[ret]
 
     def wait_motion_ready(self, axis_id, timeout=None, interval=10):

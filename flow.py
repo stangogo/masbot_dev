@@ -17,6 +17,7 @@ def move_xy(x, y, speed=50, acc_time=0.3):
         axis_list.append(AxisInfo(axis_id, pulse))
     speed = speed * proportion
     ret = motion.absolute_move(axis_list, speed, acc_time, acc_time)
+    stat()
     return ret
 
 def single_rmove(axis_info, distance, speed=50, acc_time=0.3):
@@ -25,6 +26,7 @@ def single_rmove(axis_info, distance, speed=50, acc_time=0.3):
     relative_pulse = distance * proportion
     speed = speed * proportion
     ret = motion.single_rmove(axis_id, relative_pulse, speed, acc_time, acc_time)
+    stat()
     return ret
 
 def stat():
