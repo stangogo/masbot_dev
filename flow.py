@@ -52,9 +52,7 @@ def servo_off():
 motion = Motion(motion_cfg)
 stat()
 
-if __name__ == "__main__":
-    #motion.DO(0, 1)
-    #servo_on()
+def test():
     piston1_cfg = {'action': 0, 'on_sensor': 0, 'off_sensor': 1}
     piston1 = Piston.start(motion, piston1_cfg)
 
@@ -63,9 +61,14 @@ if __name__ == "__main__":
 
     print("ready to run 2 pistons down")
     sleep(0.5)
-    piston1.tell({'command': 'down_no_wait'})
-    piston2.tell({'command': 'down_no_wait'})
+    piston1.ask({'msg': 'down_action'})
+    piston2.ask({'msg': 'down_action'})
     print("ready to run 2 pistons down")
     sleep(0.5)
-    piston1.tell({'command': 'up_no_wait'})
-    piston2.tell({'command': 'up_no_wait'})
+    piston1.ask({'msg': 'up_action'}, False)
+    piston2.ask({'msg': 'up_action'})
+    
+if __name__ == "__main__":
+    #motion.DO(0, 1)
+    #servo_on()
+    test()
