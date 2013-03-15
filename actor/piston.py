@@ -19,7 +19,6 @@ class Piston(pykka.ThreadingActor):
     def on_receive(self, message):
         # normal case
         if message.get('msg') == 'down_action':
-            print('func in')
             message['reply_to'].set('downing')
             action_port = self.piston_info['action']
             self.io_card.DO(action_port, 1)
@@ -29,13 +28,5 @@ class Piston(pykka.ThreadingActor):
             action_port = self.piston_info['action']
             self.io_card.DO(action_port, 0)
             message['reply_to'].set('ready')
-            
-        # no wait case
-        if message.get('command') == 'down_no_wait':
-            action_port = self.piston_info['action']
-            self.io_card.DO(action_port, 1)
-        elif message.get('command') == 'up_no_wait':
-            action_port = self.piston_info['action']
-            self.io_card.DO(action_port, 0)
 
 

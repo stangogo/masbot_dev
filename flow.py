@@ -61,9 +61,9 @@ if __name__ == "__main__":
 
     print("ready to run 2 pistons down")
     sleep(0.5)
-    piston1.tell({'command': 'down_no_wait'})
-    piston2.tell({'command': 'down_no_wait'})
+    piston1.ask({'msg': 'down_action'})
+    piston2.ask({'msg': 'down_action'})
     print("ready to run 2 pistons down")
     sleep(0.5)
-    piston1.tell({'command': 'up_no_wait'})
-    piston2.tell({'command': 'up_no_wait'})
+    piston1.ask({'msg': 'up_action'}, False)
+    piston2.ask({'msg': 'up_action'}, False)
