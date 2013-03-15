@@ -17,6 +17,7 @@ def move_xy(x, y, speed=50, acc_time=0.3):
         axis_list.append(AxisInfo(axis_id, pulse))
     speed = speed * proportion
     ret = motion.absolute_move(axis_list, speed, acc_time, acc_time)
+    stat()
     return ret
 
 def single_rmove(axis_info, distance, speed=50, acc_time=0.3):
@@ -25,6 +26,7 @@ def single_rmove(axis_info, distance, speed=50, acc_time=0.3):
     relative_pulse = distance * proportion
     speed = speed * proportion
     ret = motion.single_rmove(axis_id, relative_pulse, speed, acc_time, acc_time)
+    stat()
     return ret
 
 def stat():
@@ -61,9 +63,9 @@ if __name__ == "__main__":
 
     print("ready to run 2 pistons down")
     sleep(0.5)
-    piston1.ask({'msg': 'down_action'})
-    piston2.ask({'msg': 'down_action'})
+    piston1.tell({'command': 'down_no_wait'})
+    piston2.tell({'command': 'down_no_wait'})
     print("ready to run 2 pistons down")
     sleep(0.5)
-    piston1.ask({'msg': 'up_action'}, False)
-    piston2.ask({'msg': 'up_action'}, False)
+    piston1.tell({'command': 'up_no_wait'})
+    piston2.tell({'command': 'up_no_wait'})
