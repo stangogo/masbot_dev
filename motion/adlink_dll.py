@@ -118,20 +118,25 @@ pci_8154._8154_start_sr_move.argtypes = [c_short, c_double, c_double, c_double, 
 pci_8158._8158_start_sr_move.restype = c_short
 pci_8158._8158_start_sr_move.argtypes = [c_short, c_double, c_double, c_double, c_double, c_double, c_double, c_double]
 
+pci_8154._8154_start_sr_line2.restype = c_short
+pci_8154._8154_start_sr_line2.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+pci_8158._8158_start_sr_line2.restype = c_short
+pci_8158._8158_start_sr_line2.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+
+pci_8154._8154_start_sr_line3.restype = c_short
+pci_8154._8154_start_sr_line3.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+pci_8158._8158_start_sr_line3.restype = c_short
+pci_8158._8158_start_sr_line3.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+
+pci_8154._8154_start_sr_line4.restype = c_short
+pci_8154._8154_start_sr_line4.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+pci_8158._8158_start_sr_line4.restype = c_short
+pci_8158._8158_start_sr_line4.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+
 pci_8154._8154_start_sa_move.restype = c_short
 pci_8154._8154_start_sa_move.argtypes = [c_short, c_double, c_double, c_double, c_double, c_double, c_double, c_double]
 pci_8158._8158_start_sa_move.restype = c_short
 pci_8158._8158_start_sa_move.argtypes = [c_short, c_double, c_double, c_double, c_double, c_double, c_double, c_double]
-
-pci_8154._8154_home_search.restype = c_short
-pci_8154._8154_home_search.argtypes = [c_short, c_double, c_double, c_double, c_double]
-pci_8158._8158_home_search.restype = c_short
-pci_8158._8158_home_search.argtypes = [c_short, c_double, c_double, c_double, c_double]
-
-pci_8154._8154_set_home_config.restype = c_short
-pci_8154._8154_set_home_config.argtypes = [c_short, c_short, c_short, c_short, c_short, c_short]
-pci_8158._8158_set_home_config.restype = c_short
-pci_8158._8158_set_home_config.argtypes = [c_short, c_short, c_short, c_short, c_short, c_short]
 
 pci_8154._8154_start_sa_line2.restype = c_short
 pci_8154._8154_start_sa_line2.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
@@ -147,6 +152,16 @@ pci_8154._8154_start_sa_line4.restype = c_short
 pci_8154._8154_start_sa_line4.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
 pci_8158._8158_start_sa_line4.restype = c_short
 pci_8158._8158_start_sa_line4.argtypes = [POINTER(c_short), POINTER(c_double), c_double, c_double, c_double, c_double, c_double, c_double]
+
+pci_8154._8154_home_search.restype = c_short
+pci_8154._8154_home_search.argtypes = [c_short, c_double, c_double, c_double, c_double]
+pci_8158._8158_home_search.restype = c_short
+pci_8158._8158_home_search.argtypes = [c_short, c_double, c_double, c_double, c_double]
+
+pci_8154._8154_set_home_config.restype = c_short
+pci_8154._8154_set_home_config.argtypes = [c_short, c_short, c_short, c_short, c_short, c_short]
+pci_8158._8158_set_home_config.restype = c_short
+pci_8158._8158_set_home_config.argtypes = [c_short, c_short, c_short, c_short, c_short, c_short]
 
 pci_8154._8154_set_inp.restype = c_short
 pci_8154._8154_set_inp.argtypes = [c_short, c_short, c_short]

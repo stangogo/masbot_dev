@@ -1,7 +1,7 @@
 # -- coding: utf-8 --
 
 from masbot.config.global_settings import *
-from masbot.motion.adlink_fake import ADLinkMotion as Motion
+from masbot.motion.adlink import ADLinkMotion as Motion
 from masbot.actor.piston import Piston
 from masbot.actor.doubleaxis import DoubleAxis
 

@@ -8,10 +8,6 @@
 # usage          : import global_settings
 # notes          : 
 
-#from collections import namedtuple
-from collections import OrderedDict
-#AxisInfo = namedtuple('AxisInfo', ['axis_id', 'position'])
-
 motion_cfg = [ 
     (1, 'DI_CARD'),
     (3, 'DI_CARD'),
@@ -26,6 +22,7 @@ motion_cfg = [
 axis_cfg = {
     'axis_x':{
         'axis_id': 0,
+        'motor_type': 'servo_type',
         'proportion': 200,
         'accelerative_time': 0.3,
         'ABSM': 122,
@@ -38,6 +35,7 @@ axis_cfg = {
     },
     'axis_y':{
         'axis_id': 1,
+        'motor_type': 'servo_type',
         'proportion': 200,
         'accelerative_time': 0.3,
         'ABSM': 125,
