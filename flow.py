@@ -1,18 +1,9 @@
 # -- coding: utf-8 --
 
 from masbot.config.global_settings import *
-from masbot.motion.adlink import ADLinkMotion as Motion
+from masbot.motion.adlink_fake import ADLinkMotion as Motion
 from masbot.actor.piston import Piston
 from masbot.actor.doubleaxis import DoubleAxis
-
-def single_rmove(axis_info, distance, speed=50, acc_time=0.3):
-    axis_id = axis_info["axis_id"]
-    proportion = axis_info["proportion"]
-    relative_pulse = distance * proportion
-    speed = speed * proportion
-    ret = motion.single_rmove(axis_id, relative_pulse, speed, acc_time, acc_time)
-    stat()
-    return ret
 
 def stat():
     for key, axis in axis_cfg.items():
@@ -25,7 +16,8 @@ def stat():
 def servo_on():
     for key, axis in axis_cfg.items():
         motion.servo_on_off(axis, 1)
-        ret = motion.sync_position(axis)
+        if axis['motor_type'] == 'servo_type':
+            ret = motion.sync_position(axis)
     stat()
     return ret
 

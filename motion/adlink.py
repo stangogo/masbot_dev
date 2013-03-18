@@ -315,27 +315,58 @@ class ADLinkMotion(Motion):
 
         return error_table[ret]
         
-    def single_rmove(self, axis_id, pulse, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
-        """ single axis move relatively
+    def relative_move(self, axis_list, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
+        """ single/multiple axis move relatively
         """
         start_vel = speed / 10
         if SVacc == -1:
             SVacc = speed / 4
         if SVdec == -1:
             SVdec = speed / 4
-
-        if self.mode == 'pci8154':
-            ret = pci_8154._8154_start_sr_move(axis_id, pulse, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
-        elif self.mode == 'pci8158':
-            ret = pci_8158._8158_start_sr_move(axis_id, pulse, start_vel, speed, Tacc, Tdec, SVacc, SVdec)
+        axis_count = len(axis_list)
+        axis_id_array = (c_short * axis_count)()
+        position_array = (c_double * axis_count)()
+        for index, axis in enumerate(axis_list):
+            axis_id_array[index] = axis.axis_id
+            position_array[index] = axis.position
+        
+        if axis_count == 1:
+            argv_list = [axis_id_array[0], position_array[0], start_vel,
+                        speed, Tacc, Tdec, SVacc, SVdec]
         else:
-            return -1
-
+            argv_list = [axis_id_array, position_array, start_vel,
+                        speed, Tacc, Tdec, SVacc, SVdec]
+        
+        # 8154 mode
+        if (self.mode == 'pci8154' and axis_count == 1):
+            ret = pci_8154._8154_start_sr_move(*argv_list)
+        elif (self.mode == 'pci8154' and axis_count == 2):
+            ret = pci_8154._8154_start_sr_line2(*argv_list)
+        elif (self.mode == 'pci8154' and axis_count == 3):
+            ret = pci_8154._8154_start_sr_line3(*argv_list)
+        elif (self.mode == 'pci8154' and axis_count == 4):
+            ret = pci_8154._8154_start_sr_line4(*argv_list)
+        # 8158 mode
+        elif (self.mode == 'pci8158' and axis_count == 1):
+            ret = pci_8158._8158_start_sr_move(*argv_list)
+        elif (self.mode == 'pci8158' and axis_count == 2):
+            ret = pci_8158._8158_start_sr_line2(*argv_list)
+        elif (self.mode == 'pci8158' and axis_count == 3):
+            ret = pci_8158._8158_start_sr_line3(*argv_list)
+        elif (self.mode == 'pci8158' and axis_count == 4):
+            ret = pci_8158._8158_start_sr_line4(*argv_list)
+        else:
+            return '[relative_move() Error] mode = {} axis_count = {}'.format(
+                self.mode, axis_count)
+        
         if ret:
             return ret
 
         timeout = 5000
-        ret = self.wait_motion_ready(axis_id, timeout)
+        for axis_id in axis_id_array:
+            ret = self.wait_motion_ready(axis_id, timeout)
+            if ret:
+                break
         return error_table[ret]
 
     def absolute_move(self, axis_list, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):

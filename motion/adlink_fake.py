@@ -99,7 +99,6 @@ class ADLinkMotion(Motion):
 
     def set_position(self, axis, position):
         self.axis_position[axis] = position
-
         return 0
 
     def get_command(self, axis):
@@ -111,13 +110,25 @@ class ADLinkMotion(Motion):
     def emg_stop(self, axis):
         return 0
         
-    def single_rmove(self, axis, distance, speed, Tacc=0.3, Tdec=0.3, SVacc=0.75, SVdec=0.75):
+    def relative_move(self, axis_list, speed, Tacc=0.2, Tdec=0.2, SVacc=0.75, SVdec=0.75):
+        simulate_count = 10
+        for count in range(simulate_count):
+            for axis in axis_list:
+                self.axis_position[axis.axis_id] += axis.position / simulate_count
+                sleep(0.025)
         return 0
 
-    def single_amove(self, axis, distance, speed, Tacc=0.3, Tdec=0.3, SVacc=0.75, SVdec=0.75):
-        return 0
+    def absolute_move(self, axis_list, speed, Tacc=0.2, Tdec=0.2, SVacc=0.75, SVdec=0.75):
+        now_position = [0] * len(axis_list)
+        for axis in axis_list:
+            now_position[axis.axis_id] = self.axis_position[axis.axis_id]
 
-    def absolute_move(self, axis_list, speed, Tacc=0.3, Tdec=0.3, SVacc=0.75, SVdec=0.75):
+        simulate_count = 10
+        for count in range(simulate_count):
+            for axis in axis_list:
+                shift_position = axis.position - now_position[axis.axis_id]
+                self.axis_position[axis.axis_id] += shift_position / simulate_count
+                sleep(0.025)
         return 0
 
     def set_home_config(self, axis, home_mode=1, org_logic=1, ez_logic=0, ez_count=0, erc_out=0):
@@ -148,15 +159,4 @@ class ADLinkMotion(Motion):
         Raises:
             
         """
-        count = 0
-        interval = 50
-        interval_time = interval / 1000
-        while True:
-            ret = self.DI(port)
-            if ret:
-                return ret
-            else:
-                count = count + interval                
-            if count >= timeout:
-                return '[check sensor timeout] port = {}'.format(port)
-            sleep(interval_time)
+        return 1

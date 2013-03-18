@@ -34,6 +34,16 @@ class DoubleAxis(pykka.ThreadingActor):
             else:
                 self.state = 0
                 message['reply_to'].set('ready')
+        elif message.get('msg') == 'rmove_xy':
+            x = message.get('x')
+            y = message.get('y')
+            ret = self._rmove_xy(x, y)
+            if ret:
+                self.state = ret
+                message['reply_to'].set(ret)
+            else:
+                self.state = 0
+                message['reply_to'].set('ready')
         elif message.get('msg') == 'move_point':
             point_index = message.get('point_index')
             ret = self._move_to_point(point_index)
@@ -67,7 +77,34 @@ class DoubleAxis(pykka.ThreadingActor):
             axis_list.append(AxisInfo(axis_id, pulse))
         speed = speed * proportion
         self.state = 'moving'
+        print(axis_list)
         ret = self.motion.absolute_move(axis_list, speed, acc_time, acc_time)
+        return ret
+
+    def _rmove_xy(self, x, y, speed=50, acc_time=0.3):
+        # check if x,y in safe scope
+        axis_x_id = self.axis_info['axis_x']['axis_id']
+        axis_y_id = self.axis_info['axis_y']['axis_id']
+        x_proportion = self.axis_info['axis_x']['proportion']
+        y_proportion = self.axis_info['axis_y']['proportion']
+        now_x = self.motion.get_position(axis_x_id) / x_proportion
+        now_y = self.motion.get_position(axis_y_id) / y_proportion
+        ret = self._check_xy_scope(now_x+x, now_y+y)
+        if ret:
+            return ret
+
+        axis_list = []
+        position = {}
+        position['axis_x'] = x
+        position['axis_y'] = y
+        for key, axis in self.axis_info.items():
+            axis_id = axis["axis_id"]
+            proportion = axis["proportion"]
+            pulse = position[key] * proportion
+            axis_list.append(AxisInfo(axis_id, pulse))
+        speed = speed * proportion
+        self.state = 'moving'
+        ret = self.motion.relative_move(axis_list, speed, acc_time, acc_time)
         return ret
         
     def _check_xy_scope(self, x, y):
