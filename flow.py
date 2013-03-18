@@ -4,6 +4,7 @@ from masbot.config.global_settings import *
 from masbot.motion.adlink import ADLinkMotion as Motion
 from time import sleep
 from masbot.actor.piston import Piston
+from masbot.actor.doubleaxis import DoubleAxis
 
 def move_xy(x, y, speed=50, acc_time=0.3):
     axis_list = []
@@ -53,11 +54,15 @@ motion = Motion(motion_cfg)
 stat()
 
 def test():
+    # initial actor
     piston = {}
     for key, val in piston_cfg.items():
         piston[key] = {}
         piston[key] = Piston.start(motion, val)
+    tbar = DoubleAxis.start(motion, axis_cfg)
 
+    tbar.ask({'msg': 'move_xy', 'x': 450, 'y': 250})
+    # test flow
     piston['piston1'].ask({'msg': 'down_action'})
     piston['piston2'].ask({'msg': 'down_action'})
     

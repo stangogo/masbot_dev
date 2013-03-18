@@ -38,8 +38,8 @@ class ADLinkMotion(Motion):
         print('8158 close')
 
     def join_io_cards(self):
+        sleep(0.2)
         for num, type in self.cards_config:
-            sleep(0.2)
             print('8158 card No.%d start' % num)
             empty_card = 32 * [0]
             if type == 'DO_CARD':
@@ -127,3 +127,33 @@ class ADLinkMotion(Motion):
 
     def sync_position(self, axis, ABSM, ABSR, TLC, DO1, ZSP):
         return 0
+        
+    def check_sensor(self, port, timeout=5000):
+        """ check if sensor is on
+        
+        Example:
+            _check_sensor(12, 200)
+            
+        Args:
+            axis(integer): sensor port
+            timeout(integer): timeout (ms)
+        
+        Returns:
+            1: in place
+            timeout message
+
+        Raises:
+            
+        """
+        count = 0
+        interval = 50
+        interval_time = interval / 1000
+        while True:
+            ret = self.DI(port)
+            if ret:
+                return ret
+            else:
+                count = count + interval                
+            if count >= timeout:
+                return '[check sensor timeout] port = {}'.format(port)
+            sleep(interval_time)
