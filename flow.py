@@ -6,21 +6,6 @@ from time import sleep
 from masbot.actor.piston import Piston
 from masbot.actor.doubleaxis import DoubleAxis
 
-def move_xy(x, y, speed=50, acc_time=0.3):
-    axis_list = []
-    position = {}
-    position['axis_x'] = x
-    position['axis_y'] = y
-    for key, axis in axis_cfg.items():
-        axis_id = axis["axis_id"]
-        proportion = axis["proportion"]
-        pulse = position[key] * proportion
-        axis_list.append(AxisInfo(axis_id, pulse))
-    speed = speed * proportion
-    ret = motion.absolute_move(axis_list, speed, acc_time, acc_time)
-    stat()
-    return ret
-
 def single_rmove(axis_info, distance, speed=50, acc_time=0.3):
     axis_id = axis_info["axis_id"]
     proportion = axis_info["proportion"]
@@ -53,19 +38,22 @@ def servo_off():
 motion = Motion(motion_cfg)
 stat()
 
-def test():
-    # initial actor
-    piston = {}
-    for key, val in piston_cfg.items():
-        piston[key] = {}
-        piston[key] = Piston.start(motion, val)
-    tbar = DoubleAxis.start(motion, axis_cfg)
+# initial actor
+piston = {}
+for key, val in piston_cfg.items():
+    piston[key] = {}
+    piston[key] = Piston.start(motion, val)
+tbar = DoubleAxis.start(motion, axis_cfg)
 
-    tbar.ask({'msg': 'move_xy', 'x': 450, 'y': 250})
-    # test flow
+def test():
+    tbar.ask({'msg': 'move_xy', 'x': 250, 'y': 250})
     piston['piston1'].ask({'msg': 'down_action'})
     piston['piston2'].ask({'msg': 'down_action'})
-    
+    piston['piston1'].ask({'msg': 'up_action'}, False)
+    piston['piston2'].ask({'msg': 'up_action'})
+    tbar.ask({'msg': 'move_xy', 'x': 300, 'y': 300})
+    piston['piston1'].ask({'msg': 'down_action'}, False)
+    piston['piston2'].ask({'msg': 'down_action'})
     piston['piston1'].ask({'msg': 'up_action'}, False)
     piston['piston2'].ask({'msg': 'up_action'})
     
