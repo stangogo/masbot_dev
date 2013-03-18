@@ -53,20 +53,16 @@ motion = Motion(motion_cfg)
 stat()
 
 def test():
-    piston1_cfg = {'action': 0, 'on_sensor': 0, 'off_sensor': 1}
-    piston1 = Piston.start(motion, piston1_cfg)
+    piston = {}
+    for key, val in piston_cfg.items():
+        piston[key] = {}
+        piston[key] = Piston.start(motion, val)
 
-    piston2_cfg = {'action': 3, 'on_sensor': 0, 'off_sensor': 1}
-    piston2 = Piston.start(motion, piston2_cfg)
-
-    print("ready to run 2 pistons down")
-    sleep(0.5)
-    piston1.ask({'msg': 'down_action'})
-    piston2.ask({'msg': 'down_action'})
-    print("ready to run 2 pistons down")
-    sleep(0.5)
-    piston1.ask({'msg': 'up_action'}, False)
-    piston2.ask({'msg': 'up_action'})
+    piston['piston1'].ask({'msg': 'down_action'})
+    piston['piston2'].ask({'msg': 'down_action'})
+    
+    piston['piston1'].ask({'msg': 'up_action'}, False)
+    piston['piston2'].ask({'msg': 'up_action'})
     
 if __name__ == "__main__":
     #motion.DO(0, 1)

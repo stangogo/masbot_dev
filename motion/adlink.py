@@ -411,7 +411,7 @@ class ADLinkMotion(Motion):
             
         """
         count = 0
-        interval = interval / 1000
+        interval_time = interval / 1000
         while True:
             ret = self.get_motion_status(axis_id)
             if ret:
@@ -420,7 +420,7 @@ class ADLinkMotion(Motion):
                 return ret
             if timeout and count >= timeout:
                 return ret
-            sleep(interval)
+            sleep(interval_time)
 
     def set_home_config(self, axis, home_mode=1, org_logic=1, ez_logic=0, ez_count=0, erc_out=0):
         """ Set the configuration for home return move motion
@@ -535,3 +535,33 @@ class ADLinkMotion(Motion):
             pci_8154._8154_set_inp(axis, inp_enable, inp_logic)
         elif self.mode == 'pci8158':
             pci_8158._8158_set_inp(axis, inp_enable, inp_logic)
+
+    def check_sensor(port, timeout=5000):
+        """ check if sensor is on
+        
+        Example:
+            _check_sensor(12, 200)
+            
+        Args:
+            axis(integer): sensor port
+            timeout(integer): timeout (ms)
+        
+        Returns:
+            1: in place
+            timeout message
+
+        Raises:
+            
+        """
+        count = 0
+        interval = 50
+        interval_time = interval / 1000
+        while True:
+            ret = self.DI(port)
+            if ret:
+                return ret
+            else:
+                count = count + interval                
+            if count >= timeout:
+                return '[check sensor timeout] port = {}'.format(port)
+            sleep(interval_time)

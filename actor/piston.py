@@ -15,18 +15,34 @@ class Piston(pykka.ThreadingActor):
         super(Piston, self).__init__()
         self.io_card = io_card
         self.piston_info = piston_info
+        self.state = 'ready'
         
     def on_receive(self, message):
-        # normal case
+        # action on
         if message.get('msg') == 'down_action':
-            message['reply_to'].set('downing')
+            self.state = 'downing'
             action_port = self.piston_info['action']
-            self.io_card.DO(action_port, 1)
-            message['reply_to'].set('ready')
+            ret = self.io_card.DO(action_port, 1)
+            if ret:
+                message['reply_to'].set('down_error')
+                return ret
+            on_port = self.piston_info['on_sensor']
+            ret = self.io_card.check_sensor(on_port)
+            if ret:
+                message['reply_to'].set('ready')
+            else:
+                message['reply_to'].set('down_error')
+        # action off
         elif message.get('msg') == 'up_action':
-            message['reply_to'].set('uping')
+            self.state = 'upping'
             action_port = self.piston_info['action']
-            self.io_card.DO(action_port, 0)
-            message['reply_to'].set('ready')
-
-
+            ret = self.io_card.DO(action_port, 0)
+            if ret:
+                message['reply_to'].set('up_error')
+                return ret
+            on_port = self.piston_info['off_sensor']
+            ret = self.io_card.check_sensor(on_port)
+            if ret:
+                message['reply_to'].set('ready')
+            else:
+                message['reply_to'].set('up_error')
