@@ -536,7 +536,7 @@ class ADLinkMotion(Motion):
         elif self.mode == 'pci8158':
             pci_8158._8158_set_inp(axis, inp_enable, inp_logic)
 
-    def check_sensor(port, timeout=5000):
+    def check_sensor(self, port, timeout=5000):
         """ check if sensor is on
         
         Example:

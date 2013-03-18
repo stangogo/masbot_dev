@@ -9,6 +9,8 @@
 # notes          : 
 
 from collections import namedtuple
+from collections import OrderedDict
+
 AxisInfo = namedtuple('AxisInfo', ['axis_id', 'position'])
 
 motion_cfg = [ 
@@ -22,8 +24,8 @@ motion_cfg = [
     (15, 'DO_CARD')
 ]
 
-axis_cfg = [
-    {
+axis_cfg = {
+    'axis_x':{
         'axis_name': 'X',
         'axis_id': 0,
         'proportion': 200,
@@ -36,7 +38,7 @@ axis_cfg = [
         'scope_min': 5,
         'scope_max': 400
     },
-    {
+    'axis_y':{
         'axis_name': 'Y',
         'axis_id': 1,
         'proportion': 200,
@@ -49,4 +51,17 @@ axis_cfg = [
         'scope_min': 5,
         'scope_max': 400
     }
-]
+}
+
+piston_cfg = {
+    'piston1':{
+        'action': 0,
+        'off_sensor': 0,
+        'on_sensor': 1
+    },
+    'piston2':{
+        'action': 3,
+        'off_sensor': 3,
+        'on_sensor': 4
+    }
+}
