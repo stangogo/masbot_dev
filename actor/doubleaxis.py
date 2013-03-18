@@ -13,10 +13,11 @@ from collections import namedtuple
 AxisInfo = namedtuple('AxisInfo', ['axis_id', 'position'])
 
 class DoubleAxis(pykka.ThreadingActor):
-    def __init__(self, motion, axis_info):
+    def __init__(self, motion, axis_info, xy_point):
         super(DoubleAxis, self).__init__()
         self.motion = motion
         self.axis_info = axis_info
+        self.xy_point = xy_point
         self.state = 0
         
     def on_receive(self, message):
@@ -33,7 +34,22 @@ class DoubleAxis(pykka.ThreadingActor):
             else:
                 self.state = 0
                 message['reply_to'].set('ready')
-      
+        elif message.get('msg') == 'move_point':
+            point_index = message.get('point_index')
+            ret = self._move_to_point(point_index)
+            if ret:
+                self.state = ret
+                message['reply_to'].set(ret)
+            else:
+                self.state = 0
+                message['reply_to'].set('ready')
+
+    def _move_to_point(self, point_index):
+        x = self.xy_point[point_index]['x']
+        y = self.xy_point[point_index]['y']
+        ret = self._move_xy(x, y)
+        return ret
+        
     def _move_xy(self, x, y, speed=50, acc_time=0.3):
         # check if x,y in safe scope
         ret = self._check_xy_scope(x, y)

@@ -84,8 +84,9 @@ class ADLinkMotion(Motion):
         
         return self.di_card_status[card_order][port]
 
-    def servo_on_off(self, axis, on_off):
-        self.axis_servo_status[axis] = on_off
+    def servo_on_off(self, axis_info, on_off):
+        axis_id = axis_info['axis_id']
+        self.axis_servo_status[axis_id] = on_off
 
     def get_io_status(self, axis):
         return 0
@@ -125,8 +126,10 @@ class ADLinkMotion(Motion):
     def home_search(self, axis, speed, acc_time, ORG_offset):
         return 0
 
-    def sync_position(self, axis, ABSM, ABSR, TLC, DO1, ZSP):
-        return 0
+    def sync_position(self, axis_info):
+        axis_id = axis_info['axis_id']
+        proportion = axis_info['proportion']
+        ret = self.set_position(axis_id, proportion*100)
         
     def check_sensor(self, port, timeout=5000):
         """ check if sensor is on

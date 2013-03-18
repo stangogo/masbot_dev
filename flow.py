@@ -2,7 +2,6 @@
 
 from masbot.config.global_settings import *
 from masbot.motion.adlink import ADLinkMotion as Motion
-from time import sleep
 from masbot.actor.piston import Piston
 from masbot.actor.doubleaxis import DoubleAxis
 
@@ -43,7 +42,7 @@ piston = {}
 for key, val in piston_cfg.items():
     piston[key] = {}
     piston[key] = Piston.start(motion, val)
-tbar = DoubleAxis.start(motion, axis_cfg)
+tbar = DoubleAxis.start(motion, axis_cfg, xy_cfg)
 
 def test():
     tbar.ask({'msg': 'move_xy', 'x': 250, 'y': 250})
