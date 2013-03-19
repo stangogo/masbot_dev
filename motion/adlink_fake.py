@@ -22,6 +22,7 @@ class ADLinkMotion(Motion):
         self.di_card_status = []
         self.axis_servo_status = 8 * [0]
         self.axis_position = 8 * [0.0]
+        self.motion_status = 8 * [0]
         self.initial()
 
     def __exit__(self):
@@ -92,7 +93,7 @@ class ADLinkMotion(Motion):
         return 0
 
     def get_motion_status(self, axis):
-        return 0
+        return self.motion_status[axis]
 
     def get_position(self, axis):
         return self.axis_position[axis]
@@ -112,23 +113,27 @@ class ADLinkMotion(Motion):
         
     def relative_move(self, axis_list, speed, Tacc=0.2, Tdec=0.2, SVacc=0.75, SVdec=0.75):
         simulate_count = 10
-        for count in range(simulate_count):
-            for axis in axis_list:
+        for axis in axis_list:
+            self.motion_status[axis.axis_id] = 14
+            for count in range(simulate_count):
                 self.axis_position[axis.axis_id] += axis.position / simulate_count
-                sleep(0.025)
+                sleep(0.01)
+            self.motion_status[axis.axis_id] = 0
         return 0
 
     def absolute_move(self, axis_list, speed, Tacc=0.2, Tdec=0.2, SVacc=0.75, SVdec=0.75):
-        now_position = [0] * len(axis_list)
+        now_position = [0] * 8
         for axis in axis_list:
             now_position[axis.axis_id] = self.axis_position[axis.axis_id]
 
         simulate_count = 10
-        for count in range(simulate_count):
-            for axis in axis_list:
+        for axis in axis_list:
+            self.motion_status[axis.axis_id] = 14
+            for count in range(simulate_count):
                 shift_position = axis.position - now_position[axis.axis_id]
                 self.axis_position[axis.axis_id] += shift_position / simulate_count
-                sleep(0.025)
+                sleep(0.01)
+            self.motion_status[axis.axis_id] = 0
         return 0
 
     def set_home_config(self, axis, home_mode=1, org_logic=1, ez_logic=0, ez_count=0, erc_out=0):

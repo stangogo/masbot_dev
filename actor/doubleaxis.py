@@ -13,11 +13,11 @@ from collections import namedtuple
 AxisInfo = namedtuple('AxisInfo', ['axis_id', 'position'])
 
 class DoubleAxis(pykka.ThreadingActor):
-    def __init__(self, motion, axis_info, xy_point):
+    def __init__(self, motion, axis_info, axis_points):
         super(DoubleAxis, self).__init__()
         self.motion = motion
         self.axis_info = axis_info
-        self.xy_point = xy_point
+        self.axis_points = axis_points
         self.state = 0
         
     def on_receive(self, message):
@@ -55,14 +55,14 @@ class DoubleAxis(pykka.ThreadingActor):
                 message['reply_to'].set('ready')
 
     def _move_to_point(self, point_index):
-        x = self.xy_point[point_index]['x']
-        y = self.xy_point[point_index]['y']
+        x = self.axis_points[point_index]['x']
+        y = self.axis_points[point_index]['y']
         ret = self._move_xy(x, y)
         return ret
         
     def _move_xy(self, x, y, speed=50, acc_time=0.3):
         # check if x,y in safe scope
-        ret = self._check_xy_scope(x, y)
+        ret = self._check_area_scope(x, y)
         if ret:
             return ret
 
@@ -77,7 +77,6 @@ class DoubleAxis(pykka.ThreadingActor):
             axis_list.append(AxisInfo(axis_id, pulse))
         speed = speed * proportion
         self.state = 'moving'
-        print(axis_list)
         ret = self.motion.absolute_move(axis_list, speed, acc_time, acc_time)
         return ret
 
@@ -89,7 +88,7 @@ class DoubleAxis(pykka.ThreadingActor):
         y_proportion = self.axis_info['axis_y']['proportion']
         now_x = self.motion.get_position(axis_x_id) / x_proportion
         now_y = self.motion.get_position(axis_y_id) / y_proportion
-        ret = self._check_xy_scope(now_x+x, now_y+y)
+        ret = self._check_area_scope(now_x+x, now_y+y)
         if ret:
             return ret
 
@@ -107,7 +106,7 @@ class DoubleAxis(pykka.ThreadingActor):
         ret = self.motion.relative_move(axis_list, speed, acc_time, acc_time)
         return ret
         
-    def _check_xy_scope(self, x, y):
+    def _check_area_scope(self, x, y):
         min_x = self.axis_info['axis_x']['scope_min']
         max_x = self.axis_info['axis_x']['scope_max']
         min_y = self.axis_info['axis_y']['scope_min']

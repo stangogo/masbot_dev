@@ -1,9 +1,10 @@
 # -- coding: utf-8 --
 
 from masbot.config.global_settings import *
-from masbot.motion.adlink import ADLinkMotion as Motion
+from masbot.motion.adlink_fake import ADLinkMotion as Motion
 from masbot.actor.piston import Piston
 from masbot.actor.doubleaxis import DoubleAxis
+from masbot.actor.singleaxis import SingleAxis
 
 def stat():
     for key, axis in axis_cfg.items():
@@ -34,7 +35,13 @@ piston = {}
 for key, val in piston_cfg.items():
     piston[key] = {}
     piston[key] = Piston.start(motion, val)
-tbar = DoubleAxis.start(motion, axis_cfg, xy_cfg)
+
+axis = {}
+for key, val in axis_cfg.items():
+    axis[key] = {}
+    axis[key] = SingleAxis.start(motion, val)
+
+tbar = DoubleAxis.start(motion, axis_cfg, xy_points)
 
 def test():
     tbar.ask({'msg': 'move_xy', 'x': 250, 'y': 250})
