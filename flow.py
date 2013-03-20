@@ -2,7 +2,7 @@
 
 from masbot.config.global_settings import *
 from masbot.device.motion.adlink_fake import ADLinkMotion as Motion
-from masbot.actor.piston import Piston
+from masbot.actor.piston_actor import PistonActor
 from masbot.actor.doubleaxis import DoubleAxis
 from masbot.actor.singleaxis import SingleAxis
 
@@ -34,7 +34,7 @@ stat()
 piston = {}
 for key, val in piston_cfg.items():
     piston[key] = {}
-    piston[key] = Piston.start(motion, val)
+    piston[key] = PistonActor.start(motion, val)
 
 axis = {}
 for key, val in axis_cfg.items():
