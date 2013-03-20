@@ -11,8 +11,8 @@
 from ctypes import *
 
 # loaded shared libraries
-pci_8154 = WinDLL(__file__ + '/../../dlls/8154.dll')
-pci_8158 = WinDLL(__file__ + '/../../dlls/8158.dll')
+pci_8154 = WinDLL(__file__ + '/../8154.dll')
+pci_8158 = WinDLL(__file__ + '/../8158.dll')
 
 # define the argument and return type for the functions
 pci_8154._8154_initial.restype = c_short

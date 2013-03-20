@@ -8,7 +8,7 @@
 # usage          : import adlink_fake
 # notes          : 
 
-from masbot.motion.motion_card import *
+from masbot.device.motion.motion_card import Motion
 from time import sleep
 
 class ADLinkMotion(Motion):
@@ -33,7 +33,6 @@ class ADLinkMotion(Motion):
         print('8158 initial')
         self.join_io_cards()
         return 0
-        
 
     def close(self):
         print('8158 close')
@@ -49,6 +48,12 @@ class ADLinkMotion(Motion):
             elif type == 'DI_CARD':
                 self.di_card_status.append(empty_card)
                 self.di_cards_index.append(num)
+
+    def do_card_count(self):
+        return len(self.do_cards_index)
+
+    def di_card_count(self):
+        return len(self.di_cards_index)
 
     def close_io_cards(self):
         print('8158 db51 close')

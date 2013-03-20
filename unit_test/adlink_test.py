@@ -1,8 +1,10 @@
 # -- coding: utf-8 --
 import unittest
-from masbot.motion.adlink import ADLinkMotion as Motion
-from masbot.motion.adlink_table import *
+from masbot.device.motion.adlink_fake import ADLinkMotion as Motion
+from masbot.device.motion.adlink_table import *
 from masbot.config.global_settings import *
+from collections import namedtuple
+AxisInfo = namedtuple('AxisInfo', ['axis_id', 'position'])
 
 cards_config = [ 
     (1,'DI_CARD'),# (3,'DI_CARD'), (5,'DI_CARD'), (7,'DI_CARD'), 

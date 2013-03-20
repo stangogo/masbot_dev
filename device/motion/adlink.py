@@ -9,9 +9,9 @@
 # notes          : the library detects 8154 or 8158 card automatically
 
 from time import sleep
-from masbot.motion.motion_card import *
-from masbot.motion.adlink_dll import *
-from masbot.motion.adlink_table import *
+from masbot.device.motion.motion_card import Motion
+from masbot.device.motion.adlink_dll import *
+from masbot.device.motion.adlink_table import *
 
 class ADLinkMotion(Motion):
     def __init__(self, cards_config=[]):
@@ -107,6 +107,12 @@ class ADLinkMotion(Motion):
         else:
             pass
 
+    def do_card_count(self):
+        return len(self.do_cards_index)
+        
+    def di_card_count(self):
+        return len(self.di_cards_index)
+        
     def close_io_cards(self):
         """ close all the I/O cards
         """

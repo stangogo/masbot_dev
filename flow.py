@@ -1,7 +1,7 @@
 # -- coding: utf-8 --
 
 from masbot.config.global_settings import *
-from masbot.motion.adlink_fake import ADLinkMotion as Motion
+from masbot.device.motion.adlink_fake import ADLinkMotion as Motion
 from masbot.actor.piston import Piston
 from masbot.actor.doubleaxis import DoubleAxis
 from masbot.actor.singleaxis import SingleAxis
@@ -27,7 +27,7 @@ def servo_off():
         ret = motion.servo_on_off(axis, 0)
     return ret
 
-motion = Motion(motion_cfg)
+motion = Motion(io_card_cfg)
 stat()
 
 # initial actor
