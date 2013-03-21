@@ -9,6 +9,7 @@
 # notes          : 
 
 from pprint import pprint
+from re import compile
 from masbot.config.global_settings import *
 from masbot.device.motion.adlink_fake import ADLinkMotion as Motion
 from masbot.device.piston import Piston
@@ -23,10 +24,10 @@ class DeviceManager(object):
         return DeviceManager._instance
 
     def _initial(self):
-        self.motion = Motion(io_card_cfg)
+        self.motion = Motion(io_card_info)
         di_count = self.motion.di_card_count() * 32
         do_count = self.motion.do_card_count() * 32
-        axis_count = len(axis_cfg)
+        axis_count = len(motor_info)
         self._di_in_service = [0] * di_count
         self._do_in_service = [0] * do_count
         self._axis_in_service = [0] * axis_count
@@ -39,13 +40,27 @@ class DeviceManager(object):
         resource['AXIS'] = self._axis_in_service
         return resource
 
-    def request(self, resource={}):
-        ret = self._resource_check(resource)
+    def request(self, module_info={}):
+        if module_info['device_type'] == 'piston':
+            return self._allocate_piston(module_info)
+            
+    def _allocate_piston(self, module_info):
+        output_pattern = compile('.*_output$')
+        input_pattern = compile('.*_input$')
+        require = {'DO': [], 'DI': []}
+        for key, val in module_info.items():
+            if output_pattern.match(key) and isinstance(val, int):
+                require['DO'].append(val)
+            elif input_pattern.match(key) and isinstance(val, int):
+                require['DI'].append(val)
+        ret = self._resource_check(require)
+        print(require)
         if ret:
             print(ret)
-        if resource['device_type'] == 'piston':
-            return Piston(self.motion, resource['DO'], resource['DI'])
-
+            return ret
+        else:
+            return Piston(self.motion, module_info)
+        
     def _resource_check(self, resource):
         if 'DO' in resource:
             for port in resource['DO']:

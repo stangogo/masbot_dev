@@ -1,9 +1,9 @@
 # -- coding: utf-8 --
 
 # Title          : piston_actor.py
-# Description    : piston with some DO and DI
+# Description    : piston actor with action and detecting status
 # Author         : Stan Liu
-# Date           : 20130313
+# Date           : 20130320
 # Dependency     : pykka
 # usage          : device_manager.py piston.py
 # notes          : 
@@ -14,38 +14,40 @@ from masbot.device.device_manager import DeviceManager
 class PistonActor(pykka.ThreadingActor):
     def __init__(self, resource):
         super(PistonActor, self).__init__()
-        DM = DeviceManager()
         self._state = 'ready'
+        DM = DeviceManager()
         resource['device_type'] = 'piston'
-        self.piston_obj = DM.request(resource)
+        self._piston_obj = DM.request(resource)
         
     def on_receive(self, message):
-        # react on
+        # action on
         if message.get('msg') == 'state':
             message['reply_to'].set(self._state)
-        elif message.get('msg') == 'react_on':
-            self._state = 'reacting'
-            ret = self.piston_obj.react(1)
+        elif message.get('msg') == 'action_on':
+            self._state = 'actioning'
+            ret = self._piston_obj.action(1)
             if ret:
-                message['reply_to'].set('react_on_error')
+                message['reply_to'].set('action_on_error')
             else:
                 message['reply_to'].set('ready')
-        # react off
-        elif message.get('msg') == 'react_off':
-            self._state = 'reacting'
-            ret = self.piston_obj.react(0)
+        # action off
+        elif message.get('msg') == 'action_off':
+            self._state = 'actioning'
+            ret = self._piston_obj.action(0)
             if ret:
-                message['reply_to'].set('react_off_error')
+                message['reply_to'].set('action_off_error')
             else:
                 message['reply_to'].set('ready')
         # sensor status
         elif message.get('msg') == 'sensor_status':
-            sensor_status = self.piston_obj.get_di_status()
+            sensor_status = self._piston_obj.get_di_status()
             message['reply_to'].set(sensor_status)
-        # react status
-        elif message.get('msg') == 'react_status':
-            react_status = self.piston_obj.get_do_status()
-            message['reply_to'].set(react_status)
+        # action status
+        elif message.get('msg') == 'action_status':
+            action_status = self._piston_obj.get_do_status()
+            message['reply_to'].set(action_status)
         else:
-            print('undefine message')
+            msg = 'undefine message format'
+            print(msg)
+            message['reply_to'].set(msg)
 

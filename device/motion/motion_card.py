@@ -49,7 +49,7 @@ class Motion(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_position(self, axis):
+    def get_pulse(self, axis):
         pass
 
     @abstractmethod

@@ -5,15 +5,25 @@ from masbot.config.global_settings import *
 from masbot.actor.piston_actor import PistonActor
 
 piston = {}
-for key, piston_info in piston_cfg.items():
-    piston[key] = PistonActor.start(piston_info)
-    
+for rec in piston_info:
+    piston[rec['key']] = PistonActor.start(rec)
+
+#motor = {}
+#for rec in motor_info:
+#    if not rec['composite']:
+#        motor[rec['key']] = AxisActor.start(rec)
+
+#double_axis = {}
+#for rec in motor_info:
+#    double_axis[rec['key']] = AxisActor.start(rec)
+
 def test():
-    print(piston['piston1'].ask({'msg':'state'}))
-    print(piston['piston1'].ask({'msg':'react_on'}))
-    print(piston['piston1'].ask({'msg':'react_status'}))
-    print(piston['piston1'].ask({'msg':'react_off'}))
-    print(piston['piston1'].ask({'msg':'react_status'}))
+    #print(piston['noz1'].ask({'msg':'state'}))
+    print(piston['noz1'].ask({'msg':'action_on'}))
+    print(piston['noz1'].ask({'msg':'action_status'}))
+    print(piston['noz1'].ask({'msg':'action_off'}))
+    print(piston['noz1'].ask({'msg':'action_status'}))
+    print(piston['noz1'].ask({'msg':'sensor_status'}))
 
 if __name__ == "__main__":
     print('main start')

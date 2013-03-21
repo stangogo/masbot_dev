@@ -189,25 +189,24 @@ class ADLinkMotion(Motion):
 
         return state[0]
 
-    def servo_on_off(self, axis_info, on_off):
+    def servo_on_off(self, axis_id, on_off):
         """ motor servo on/off
         """
-        axis_id = axis_info['axis_id']
         if self.mode == 'pci8154':
             ret = pci_8154._8154_set_servo(axis_id, on_off)
         elif self.mode == 'pci8158':
             ret = pci_8158._8158_set_servo(axis_id, on_off)
         else:
-            return -1
+            return error_table[ret]
             
-    def get_io_status(self, axis):
+    def get_io_status(self, axis_id):
         """ get axis I/O status
         """
         status = pointer(c_ushort(0))
         if self.mode == 'pci8154':
-            ret = pci_8154._8154_get_io_status(axis, status)
+            ret = pci_8154._8154_get_io_status(axis_id, status)
         elif self.mode == 'pci8158':
-            ret = pci_8158._8158_get_io_status(axis, status)
+            ret = pci_8158._8158_get_io_status(axis_id, status)
         else:
             return -1
 
@@ -259,7 +258,7 @@ class ADLinkMotion(Motion):
 
         return ret
 
-    def get_position(self, axis):
+    def get_pulse(self, axis):
         """ Get the value of feedback position counter
         """
         position = pointer(c_double(0))
@@ -321,7 +320,7 @@ class ADLinkMotion(Motion):
 
         return error_table[ret]
         
-    def relative_move(self, axis_list, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
+    def relative_move(self, axis_map, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
         """ single/multiple axis move relatively
         """
         start_vel = speed / 10
@@ -329,12 +328,12 @@ class ADLinkMotion(Motion):
             SVacc = speed / 4
         if SVdec == -1:
             SVdec = speed / 4
-        axis_count = len(axis_list)
+        axis_count = len(axis_map)
         axis_id_array = (c_short * axis_count)()
         position_array = (c_double * axis_count)()
-        for index, axis in enumerate(axis_list):
-            axis_id_array[index] = axis.axis_id
-            position_array[index] = axis.position
+        for index, axis in enumerate(axis_map):
+            axis_id_array[index] = axis['axis_id']
+            position_array[index] = axis['pulse']
         
         if axis_count == 1:
             argv_list = [axis_id_array[0], position_array[0], start_vel,
@@ -375,7 +374,7 @@ class ADLinkMotion(Motion):
                 break
         return error_table[ret]
 
-    def absolute_move(self, axis_list, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
+    def absolute_move(self, axis_map, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
         """ single/multiple axis move absolutely
         """
         start_vel = speed / 10
@@ -383,12 +382,12 @@ class ADLinkMotion(Motion):
             SVacc = speed / 4
         if SVdec == -1:
             SVdec = speed / 4
-        axis_count = len(axis_list)
+        axis_count = len(axis_map)
         axis_id_array = (c_short * axis_count)()
         position_array = (c_double * axis_count)()
-        for index, axis in enumerate(axis_list):
-            axis_id_array[index] = axis.axis_id
-            position_array[index] = axis.position
+        for index, axis in enumerate(axis_map):
+            axis_id_array[index] = axis['axis_id']
+            position_array[index] = axis['pulse']
         
         if axis_count == 1:
             argv_list = [axis_id_array[0], position_array[0], start_vel,
@@ -499,7 +498,7 @@ class ADLinkMotion(Motion):
 
         return error_table[ret]
 
-    def sync_position(self, axis_info):
+    def sync_pulse(self, axis_info):
         """ update position
         """
         ABSM = axis_info['ABSM']

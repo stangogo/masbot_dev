@@ -8,7 +8,7 @@
 # usage          : import global_settings
 # notes          : 
 
-motion_cfg = [ 
+io_card_info = [ 
     (1, 'DI_CARD'),
     (3, 'DI_CARD'),
     (5, 'DI_CARD'),
@@ -19,59 +19,91 @@ motion_cfg = [
     (15, 'DO_CARD')
 ]
 
-axis_cfg = {
-    'axis_x':{
+motor_info = [
+    {
+        'key': 'axis_x',
         'axis_id': 0,
         'motor_type': 'servo_type',
         'proportion': 200,
-        'accelerative_time': 0.3,
+        'accelerative_time': 0.2,
+        'speed': 50,
         'ABSM': 122,
         'ABSR': 123,
         'TLC': 124,
         'DO1': 122,
         'ZSP': 123,
         'scope_min': 5,
-        'scope_max': 400
+        'scope_max': 400,
+        'composite': 1
     },
-    'axis_y':{
+    {
+        'key': 'axis_y',
         'axis_id': 1,
         'motor_type': 'servo_type',
         'proportion': 200,
-        'accelerative_time': 0.3,
+        'accelerative_time': 0.2,
+        'speed': 50,
         'ABSM': 125,
         'ABSR': 126,
         'TLC': 127,
         'DO1': 125,
         'ZSP': 126,
         'scope_min': 5,
-        'scope_max': 400
+        'scope_max': 400,
+        'composite': 1
+    },
+    {
+        'key': 'axis_z',
+        'axis_id': 2,
+        'motor_type': 'servo_type',
+        'proportion': 500,
+        'accelerative_time': 0.2,
+        'ABSM': 127,
+        'ABSR': 128,
+        'TLC': 130,
+        'DO1': 128,
+        'ZSP': 129,
+        'scope_min': 20,
+        'scope_max': 300,
+        'composite': 0
     }
+]
+
+double_axis_info = {
+    'tbar':[
+        motor_info[0], motor_info[1]
+    ]
 }
 
-piston_cfg = {
-    'piston1':{
-        'action': 0,
-        'on_sensor': 0,
-        'off_sensor': 1
+piston_info = [
+    {
+        'key': 'noz1',
+        '1st_output': 0,
+        '2nd_output': '',
+        '1st_input': 0,
+        '2nd_input': 1,
+        '3rd_input': '',
+        '4th_input': ''
     },
-    'piston2':{
-        'action': 3,
-        'on_sensor': 3,
-        'off_sensor': 4
+    {
+        'key': 'noz2',
+        '1st_output': 3,
+        '2nd_output': '',
+        '1st_input': 3,
+        '2nd_input': 4,
+        '3rd_input': '',
+        '4th_input': ''
     }
+]
+
+tbar_points = {
+    'p1': [100, 200],
+    'p2': [150, 230],
+    'p3': [210, 330]
 }
 
-xy_cfg = {
-    'p1':{
-        'x': 100,
-        'y': 100
-    },
-    'p2':{
-        'x': 200,
-        'y': 100
-    },
-    'p3':{
-        'x': 200,
-        'y': 200
-    }
+z_points = {
+    'z1': [100],
+    'z2': [150],
+    'z3': [210]
 }
