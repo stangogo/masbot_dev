@@ -1,6 +1,6 @@
 # -- coding: utf-8 --
 
-# Title          : axis.py
+# Title          : motor.py
 # Description    : axis feature with moving, its status
 # Author         : Stan Liu
 # Date           : 20130321
@@ -8,7 +8,7 @@
 # usage          : 
 # notes          : 
 
-class Axis(object):
+class Motor(object):
     def __init__(self, motion, axis_list, points_info):
         self._motion = motion
         self._points_info = points_info
@@ -49,12 +49,12 @@ class Axis(object):
                 return msg
         return ret
         
-    def abs_move(self, *position_tuple):
+    def abs_move(self, position_tuple):
         # check if parameter legal
         if len(position_tuple) != self._axis_count:
             return 'axis count = {}'.format(self._axis_count)
         # check if position under scope
-        ret = self.check_scope(*position_tuple)
+        ret = self.check_scope(position_tuple)
         if ret:
             return ret
         axis_list = self._axis_list
@@ -72,7 +72,7 @@ class Axis(object):
             return msg
         return ret
             
-    def rel_move(self, *rel_position_tuple):
+    def rel_move(self, rel_position_tuple):
         # check if parameter legal
         if len(rel_position_tuple) != self._axis_count:
             return "axis count = {}".format(self._axis_count)
@@ -81,7 +81,7 @@ class Axis(object):
         position_list = []
         for index in range(self._axis_count):
             position_list.append(now_position_list[index] + rel_position_tuple[index])
-        ret = self.check_scope(*position_list)
+        ret = self.check_scope(position_list)
         if ret:
             return ret
         axis_list = self._axis_list
@@ -105,7 +105,8 @@ class Axis(object):
         target_point = self._points_info[point_key]
         return self.abs_move(*target_point)
         
-    def check_scope(self, *position_tuple):
+    def check_scope(self, position_tuple):
+        print('funcion i ', position_tuple)
         # check if parameter legal
         if len(position_tuple) != self._axis_count:
             return "axis count = {}".format(self._axis_count)
@@ -115,7 +116,7 @@ class Axis(object):
             max = axis_list[index]['scope_max']
             if position <= min or position >= max:
                 msg = "out of scope: axis = {}, target = {}, scope between ({}, {})".format(
-                    axis_list[index]['axis_key'], position, min, max)
+                    axis_list[index]['key'], position, min, max)
                 return msg
         return 0
         

@@ -5,19 +5,18 @@
 # Author         : Stan Liu
 # Date           : 20130320
 # Dependency     : pykka
-# usage          : device_manager.py piston.py
+# usage          : 
 # notes          : 
 
 import pykka
 from masbot.device.device_manager import DeviceManager
 
 class PistonActor(pykka.ThreadingActor):
-    def __init__(self, resource):
+    def __init__(self, module_info):
         super(PistonActor, self).__init__()
         self._state = 'ready'
         DM = DeviceManager()
-        resource['device_type'] = 'piston'
-        self._piston_obj = DM.request(resource)
+        self._piston_obj = DM.request('piston', module_info)
         
     def on_receive(self, message):
         # action on
