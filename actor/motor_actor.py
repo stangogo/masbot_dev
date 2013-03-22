@@ -1,4 +1,4 @@
-# -- coding: utf-8 --
+# -*- coding: utf-8 -*-
 
 # Title          : motor_actor.py
 # Description    : motor features
@@ -29,9 +29,7 @@ class MotorActor(pykka.ThreadingActor):
         elif message.get('msg') == 'servo_on':
             ret = self._motor_obj.servo_on_off(1)
         elif message.get('msg') == 'servo_off':
-            ret = self._motor_obj.servo_on_off(0)
-        elif message.get('msg') == 'sync_pulse':
-            ret = self._motor_obj.sync_pulse()
+            ret = self._motor_obj.servo_on_off(0)        
         elif message.get('msg') == 'get_position':
             ret = self._motor_obj.get_position()
         elif message.get('msg') == 'abs_move':
@@ -54,5 +52,5 @@ class MotorActor(pykka.ThreadingActor):
         else:
             ret = 'undefine message format'
             print(ret)
-        # error handling
+        # message response
         message['reply_to'].set(ret)

@@ -3,7 +3,6 @@
 from masbot.config.global_settings import *
 from masbot.device.motion.adlink_fake import ADLinkMotion as Motion
 from masbot.actor.piston_actor import PistonActor
-from masbot.actor.doubleaxis import DoubleAxis
 from masbot.actor.singleaxis import SingleAxis
 
 def stat():

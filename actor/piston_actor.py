@@ -1,4 +1,4 @@
-# -- coding: utf-8 --
+# -*- coding: utf-8 -*-
 
 # Title          : piston_actor.py
 # Description    : piston actor with action and detecting status
@@ -25,28 +25,19 @@ class PistonActor(pykka.ThreadingActor):
         elif message.get('msg') == 'action_on':
             self._state = 'actioning'
             ret = self._piston_obj.action(1)
-            if ret:
-                message['reply_to'].set('action_on_error')
-            else:
-                message['reply_to'].set('ready')
         # action off
         elif message.get('msg') == 'action_off':
             self._state = 'actioning'
             ret = self._piston_obj.action(0)
-            if ret:
-                message['reply_to'].set('action_off_error')
-            else:
-                message['reply_to'].set('ready')
         # sensor status
         elif message.get('msg') == 'sensor_status':
-            sensor_status = self._piston_obj.get_di_status()
-            message['reply_to'].set(sensor_status)
+            ret = self._piston_obj.get_di_status()
         # action status
         elif message.get('msg') == 'action_status':
-            action_status = self._piston_obj.get_do_status()
-            message['reply_to'].set(action_status)
+            ret = self._piston_obj.get_do_status()
         else:
-            msg = 'undefine message format'
+            ret = 'undefine message format'
             print(msg)
-            message['reply_to'].set(msg)
+        # message response
+        message['reply_to'].set(ret)
 

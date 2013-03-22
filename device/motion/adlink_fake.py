@@ -1,4 +1,4 @@
-# -- coding: utf-8 --
+# -*- coding: utf-8 -*-
 
 # Title          : adlink_fake.py
 # Description    : simulate adlink.py functions
