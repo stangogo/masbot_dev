@@ -4,3 +4,6 @@ config/global_settings.py
 _8154_initial.txt
 log
 temp
+masttif_ui/imgs/*.JPG
+*.log
+*.db
