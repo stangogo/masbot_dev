@@ -1,9 +1,10 @@
 ﻿
 from PySide import QtGui, QtCore
 
-from masttif_ui.ui_interface.i_axis_table import IAxisTableObj as IAxisTableObj 
-from masttif_ui.db_table_def import DBTableDefine
-from masttif_ui.sqldb import SqlDB
+from masbot.ui.ui_interface.i_axis_table import IAxisTableObj as IAxisTableObj 
+from masbot.ui.db_table_def import DBTableDefine
+from masbot.ui.sqldb import SqlDB
+from masbot.ui.utils import Path
 
 
 class AxisButton(QtGui.QPushButton):
@@ -81,7 +82,9 @@ class AxisTable(QtGui.QTableWidget):
         index = 0
         query.exec_("select axis_key from SingleAxis")
         for i in range(0, self.columnCount()):
-            btn_add = AxisButton(QtGui.QIcon("D:/Works_LD/masbot/masttif_ui/imgs/Start.bmp"),"+")
+            
+            btn_add = AxisButton(QtGui.QIcon("{0}/Start.bmp".format(Path.imgs_dir())),"+")
+            #btn_add = AxisButton(QtGui.QIcon("C:\Python33\Lib\site-packages\masbot\ui/imgs/Start.bmp"),"+")
             btn_minus = AxisButton('-')
             btn_scale = AxisButton('1')
             

@@ -7,10 +7,10 @@ import time
 
 from PySide import QtGui, QtCore
 from datetime import datetime
-from masttif_ui.message_log import MessageAndLog
-from masttif_ui.robot.major.tray_info_table import TrayInfoTable 
+from masbot.ui.message_log import MessageAndLog
+from masbot.ui.robot.major.tray_info_table import TrayInfoTable 
 
-from masttif_ui.ui_interface.i_major_widget import IRobotMajorObj as RobotMajorObj
+from masbot.ui.ui_interface.i_major_widget import IRobotMajorObj as RobotMajorObj
 
 class MajorWidget(QtGui.QDockWidget):
     def __init__(self, title = 'Major Widget', parent = None):

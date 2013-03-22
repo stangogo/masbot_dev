@@ -14,7 +14,7 @@ import time
 from threading import Thread
 from PySide import QtGui, QtCore
 
-from masttif_ui.robot.axis_table import AxisTable
+from masbot.ui.robot.axis_table import AxisTable
 
 class AxisBanner(QtGui.QWidget):
 

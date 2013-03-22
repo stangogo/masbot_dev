@@ -8,8 +8,8 @@ import sys
 from datetime import datetime
 from PySide import QtGui, QtCore, QtSql
 
-from masttif_ui.sqldb import SqlDB
-from masttif_ui.utils import Path
+from masbot.ui.sqldb import SqlDB
+from masbot.ui.utils import Path
 
 
 class DoButton(QtGui.QPushButton):

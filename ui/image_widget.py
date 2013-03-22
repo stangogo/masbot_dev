@@ -20,8 +20,8 @@ from threading import Thread
 
 from PySide import QtGui, QtCore
 
-from masttif_ui.image.pixelmap_label import PixelMapLabel
-from masttif_ui.image.image_tools_dock_widget import ImageToolsDockWidget
+from masbot.ui.image.pixelmap_label import PixelMapLabel
+from masbot.ui.image.image_tools_dock_widget import ImageToolsDockWidget
 
 
 class Communicate(QtCore.QObject):

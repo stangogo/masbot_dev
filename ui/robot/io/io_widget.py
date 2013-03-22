@@ -7,7 +7,7 @@ import time
 
 from PySide import QtGui, QtCore
 from datetime import datetime
-from masttif_ui.robot.io.io_dock import IODock
+from masbot.ui.robot.io.io_dock import IODock
 
 
 class IOWidget(QtGui.QDockWidget):

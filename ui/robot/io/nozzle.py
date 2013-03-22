@@ -8,7 +8,7 @@ import time
 from PySide import QtGui, QtCore
 from datetime import datetime
 
-from masttif_ui.robot.io.nozzle_tablewidget import NozzleTable
+from masbot.ui.robot.io.nozzle_tablewidget import NozzleTable
 
 
 class Nozzle(QtGui.QDockWidget):

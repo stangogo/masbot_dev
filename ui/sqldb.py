@@ -8,8 +8,8 @@ from datetime import datetime
 from collections import OrderedDict
 from PySide import QtCore, QtSql
 
-from masttif_ui.utils import Constants, Path
-from masttif_ui.db_table_def import DBTableDefine
+from masbot.ui.utils import Constants, Path
+from masbot.ui.db_table_def import DBTableDefine
 
 class SqlDB():
     

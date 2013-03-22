@@ -31,8 +31,8 @@ from collections import OrderedDict
 from datetime import datetime
 from PySide import QtGui, QtCore, QtSql
 
-from masttif_ui.sqldb import SqlDB
-from masttif_ui.db_table_def import DBTableDefine
+from masbot.ui.sqldb import SqlDB
+from masbot.ui.db_table_def import DBTableDefine
 
 
 

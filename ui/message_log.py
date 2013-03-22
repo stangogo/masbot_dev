@@ -15,7 +15,7 @@ import logging
 import sys
 from datetime import date
 from PySide import QtGui, QtCore
-from masttif_ui.utils import Constants, Communicate
+from masbot.ui.utils import Constants, Communicate
 
 class MessageAndLog(QtGui.QListWidget):
     

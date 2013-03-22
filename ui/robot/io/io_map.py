@@ -10,7 +10,7 @@ last edited: Mar. 2013
 import sys
 from PySide import QtGui, QtCore
 
-from masttif_ui.utils import Path
+from masbot.ui.utils import Path
 
 class DIOButton(QtGui.QPushButton):
     bOn = False

@@ -1,7 +1,7 @@
 ﻿
 from PySide import QtGui, QtCore
-from masttif_ui.robot.major.major_widget import MajorWidget
-from masttif_ui.robot.io.io_widget import IOWidget
+from masbot.ui.robot.major.major_widget import MajorWidget
+from masbot.ui.robot.io.io_widget import IOWidget
     
 class RobotPageDock(QtGui.QMainWindow):
     

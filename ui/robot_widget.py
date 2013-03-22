@@ -3,9 +3,9 @@
 
 import sys
 from PySide import QtGui, QtCore
-from masttif_ui.robot.robot_dock import RobotPageDock
-from masttif_ui.robot.robot_banner import RobotBanner
-from masttif_ui.robot.axis_banner import AxisBanner
+from masbot.ui.robot.robot_dock import RobotPageDock
+from masbot.ui.robot.robot_banner import RobotBanner
+from masbot.ui.robot.axis_banner import AxisBanner
 
 class RobotWidget(QtGui.QWidget):
     

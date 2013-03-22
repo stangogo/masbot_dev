@@ -1,8 +1,8 @@
 ﻿
 from PySide import QtGui, QtCore
 
-from masttif_ui.robot.io.motor import Motor
-from masttif_ui.robot.io.nozzle import Nozzle
+from masbot.ui.robot.io.motor import Motor
+from masbot.ui.robot.io.nozzle import Nozzle
 
 class IODock(QtGui.QMainWindow):
     def __init__(self):  

@@ -15,11 +15,11 @@ from datetime import datetime
 
 from PySide import QtGui
 from PySide import QtCore
-from masttif_ui.image_widget import ImageWidget
-from masttif_ui.robot_widget import RobotWidget
-from masttif_ui.robot.io.io_map import IOMap
+from masbot.ui.image_widget import ImageWidget
+from masbot.ui.robot_widget import RobotWidget
+from masbot.ui.robot.io.io_map import IOMap
 
-from masttif_ui.utils import Path, Constants
+from masbot.ui.utils import Path, Constants
 
 
 class MainUI(QtGui.QMainWindow):
