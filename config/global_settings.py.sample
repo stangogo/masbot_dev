@@ -58,11 +58,12 @@ motor_info = [
         'motor_type': 'servo_type',
         'proportion': 500,
         'accelerative_time': 0.2,
-        'ABSM': 127,
-        'ABSR': 128,
-        'TLC': 130,
-        'DO1': 128,
-        'ZSP': 129,
+        'speed': 50,
+        'ABSM': 107,
+        'ABSR': 108,
+        'TLC': 109,
+        'DO1': 108,
+        'ZSP': 107,
         'scope_min': 20,
         'scope_max': 300,
         'composite': 0
@@ -96,14 +97,18 @@ piston_info = [
     }
 ]
 
-tbar_points = {
-    'p1': [100, 200],
-    'p2': [150, 230],
-    'p3': [210, 330]
+double_axis_points = {
+    'tbar':{
+        'p1': [100, 200],
+        'p2': [150, 230],
+        'p3': [210, 330]
+    }
 }
 
-z_points = {
-    'z1': [100],
-    'z2': [150],
-    'z3': [210]
+single_axis_points = {
+    'axis_z': {
+        'z1': [100],
+        'z2': [150],
+        'z3': [210]
+    }
 }

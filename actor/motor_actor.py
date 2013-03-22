@@ -36,10 +36,21 @@ class MotorActor(pykka.ThreadingActor):
             ret = self._motor_obj.get_position()
         elif message.get('msg') == 'abs_move':
             target_position = message.get('position')
+            if isinstance(target_position, (int, float)):
+                target_position = (target_position, )
+            elif isinstance(target_position, list):
+                target_position = tuple(target_position)
             ret = self._motor_obj.abs_move(target_position)
         elif message.get('msg') == 'rel_move':
             target_position = message.get('position')
+            if isinstance(target_position, (int, float)):
+                target_position = (target_position, )
+            elif isinstance(target_position, list):
+                target_position = tuple(target_position)
             ret = self._motor_obj.rel_move(target_position)
+        elif message.get('msg') == 'pt_move':
+            point_index = message.get('pt')
+            ret = self._motor_obj.pt_move(point_index)
         else:
             ret = 'undefine message format'
             print(ret)

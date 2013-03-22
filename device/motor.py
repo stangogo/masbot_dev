@@ -103,10 +103,10 @@ class Motor(object):
         if point_key not in self._points_info:
             return 'undefine point key: {}'.format(point_key)
         target_point = self._points_info[point_key]
-        return self.abs_move(*target_point)
+        target_point = tuple(target_point)
+        return self.abs_move(target_point)
         
     def check_scope(self, position_tuple):
-        print('funcion i ', position_tuple)
         # check if parameter legal
         if len(position_tuple) != self._axis_count:
             return "axis count = {}".format(self._axis_count)

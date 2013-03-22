@@ -8,7 +8,6 @@
 # usage          : 
 # notes          : 
 
-from pprint import pprint
 from re import compile
 from masbot.config.global_settings import *
 from masbot.device.motion.adlink_fake import ADLinkMotion as Motion
