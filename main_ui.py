@@ -1,0 +1,193 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+"""
+
+author: Cigar Huang
+website: 
+last edited: Mar. 2013
+"""
+
+import sys
+import os
+import logging
+from datetime import datetime
+
+from PySide import QtGui
+from PySide import QtCore
+from masttif_ui.image_widget import ImageWidget
+from masttif_ui.robot_widget import RobotWidget
+from masttif_ui.robot.io.io_map import IOMap
+
+from masttif_ui.utils import Path, Constants
+
+
+class MainUI(QtGui.QMainWindow):
+    
+    def __init__(self):
+        super(MainUI, self).__init__()
+        
+        self.init_ui()
+   
+    def init_ui(self):
+        
+        width = 1420
+        height = 880
+        
+        main_widget = RobotWidget()
+        image_widget = ImageWidget()
+                
+        main_splitter = QtGui.QSplitter(QtCore.Qt.Horizontal)
+        main_splitter.addWidget(main_widget)
+        main_splitter.addWidget(image_widget)
+        
+        main_splitter.setSizes([width*4/7, width*3/7])
+        
+        self.setCentralWidget(main_splitter)
+
+        self.setGeometry(30, 30, width, height)
+        self.setWindowTitle(self.init_caption())
+        imgs_dir = Path.imgs_dir()
+        self.setWindowIcon(QtGui.QIcon("{0}//App.ico".format(imgs_dir)))
+        self.show()
+        
+    def init_caption(self):
+        now_time = datetime.now()
+        
+        caption = "Masbot - {0} Ver.{1} 啟動時間: {2}".format(Constants.MACHINE_NAME, 
+                                                    Constants.VERSION,
+                                                    now_time.strftime("%Y/%m/%d %H:%M:%S"))
+        return caption
+        
+def main():
+    
+    app = QtGui.QApplication(sys.argv)
+    #with open("stylesheet.css", 'r') as cssFile:
+        #styleSheet =cssFile.read()
+
+    #app.setStyleSheet(styleSheet)
+        
+    Settings = { "tabcolor":"#17B6FF", "fontsize":"10px" }
+    
+    stylesheet = """
+    QToolBar{
+        icon-size:16px;
+        max-height:20px;
+        min-height:20px;
+        padding:1px;
+    }
+    
+    QToolBar QToolButton{
+        max-width:24px;
+    }
+    
+    QToolBar::handle{
+        width:0px;
+    }
+    
+    QToolBar QComboBox{
+        font-size:%(fontsize)s;
+        height:12px;
+    }
+    
+    QTabBar{
+        text-align: left;
+        font-size:12px;
+        icon-size:0px;
+    }
+    
+    QTabBar::tab {
+        padding: 2px;
+        font-size:12px;
+        border-top-left-radius: 1px;
+        border-top-right-radius: 1px;
+        border: 1px solid #C4C4C3;
+        margin:1px;
+        spacing:0px;
+        text-align: left;
+        max-height:150px;
+    }
+    
+    QTabBar::tab:top{
+        padding-left:3px;
+        padding-right:3px;
+    }
+    
+    QTabBar::tab:selected {
+         background: %(tabcolor)s;
+         padding:1px;
+    }
+    
+    QMenuBar{
+        font-size:%(fontsize)s;
+    }
+    
+    QStatusBar QLabel{
+        font-size:%(fontsize)s;
+    }
+    
+    QSplitter::handle {
+        width:2px;
+    }
+    
+    QTreeView{
+        font-size:%(fontsize)s;
+    }
+    
+    QToolTip{
+        color:black;
+    }
+    
+    QScrollBar:vertical {
+         width: 6px;
+         padding:0px;
+         border:0px;
+         background-color:gray;
+     }
+    
+    QScrollBar::handle:vertical {
+         background: %(tabcolor)s;
+         min-height:30px;
+    }
+    
+    QScrollBar:horizontal {
+         height: 6px;
+         padding:0px;
+         border:0px;
+         background-color:gray;
+    }
+    
+    QScrollBar::handle:horizontal {
+         background: %(tabcolor)s;
+         min-width:30px;
+    }
+    
+    .bbb { 
+    background-color : red; 
+    color: rgba(0, 255, 0, 90); 
+    font-size:30pt ;
+    }
+    
+    .title_lable { 
+    background-color : lightblue; 
+    color: rgb(0, 0, 0); 
+    font-size:30pt ;
+    font-family: ms pmincho;
+    }    
+    
+    """ % Settings    
+    
+    
+    app.setStyle(QtGui.QStyleFactory.create("plastique"))
+    
+    #app.setStyleSheet(stylesheet)
+
+    ex = MainUI()
+    sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    main()
+
+
+        
+        

@@ -1,0 +1,1 @@
+__all__ = ['major_widget', 'tray_info_table']
