@@ -1,4 +1,4 @@
-# -- coding: utf-8 --
+# -*- coding: utf-8 -*-
 
 # Title          : motor.py
 # Description    : axis feature with moving, its status
@@ -39,6 +39,8 @@ class Motor(object):
             if ret:
                 msg = "servo on error: {} {}".format(axis_info['name'], ret)
                 return msg
+            if axis_info['motor_type'] == 'servo_type':
+                ret = self.sync_pulse()
         return ret
         
     def sync_pulse(self):
@@ -115,7 +117,7 @@ class Motor(object):
             min = axis_list[index]['scope_min']
             max = axis_list[index]['scope_max']
             if position <= min or position >= max:
-                msg = "out of scope: axis = {}, target = {}, scope between ({}, {})".format(
+                msg = "out of scope: axis = {}, target = {}, scope between {} ~ {})".format(
                     axis_list[index]['key'], position, min, max)
                 return msg
         return 0

@@ -1,4 +1,4 @@
-# -- coding: utf-8 --
+# -*- coding: utf-8 -*-
 
 # Title          : adlink_dll.py
 # Description    : define functions format in 8154.dll and 8158.dll of ADLink

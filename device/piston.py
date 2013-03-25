@@ -1,4 +1,4 @@
-# -- coding: utf-8 --
+# -*- coding: utf-8 -*-
 
 # Title          : piston.py
 # Description    : piston feature with Operating On/Off

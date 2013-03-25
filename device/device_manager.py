@@ -1,4 +1,4 @@
-# -- coding: utf-8 --
+# -*- coding: utf-8 -*-
 
 # Title          : device_manager.py
 # Description    : the role who manages the all I/O device
