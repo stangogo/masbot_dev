@@ -81,7 +81,7 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)  
     window = RobotPageDock()    
     window.show()      
-    unittest.main()
+    #unittest.main()
     
     sys.exit(app.exec_()) 
     

@@ -37,6 +37,14 @@ class SigName:
     FROM_AXIS_TABLE = 'FROM_AXIS_TABLE'     
     """data from axis table - axis_name(str), value(int), action (1:add, -1 minus)"""
     
+    #DIO map
+    ENTER_IO_MAP_DI = 'ENTER_IO_MAP_DI'
+        #set DI in io map - DI number (int), on/off (bool)
+    ENTER_IO_MAP_DO = 'ENTER_IO_MAP_DO'
+        #set DO in io map - DO number (int), on/off (bool)
+    FROM_IO_MAP = 'FROM_IO_MAP'
+        #send DO clicked - DO number (int), on/off (bool)
+    
 class UISignals():
     signal_dict = {}
     @staticmethod
