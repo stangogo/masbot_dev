@@ -97,48 +97,60 @@ class IOMap(QtGui.QWidget):
         
         self.init_ui()
         
-    def init_ui(self):
-        do_combobox = QtGui.QComboBox()
-        di_combobox = QtGui.QComboBox()
+    def init_ui(self):        
+        do_radiogroup = QtGui.QButtonGroup()
+        di_radiogroup = QtGui.QButtonGroup()
+        
+        do_radiogroup.setExclusive(False)
+        di_radiogroup.setExclusive(False)
+        
+        do_layout = QtGui.QHBoxLayout()        
+        di_layout = QtGui.QHBoxLayout()
         card_num = 5
+        
         for i in range(0, card_num):
-            do_combobox.addItem("DO_{0} Card".format(i+1))
-            di_combobox.addItem("DI_{0} Card".format(i+1))            
-        do_combobox.currentIndexChanged.connect(self.do_changed)
-        di_combobox.currentIndexChanged.connect(self.di_changed)
-                  
+            di_btn = QtGui.QRadioButton("DI Card {0}".format(i+1))
+            do_btn = QtGui.QRadioButton("DO Card {0}".format(i+1))
+            
+            do_radiogroup.addButton(do_btn)
+            do_layout.addWidget(do_btn)
+            
+            di_radiogroup.addButton(di_btn)
+            di_layout.addWidget(di_btn)
+                                  
         self.di_stacklayout = QtGui.QStackedLayout()
         self.do_stacklayout = QtGui.QStackedLayout()
         
-        for card_index in range(0, card_num):
-            do_grid = QtGui.QGridLayout()
-            do_grid.setVerticalSpacing(3)   # row的間距
-            do_grid.setHorizontalSpacing(8)  # column的間距
+        #for card_index in range(0, card_num):
+        card_index = 0
+        do_grid = QtGui.QGridLayout()
+        do_grid.setVerticalSpacing(3)   # row的間距
+        do_grid.setHorizontalSpacing(8)  # column的間距
+        
+        di_grid = QtGui.QGridLayout()
+        di_grid.setVerticalSpacing(3)   # row的間距
+        di_grid.setHorizontalSpacing(8)  # column的間距                 
+        
+        col_len = 16
+        io_num = 64
+        for i in range(0, io_num):
+            row = (int)(i/col_len) * 2
+            number = io_num * card_index + i
+            do_grid.addWidget(QtGui.QLabel("{0}".format(number)), row, i % col_len)
+            do_grid.addWidget(DIOLabel(number), row + 1, i % col_len)
             
-            di_grid = QtGui.QGridLayout()
-            di_grid.setVerticalSpacing(3)   # row的間距
-            di_grid.setHorizontalSpacing(8)  # column的間距                
-            
-            col_len = 16
-            io_num = 64
-            for i in range(0, io_num):
-                row = (int)(i/col_len) * 2
-                number = io_num * card_index + i
-                do_grid.addWidget(QtGui.QLabel("{0}".format(number)), row, i % col_len)
-                do_grid.addWidget(DIOLabel(number), row + 1, i % col_len)
-                
-                di_grid.addWidget(QtGui.QLabel("{0}".format(number)), row, i % col_len)
-                di_grid.addWidget(DIOLabel(number), row + 1, i % col_len)
+            di_grid.addWidget(QtGui.QLabel("{0}".format(number)), row, i % col_len)
+            di_grid.addWidget(DIOLabel(number), row + 1, i % col_len)
             
             #self.do_stacklayout.addWidget(QtGui.QWidget().setLayout(do_grid))
             #self.di_stacklayout.addWidget(QtGui.QWidget().setLayout(di_grid))
      
         self.v_layout = QtGui.QVBoxLayout()
         
-        self.v_layout.addWidget(do_combobox)
-        self.v_layout.addLayout(self.do_stacklayout)
-        self.v_layout.addWidget(di_combobox)
-        self.v_layout.addLayout(self.di_stacklayout)
+        self.v_layout.addLayout(do_layout)
+        self.v_layout.addLayout(do_grid)
+        self.v_layout.addLayout(di_layout)
+        self.v_layout.addLayout(di_grid)
 
         self.v_layout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
 

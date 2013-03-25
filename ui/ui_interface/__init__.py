@@ -1,1 +1,0 @@
-__all__ = ['i_axis_table', 'i_major_widget']

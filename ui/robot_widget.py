@@ -25,10 +25,15 @@ class RobotWidget(QtGui.QWidget):
         
         self.stack_layout.addWidget(AxisBanner())
 
+        #di_do_btn = QtGui.QPushButton("Test")
+        #di_do_btn.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        
         v_layout.addLayout(self.stack_layout, 1)
+        #v_layout.addWidget(di_do_btn, 1, QtCore.Qt.AlignRight)
         v_layout.addWidget(robot_dock, 5)
 
         self.setLayout(v_layout)
+        
         self.setWindowTitle('Robot')
         self.show()
     
