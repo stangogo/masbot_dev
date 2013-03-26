@@ -33,6 +33,12 @@ class MotorActor(pykka.ThreadingActor):
             ret = self._motor_obj.servo_on_off(0)        
         elif message.get('msg') == 'get_position':
             ret = self._motor_obj.get_position()
+        elif message.get('msg') == 'set_speed':
+            new_speed = message.get('speed')
+            ret = self._motor_obj.set_speed(new_speed)
+        elif message.get('msg') == 'set_acc_time':
+            new_acc_time = message.get('acc_time')
+            ret = self._motor_obj.set_acc_time(new_acc_time)
         elif message.get('msg') == 'abs_move':
             target_position = message.get('position')
             if isinstance(target_position, (int, float)):

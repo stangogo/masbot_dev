@@ -24,36 +24,41 @@ class Motor(object):
             self._speed = 50
             self._acc_time = 0.2
         
-    def get_speed():
+    def get_speed(self):
         return self._speed
 
-    def set_speed(value):
-        self._speed = value
+    def set_speed(self, value):
+        if isinstance(value, int):
+            self._speed = value
+        else:
+            self._speed = 50
         
-    def get_acc_time():
+    def get_acc_time(self):
         return self._acc_time
         
-    def set_acc_time(value):
-        self._acc_time = value
-    
+    def set_acc_time(self, value):
+        if isinstance(value, (int, float)):
+            self._acc_time = value
+        else:
+            self._acc_time = 0.2
+
     def servo_on_off(self, on_off):
         for axis_info in self._axis_list:
             ret = self._motion.servo_on_off(axis_info['axis_id'], on_off)
             if ret:
                 msg = "servo on error: {} {}".format(axis_info['key'], ret)
+                self.logger.critical(msg)
                 return msg
-            if axis_info['motor_type'] == 'servo_type':
-                ret = self._sync_pulse()
-            self.logger.debug('%s sync pulse ret = %d', axis_info['key'], ret)
+            if on_off == 1 and axis_info['motor_type'] == 'servo_type':
+                ret = self._sync_pulse(axis_info)
+            self.logger.debug(ret)
         return ret
         
-    def _sync_pulse(self):
-        for axis_info in self._axis_list:
-            ret = self._motion.sync_pulse(axis_info)
-            if ret:
-                msg = "sync position error: {} {}".format(axis_info['key'], ret)
-                return msg
-        return ret
+    def _sync_pulse(self, axis_info):
+        ret = self._motion.sync_pulse(axis_info)
+        if ret:
+            return ret
+        return 0
         
     def abs_move(self, position_tuple):
         # check if parameter legal
@@ -71,8 +76,9 @@ class Motor(object):
             proportion = axis_list[index]['proportion']
             dic['pulse'] = proportion * position
             axis_map.append(dic)
+        speed = self._speed * proportion
         ret = self._motion.absolute_move(
-            axis_map, self._speed, self._acc_time, self._acc_time)
+            axis_map, speed, self._acc_time, self._acc_time)
         if ret:
             msg = "abs move error: {}".format(ret)
             return msg
@@ -98,8 +104,9 @@ class Motor(object):
             proportion = axis_list[index]['proportion']
             dic['pulse'] = proportion * position
             axis_map.append(dic)
+        speed = self._speed * proportion
         ret = self._motion.relative_move(
-            axis_map, self._speed, self._acc_time, self._acc_time)
+            axis_map, speed, self._acc_time, self._acc_time)
         if ret:
             msg = "rel move error: {}".format(ret)
             return msg

@@ -373,7 +373,7 @@ class ADLinkMotion(Motion):
         for axis_id in axis_id_array:
             ret = self.wait_motion_ready(axis_id, timeout)
             if ret:
-                break
+                return 'move timeout'
         return error_table[ret]
 
     def absolute_move(self, axis_map, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
@@ -427,10 +427,11 @@ class ADLinkMotion(Motion):
         for axis_id in axis_id_array:
             ret = self.wait_motion_ready(axis_id, timeout)
             if ret:
-                break
+                return 'move timeout'
+
         return error_table[ret]
 
-    def wait_motion_ready(self, axis_id, timeout=None, interval=10):
+    def wait_motion_ready(self, axis_id, timeout=None, interval=20):
         """ check if motion status is ready
         
         Example:
@@ -511,12 +512,12 @@ class ADLinkMotion(Motion):
         
         if self.DO(ABSM, 1):
             self.DO(ABSM, 0)
-            return 'ABSM error: DO port = {}'.format(ABSM)
+            return '{} ABSM error: DO port = {}'.format(axis_info['key'], ABSM)
         interval = 0.02
         sleep(interval)
         if self.DI(TLC) == 0:
             self.DO(ABSM, 0)
-            return 'TLC error: DI port = {}'.format(TLC)
+            return '{} TLC error: DI port = {}'.format(axis_info['key'], TLC)
         sum = [0, 0, 0, 0]
         for i in range(0, 31, 2):
             self.DO(ABSR, 1)
