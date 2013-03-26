@@ -71,7 +71,7 @@ class MainUI(QtGui.QMainWindow):
     def init_caption(self):
         now_time = datetime.now()
         
-        caption = "Masbot - {0} Ver.{1} Ÿå‚é: {2}".format(Constants.MACHINE_NAME, 
+        caption = "Masbot - {0} Ver.{1}: {2}".format(Constants.MACHINE_NAME, 
                                                     Constants.VERSION,
                                                     now_time.strftime("%Y/%m/%d %H:%M:%S"))
         return caption

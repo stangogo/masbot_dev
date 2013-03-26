@@ -2,10 +2,9 @@ syntax: glob
 *.pyc
 config/global_settings.py
 _8154_initial.txt
-log
 temp
 *.log
 *.db
 ui/imgs/*.JPG
-ui/¤j¹Ï/*.png
-ui/¦^¦¬/*
+ui/å¤§åœ–/*.png
+ui/å›žæ”¶/*
