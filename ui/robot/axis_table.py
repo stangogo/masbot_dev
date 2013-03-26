@@ -12,21 +12,25 @@ class Signals(QtCore.QObject):
     """    
     Signal in/out AxisTable.
     """
-    enter = QtCore.Signal(str, str, int)
+    enter = QtCore.Signal(str, str, float)  
     """
     row     - string.    定義在 db_table_def.py 裡的 AxisOP 
     column  - string     定義在database 的 SingleAxis 資料表裡的 axis_key 欄
     value   - 填入的值
     """
-    out_int = QtCore.Signal(str, int, int)
-    out_float = QtCore.Signal(str, float, int)
+    out_float = QtCore.Signal(str, float, float)
+    """axis name, value, action    """
+    
+    #out_int = QtCore.Signal(str, int, float)
+    #axis name, value, action
+
 
 
 class AxisButton(QtGui.QPushButton):
     row = -1
     column = -1
     axis = ""
-    scale = 1
+    scale = 0.0
    
     def __new__(self, icon, text=None):
         if text == None:
@@ -50,11 +54,9 @@ class AxisTable(QtGui.QTableWidget):
         
         self.signals = Signals()
         UISignals.RegisterSignal(self.signals.enter, SigName.ENTER_AXIS_TABLE)
-        UISignals.RegisterSignal(self.signals.out_int, SigName.FROM_AXIS_TABLE)
+        UISignals.RegisterSignal(self.signals.out_float, SigName.FROM_AXIS_TABLE)
                                  
         self.signals.enter.connect(self.from_outside)
-        
-        
         
     def init_ui(self):
         db = SqlDB()
@@ -127,7 +129,7 @@ class AxisTable(QtGui.QTableWidget):
         try:
             n_row = self.row_dict[row]
             n_col = self.column_dict[axis]
-            item = QtGui.QTableWidgetItem("{0}".format(value))            
+            item = QtGui.QTableWidgetItem("{0:.3f}".format(value))            
             self.setItem(n_row, n_col, item)
         except:
             print("from_outside error: {0}".format(sys.exc_info()[1]))

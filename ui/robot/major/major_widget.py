@@ -45,8 +45,9 @@ class MajorWidget(QtGui.QDockWidget):
         button_grid_layout = QtGui.QGridLayout()
         
         login_btn = QtGui.QPushButton('Log in')        
-        login_btn .setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        login_btn.clicked.connect(self.login_clicked)
+        login_btn .setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)        
+        UISignals.RegisterSignal(login_btn.clicked, SigName.LOG_IN)
+        #login_btn.clicked.connect(self.login_clicked)
         
         start_btn = QtGui.QPushButton('Start')
         start_btn .setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
@@ -106,7 +107,7 @@ class MajorWidget(QtGui.QDockWidget):
         self.show()
 
     def login_clicked(self):
-        self.msg_in.flow_speak.emit('mm')
+        self.msg_in.flow_speak.emit('login')
         
     def set_flow_msg(self, msg):
         self.flow_message.add_message(msg)

@@ -36,7 +36,7 @@ class MainUI(QtGui.QMainWindow):
         right_widget = QtGui.QWidget()        
         self.right_layout = QtGui.QStackedLayout()
         self.right_layout.addWidget(ImageWidget())
-        self.right_layout.addWidget(IOMap())
+        self.right_layout.addWidget(IOMap(8))
         right_widget.setLayout(self.right_layout)
         
         main_widget = RobotWidget()
@@ -48,7 +48,8 @@ class MainUI(QtGui.QMainWindow):
         main_splitter.addWidget(main_widget)
         main_splitter.addWidget(right_widget) 
         
-        main_splitter.setSizes([width*4/7, width*3/7])
+        #main_splitter.setSizes([width*4/7, width*3/7])
+        main_splitter.setSizes([width/2, width/2])
         
         self.setCentralWidget(main_splitter)
         self.setGeometry(30, 30, width, height)
@@ -59,6 +60,7 @@ class MainUI(QtGui.QMainWindow):
         
     def right_stack_changed(self):
         self.right_layout.setCurrentIndex( (self.right_layout.currentIndex() + 1) %2)
+        #start update 
         
         
     def init_caption(self):
