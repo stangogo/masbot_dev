@@ -8,8 +8,11 @@
 # usage          : 
 # notes          : 
 
+import logging
+
 class Motor(object):
     def __init__(self, motion, axis_list, points_info):
+        self.logger = logging.getLogger(__name__)
         self._motion = motion
         self._points_info = points_info
         self._axis_list = axis_list
@@ -37,17 +40,18 @@ class Motor(object):
         for axis_info in self._axis_list:
             ret = self._motion.servo_on_off(axis_info['axis_id'], on_off)
             if ret:
-                msg = "servo on error: {} {}".format(axis_info['name'], ret)
+                msg = "servo on error: {} {}".format(axis_info['key'], ret)
                 return msg
             if axis_info['motor_type'] == 'servo_type':
-                ret = self.sync_pulse()
+                ret = self._sync_pulse()
+            self.logger.debug('%s sync pulse ret = %d', axis_info['key'], ret)
         return ret
         
-    def sync_pulse(self):
+    def _sync_pulse(self):
         for axis_info in self._axis_list:
             ret = self._motion.sync_pulse(axis_info)
             if ret:
-                msg = "sync position error: {} {}".format(axis_info['name'], ret)
+                msg = "sync position error: {} {}".format(axis_info['key'], ret)
                 return msg
         return ret
         
@@ -138,6 +142,7 @@ class Motor(object):
             pulse = self._motion.get_pulse(axis_info['axis_id'])
             position = pulse / axis_info['proportion']
             position_list.append(position)
+            self.logger.debug('%s position = %f', axis_info['key'], position)
         if self._axis_count == 1:
             return position
         else:
@@ -148,6 +153,7 @@ class Motor(object):
         for axis_info in self._axis_list:
             stat = self._motion.get_motion_status(axis_info['axis_id'])
             pulse_list.append(stat)
+            self.logger.debug('%s motion_status = %d', axis_info['key'], stat)
         if self._axis_count == 1:
             return stat
         else:
@@ -158,6 +164,7 @@ class Motor(object):
         for axis_info in self._axis_list:
             stat = self._motion.get_io_status(axis_info['axis_id'])
             pulse_list.append(stat)
+            self.logger.debug('%s io_status = %d', axis_info['key'], stat)
         if self._axis_count == 1:
             return stat
         else:

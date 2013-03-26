@@ -9,5 +9,6 @@ def sample():
     motor['axis_z'].send('get_position')
     
 if __name__ == "__main__":
-    logging.info('main start')
+    logger = logging.getLogger(__name__)
+    #logger.debug('main start')
     pass
