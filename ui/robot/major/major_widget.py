@@ -9,12 +9,22 @@ from PySide import QtGui, QtCore
 from datetime import datetime
 from masbot.ui.message_log import MessageAndLog
 from masbot.ui.robot.major.tray_info_table import TrayInfoTable 
+from masbot.ui.utils import UISignals, SigName
 
-from masbot.ui.ui_interface.i_major_widget import IRobotMajorObj as RobotMajorObj
+class Signals(QtCore.QObject):
+    """
+    三個Signals, 分別做為 MajorWidget 的 flow message, 
+    alarm message and product info (tray infomation) 
+    的訊息傳入.
+    """
+    flow_speak = QtCore.Signal(str)
+    alarm_speak = QtCore.Signal(str)
+    product_info_speak = QtCore.Signal(dict)
+
 
 class MajorWidget(QtGui.QDockWidget):
     def __init__(self, title = 'Major Widget', parent = None):
-        super(MajorWidget, self).__init__(parent)        
+        super(MajorWidget, self).__init__(parent)
         
         self.init_ui(title)
     
@@ -22,32 +32,35 @@ class MajorWidget(QtGui.QDockWidget):
         widget_base = QtGui.QWidget()    
         v_layout = QtGui.QVBoxLayout()
         
-        self.i_robot_major = RobotMajorObj()
-
-        self.i_robot_major.msg_in.product_info_speak.connect(self.set_product_info)
-        self.i_robot_major.msg_in.alarm_speak.connect(self.set_alarm_msg)
-        self.i_robot_major.msg_in.flow_speak.connect(self.set_flow_msg)        
+        self.msg_in = Signals()
+        self.msg_in.product_info_speak.connect(self.set_product_info)
+        self.msg_in.alarm_speak.connect(self.set_alarm_msg)
+        self.msg_in.flow_speak.connect(self.set_flow_msg)        
+        
+        UISignals.RegisterSignal(self.msg_in.flow_speak, SigName.FLOW_MSG)
+        UISignals.RegisterSignal(self.msg_in.alarm_speak, SigName.ALARM_MSG)
+        UISignals.RegisterSignal(self.msg_in.product_info_speak, SigName.PRODUCT_INFO)
         
         btn_panel = QtGui.QHBoxLayout()
         button_grid_layout = QtGui.QGridLayout()
         
-        login_btn = QtGui.QPushButton('Log in')
-        login_btn.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
-        login_btn.clicked.connect(self.i_robot_major.login_clicked)
+        login_btn = QtGui.QPushButton('Log in')        
+        login_btn .setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        login_btn.clicked.connect(self.login_clicked)
         
         start_btn = QtGui.QPushButton('Start')
-        start_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
-        start_btn.clicked.connect(self.i_robot_major.start_clicked)
+        start_btn .setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        UISignals.RegisterSignal(start_btn.clicked, SigName.START_MAIN)
         
         servo_on_btn = QtGui.QPushButton('Servo On')        
         servo_on_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        servo_on_btn.clicked.connect(self.i_robot_major.servo_on_clicked)
+        UISignals.RegisterSignal(servo_on_btn.clicked, SigName.SERVO_ON)
         
         pause_btn = QtGui.QPushButton('Pause')
         pause_btn.setStyleSheet("QPushButton{color:red;font-size:17px;font-family:courier;font-style:italic}")
         pause_btn.setCheckable(True)
         pause_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        pause_btn.clicked.connect(self.i_robot_major.pause_clicked)
+        UISignals.RegisterSignal(pause_btn.clicked, SigName.PAUSE_MAIN)
         
         button_grid_layout.addWidget(login_btn, 0, 0)
         button_grid_layout.addWidget(start_btn, 0, 1)
@@ -92,6 +105,9 @@ class MajorWidget(QtGui.QDockWidget):
         self.setWindowTitle(title)
         self.show()
 
+    def login_clicked(self):
+        self.msg_in.flow_speak.emit('mm')
+        
     def set_flow_msg(self, msg):
         self.flow_message.add_message(msg)
         
@@ -102,6 +118,7 @@ class MajorWidget(QtGui.QDockWidget):
         now_time = datetime.now()
         info['LogTime']= now_time.strftime("%Y/%m/%d %H:%M:%S")
         self.product_message.add_message(info)
+        
         
 def main():
     

@@ -1,10 +1,25 @@
 ﻿
 from PySide import QtGui, QtCore
 
-from masbot.ui.ui_interface.i_axis_table import IAxisTableObj as IAxisTableObj 
 from masbot.ui.db_table_def import DBTableDefine
 from masbot.ui.sqldb import SqlDB
 from masbot.ui.utils import Path
+from masbot.ui.utils import UISignals, SigName
+
+
+    
+class Signals(QtCore.QObject):
+    """    
+    Signal in/out AxisTable.
+    """
+    enter = QtCore.Signal(str, str, int)
+    """
+    row     - string.    定義在 db_table_def.py 裡的 AxisOP 
+    column  - string     定義在database 的 SingleAxis 資料表裡的 axis_key 欄
+    value   - 填入的值
+    """
+    out_int = QtCore.Signal(str, int, int)
+    out_float = QtCore.Signal(str, float, int)
 
 
 class AxisButton(QtGui.QPushButton):
@@ -24,7 +39,7 @@ class AxisButton(QtGui.QPushButton):
             
             
 class AxisTable(QtGui.QTableWidget):
-    i_axis_table_obj = IAxisTableObj()
+    
     scale_list = []
     row_dict = {}
     column_dict = {}
@@ -32,17 +47,15 @@ class AxisTable(QtGui.QTableWidget):
     def __init__(self):  
         super(AxisTable, self).__init__()
         self.init_ui()
-        self.i_axis_table_obj.msg_in.speak.connect(self.from_outside)
         
-    def from_outside(self, row, axis, value):
-        try:
-            n_row = self.row_dict[row]
-            n_col = self.column_dict[axis]
-            item = QtGui.QTableWidgetItem("{0}".format(value))            
-            self.setItem(n_row, n_col, item)
-        except:
-            print("from_outside error: {0}".format(sys.exc_info()[1]))
-            
+        self.signals = Signals()
+        UISignals.RegisterSignal(self.signals.enter, SigName.ENTER_AXIS_TABLE)
+        UISignals.RegisterSignal(self.signals.out_int, SigName.FROM_AXIS_TABLE)
+                                 
+        self.signals.enter.connect(self.from_outside)
+        
+        
+        
     def init_ui(self):
         db = SqlDB()
         axis_table_model = db.get_table_model('SingleAxis')
@@ -109,16 +122,25 @@ class AxisTable(QtGui.QTableWidget):
         
         #self.resizeRowsToContents()    #符合列高        
         #self.verticalHeader().hide()   #隱藏左側欄header
+        
+    def from_outside(self, row, axis, value):
+        try:
+            n_row = self.row_dict[row]
+            n_col = self.column_dict[axis]
+            item = QtGui.QTableWidgetItem("{0}".format(value))            
+            self.setItem(n_row, n_col, item)
+        except:
+            print("from_outside error: {0}".format(sys.exc_info()[1]))
 
     def minus_clicked(self):
         sender = self.sender()
         scale_value = self.scale_list[sender.column].scale    
-        self.i_axis_table_obj.from_axis_table(sender.axis, scale_value, -1)
+        self.signals.out_int.emit(sender.axis, scale_value, -1)
         
     def add_clicked(self):
         sender = self.sender()
         scale_value = self.scale_list[sender.column].scale    
-        self.i_axis_table_obj.from_axis_table(sender.axis, scale_value, 1)
+        self.signals.out_int.emit(sender.axis, scale_value, 1)
         
     def scale_clicked(self):
         sender = self.sender()

@@ -19,8 +19,7 @@ from masbot.ui.image_widget import ImageWidget
 from masbot.ui.robot_widget import RobotWidget
 from masbot.ui.robot.io.io_map import IOMap
 
-from masbot.ui.utils import Path, Constants
-
+from masbot.ui.utils import Path, Constants, UISignals, SigName
 
 class MainUI(QtGui.QMainWindow):
     
@@ -34,22 +33,33 @@ class MainUI(QtGui.QMainWindow):
         width = 1420
         height = 880
         
+        right_widget = QtGui.QWidget()        
+        self.right_layout = QtGui.QStackedLayout()
+        self.right_layout.addWidget(ImageWidget())
+        self.right_layout.addWidget(IOMap())
+        right_widget.setLayout(self.right_layout)
+        
         main_widget = RobotWidget()
-        image_widget = ImageWidget()
-                
+        
+        btn = UISignals.GetSignal(SigName.DI_DO_SHOW)
+        btn.connect(self.right_stack_changed)
+                        
         main_splitter = QtGui.QSplitter(QtCore.Qt.Horizontal)
         main_splitter.addWidget(main_widget)
-        main_splitter.addWidget(image_widget)
+        main_splitter.addWidget(right_widget) 
         
         main_splitter.setSizes([width*4/7, width*3/7])
         
         self.setCentralWidget(main_splitter)
-
         self.setGeometry(30, 30, width, height)
         self.setWindowTitle(self.init_caption())
         imgs_dir = Path.imgs_dir()
         self.setWindowIcon(QtGui.QIcon("{0}//App.ico".format(imgs_dir)))
         self.show()
+        
+    def right_stack_changed(self):
+        self.right_layout.setCurrentIndex( (self.right_layout.currentIndex() + 1) %2)
+        
         
     def init_caption(self):
         now_time = datetime.now()
