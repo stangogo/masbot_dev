@@ -31,6 +31,10 @@ class RobotPageDock(QtGui.QMainWindow):
         self.setTabPosition(QtCore.Qt.AllDockWidgetAreas, QtGui.QTabWidget.West)
 
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.pages['main_page'])
+        UISignals.GetSignal(SigName.SERVO_ON).connect(self.servo_on)
+        
+    def servo_on(self):
+        print('login')
 
     
         
@@ -81,7 +85,7 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)  
     window = RobotPageDock()    
     window.show()      
-    unittest.main()
+    #unittest.main()
     
     sys.exit(app.exec_()) 
     

@@ -27,7 +27,7 @@ class SigName:
                                 'ProdNum': '11op98733', 
                                 'Total': 200}
     """
-    LOG_IN = 'LOG_IN'           #Servo On button
+    LOG_IN = 'LOG_IN'           #login button
     SERVO_ON = 'SERVO_ON'       #Servo On button
     START_MAIN = 'START_MAIN'   #Start button
     PAUSE_MAIN = 'PAUSE_MAIN'   #Pause button
