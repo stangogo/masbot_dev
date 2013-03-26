@@ -12,7 +12,7 @@ class Signals(QtCore.QObject):
     """    
     Signal in/out AxisTable.
     """
-    enter = QtCore.Signal(str, str, int)
+    enter = QtCore.Signal(str, str, float)
     """
     row     - string.    定義在 db_table_def.py 裡的 AxisOP 
     column  - string     定義在database 的 SingleAxis 資料表裡的 axis_key 欄

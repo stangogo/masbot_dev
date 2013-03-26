@@ -142,7 +142,7 @@ class Motor(object):
             pulse = self._motion.get_pulse(axis_info['axis_id'])
             position = pulse / axis_info['proportion']
             position_list.append(position)
-            self.logger.debug('%s position = %f', axis_info['key'], position)
+            #self.logger.debug('%s position = %f', axis_info['key'], position)
         if self._axis_count == 1:
             return position
         else:

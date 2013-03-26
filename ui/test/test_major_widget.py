@@ -30,13 +30,7 @@ class RobotPageDock(QtGui.QMainWindow):
         # sets the tab position at the top of tabbed dockwidgets
         self.setTabPosition(QtCore.Qt.AllDockWidgetAreas, QtGui.QTabWidget.West)
 
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.pages['main_page'])
-        UISignals.GetSignal(SigName.SERVO_ON).connect(self.servo_on)
-        
-    def servo_on(self):
-        print('login')
-
-    
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.pages['main_page'])  
         
 class CalculatorTest(unittest.TestCase):                 
 

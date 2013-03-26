@@ -20,6 +20,7 @@ from masbot.ui.robot_widget import RobotWidget
 from masbot.ui.robot.io.io_map import IOMap
 
 from masbot.ui.utils import Path, Constants, UISignals, SigName
+from masbot.controller.major_widget_ctrl import MajorWidgetCtrl
 
 class MainUI(QtGui.QMainWindow):
     
@@ -27,6 +28,7 @@ class MainUI(QtGui.QMainWindow):
         super(MainUI, self).__init__()
         
         self.init_ui()
+        self._init_controller()
    
     def init_ui(self):
         
@@ -56,6 +58,9 @@ class MainUI(QtGui.QMainWindow):
         imgs_dir = Path.imgs_dir()
         self.setWindowIcon(QtGui.QIcon("{0}//App.ico".format(imgs_dir)))
         self.show()
+
+    def _init_controller(self):
+        self._major_widget_instance = MajorWidgetCtrl()
         
     def right_stack_changed(self):
         self.right_layout.setCurrentIndex( (self.right_layout.currentIndex() + 1) %2)
