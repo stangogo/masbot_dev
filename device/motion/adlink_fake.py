@@ -8,12 +8,14 @@
 # usage          : import adlink_fake
 # notes          : 
 
-from masbot.device.motion.motion_card import Motion
+import logging
 from time import sleep
 from random import *
+from masbot.device.motion.motion_card import Motion
 
 class ADLinkMotion(Motion):
     def __init__(self, cards_config=[]):
+        self.logger = logging.getLogger(__name__)
         self.mode = 'pci8158'
 
         self.cards_config = cards_config
@@ -31,17 +33,17 @@ class ADLinkMotion(Motion):
         self.close()
 
     def initial(self, manual_id = 0):
-        print('8158 initial')
+        self.logger.debug('adlink_fake card initial')
         self.join_io_cards()
         return 0
 
     def close(self):
-        print('8158 close')
+        self.logger.debug('adlink_fake card close')
 
     def join_io_cards(self):
         sleep(0.2)
         for num, type in self.cards_config:
-            print('8158 card No.%d start' % num)
+            self.logger.debug('adlink_fake %s %d initial', type, num)
             empty_card = 32 * [0]
             if type == 'DO_CARD':
                 self.do_card_status.append(empty_card)
@@ -57,7 +59,7 @@ class ADLinkMotion(Motion):
         return len(self.di_cards_index)
 
     def close_io_cards(self):
-        print('8158 db51 close')
+        self.logger.debug('adlink_fake db51 close')
 
     def DO(self, port, state):
         card_order = int(port/32)
@@ -152,7 +154,8 @@ class ADLinkMotion(Motion):
         proportion = axis_info['proportion']
         # random position
         current_position = uniform(0, 200)
-        ret = self.set_position(axis_id, proportion*current_position)
+        self.set_position(axis_id, proportion*current_position)
+        return 0
         
     def check_sensor(self, port, timeout=5000):
         """ check if sensor is on

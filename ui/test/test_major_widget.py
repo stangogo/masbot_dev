@@ -22,7 +22,7 @@ class RobotPageDock(QtGui.QMainWindow):
     def createDockWindows(self):
         main_title_widget = QtGui.QWidget()
         
-        self.pages['main_page'] = MajorWidget('主頁', self)
+        self.pages['main_page'] = MajorWidget('主�', self)
         self.pages['main_page'].setTitleBarWidget(main_title_widget)
 
         self.setDockOptions(self.AnimatedDocks | self.ForceTabbedDocks)
@@ -30,9 +30,7 @@ class RobotPageDock(QtGui.QMainWindow):
         # sets the tab position at the top of tabbed dockwidgets
         self.setTabPosition(QtCore.Qt.AllDockWidgetAreas, QtGui.QTabWidget.West)
 
-        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.pages['main_page'])
-
-    
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.pages['main_page'])  
         
 class CalculatorTest(unittest.TestCase):                 
 

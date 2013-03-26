@@ -32,7 +32,10 @@ class DeviceManager(object):
         self._do_in_service = [0] * do_count
         self._axis_in_service = [0] * axis_count
         #self.serial_in_service = [0] * serial_count
-        
+
+    def _device_proxy(self):
+        return self.motion
+
     def resource_status(self):
         resource = {}
         resource['DI'] = self._di_in_service

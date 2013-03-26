@@ -12,13 +12,14 @@
 # usage          : 
 # notes          : 
 
+import logging
 import pykka
 from masbot.device.device_manager import DeviceManager
 
 class MotorActor(pykka.ThreadingActor):
     def __init__(self, require, points_info):
         super(MotorActor, self).__init__()
-        self._state = 'ready'
+        self._state = 0
         DM = DeviceManager()
         self._motor_obj = DM.request('motor', require, points_info)
         
@@ -53,4 +54,5 @@ class MotorActor(pykka.ThreadingActor):
             ret = 'undefine message format'
             print(ret)
         # message response
+        self._state = ret
         message['reply_to'].set(ret)
