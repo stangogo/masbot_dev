@@ -12,6 +12,7 @@
 # usage          : 
 # notes          : 
 
+import logging
 import pykka
 from masbot.device.device_manager import DeviceManager
 

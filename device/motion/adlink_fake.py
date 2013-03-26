@@ -8,9 +8,10 @@
 # usage          : import adlink_fake
 # notes          : 
 
-from masbot.device.motion.motion_card import Motion
+import logging
 from time import sleep
 from random import *
+from masbot.device.motion.motion_card import Motion
 
 class ADLinkMotion(Motion):
     def __init__(self, cards_config=[]):
@@ -31,17 +32,17 @@ class ADLinkMotion(Motion):
         self.close()
 
     def initial(self, manual_id = 0):
-        print('8158 initial')
+        logging.debug('adlink_fake card initial')
         self.join_io_cards()
         return 0
 
     def close(self):
-        print('8158 close')
+        logging.debug('adlink_fake card close')
 
     def join_io_cards(self):
         sleep(0.2)
         for num, type in self.cards_config:
-            print('8158 card No.%d start' % num)
+            logging.debug('adlink_fake %s %d initial', type, num)
             empty_card = 32 * [0]
             if type == 'DO_CARD':
                 self.do_card_status.append(empty_card)
@@ -57,7 +58,7 @@ class ADLinkMotion(Motion):
         return len(self.di_cards_index)
 
     def close_io_cards(self):
-        print('8158 db51 close')
+        logging.debug('adlink_fake db51 close')
 
     def DO(self, port, state):
         card_order = int(port/32)

@@ -8,6 +8,7 @@
 # usage          : import adlink
 # notes          : the library detects 8154 or 8158 card automatically
 
+import logging
 from time import sleep
 from masbot.device.motion.motion_card import Motion
 from masbot.device.motion.adlink_dll import *
@@ -44,6 +45,7 @@ class ADLinkMotion(Motion):
         Raises:
         
         """
+        logging.debug('ADLink card initial')
         cardid_inbit = pointer(c_ushort(0))
         ret_8154 = pci_8154._8154_initial(cardid_inbit, manual_id)
         ret_8158 = pci_8158._8158_initial(cardid_inbit, manual_id)

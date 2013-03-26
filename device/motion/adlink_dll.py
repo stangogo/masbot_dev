@@ -4,15 +4,23 @@
 # Description    : define functions format in 8154.dll and 8158.dll of ADLink
 # Author         : Stan Liu
 # Date           : 20130314
-# Dependency     : 8154.dll 8158.dll
+# Dependency     : 8154.dll 8158.dll (8154x64.dll 8158x64.dll if 64 bit)
 # usage          : import adlink_dll
 # notes          : 
 
 from ctypes import *
+from platform import architecture
+
+# detect 32 bit or 64 bit
+os_format = architecture()
+if os_format[0] == '64bit':
+    suffix = 'x64'
+else:
+    suffix = ''
 
 # loaded shared libraries
-pci_8154 = WinDLL(__file__ + '/../8154.dll')
-pci_8158 = WinDLL(__file__ + '/../8158.dll')
+pci_8154 = WinDLL(__file__ + '/../8154{}.dll'.format(suffix))
+pci_8158 = WinDLL(__file__ + '/../8158{}.dll'.format(suffix))
 
 # define the argument and return type for the functions
 pci_8154._8154_initial.restype = c_short
