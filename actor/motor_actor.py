@@ -19,46 +19,57 @@ from masbot.device.device_manager import DeviceManager
 class MotorActor(pykka.ThreadingActor):
     def __init__(self, require, points_info):
         super(MotorActor, self).__init__()
-        self._state = 0
+        self.__logger = logging.getLogger(__name__)
+        self.__points_info = points_info
+        self.__state = 0
         DM = DeviceManager()
-        self._motor_obj = DM.request('motor', require, points_info)
+        self.__motor_obj = DM.request('motor', require)
         
     def on_receive(self, message):
         # action on
         if message.get('msg') == 'state':
-            message['reply_to'].set(self._state)
+            message['reply_to'].set(self.__state)
         elif message.get('msg') == 'servo_on':
-            ret = self._motor_obj.servo_on_off(1)
+            ret = self.__motor_obj.servo_on()
         elif message.get('msg') == 'servo_off':
-            ret = self._motor_obj.servo_on_off(0)        
+            ret = self.__motor_obj.servo_off()
         elif message.get('msg') == 'get_position':
-            ret = self._motor_obj.get_position()
+            ret = self.__motor_obj.get_position()
         elif message.get('msg') == 'set_speed':
             new_speed = message.get('speed')
-            ret = self._motor_obj.set_speed(new_speed)
+            ret = self.__motor_obj.set_speed(new_speed)
         elif message.get('msg') == 'set_acc_time':
             new_acc_time = message.get('acc_time')
-            ret = self._motor_obj.set_acc_time(new_acc_time)
+            ret = self.__motor_obj.set_acc_time(new_acc_time)
         elif message.get('msg') == 'abs_move':
             target_position = message.get('position')
             if isinstance(target_position, (int, float)):
                 target_position = (target_position, )
             elif isinstance(target_position, list):
                 target_position = tuple(target_position)
-            ret = self._motor_obj.abs_move(target_position)
+            ret = self.__motor_obj.abs_move(target_position)
         elif message.get('msg') == 'rel_move':
             target_position = message.get('position')
             if isinstance(target_position, (int, float)):
                 target_position = (target_position, )
             elif isinstance(target_position, list):
                 target_position = tuple(target_position)
-            ret = self._motor_obj.rel_move(target_position)
+            ret = self.__motor_obj.rel_move(target_position)
         elif message.get('msg') == 'pt_move':
-            point_index = message.get('pt')
-            ret = self._motor_obj.pt_move(point_index)
+            pt_name = message.get('pt')
+            ret = self.pt_move(pt_name)
         else:
             ret = 'undefine message format'
-            print(ret)
+            self.__logger.error(ret)
         # message response
-        self._state = ret
+        self.__state = ret
         message['reply_to'].set(ret)
+
+    def pt_move(self, pt_name):
+        if pt_name not in self.__points_info:
+            msg = 'undefine point name: {}'.format(pt_name)
+            self.__logger.error(msg)
+            return msg
+        target_position = self.__points_info[pt_name]
+        target_position = tuple(target_position)
+        return self.__motor_obj.abs_move(target_position)

@@ -8,78 +8,80 @@
 # usage          : 
 # notes          : 
 
+import logging
 from re import compile
 
 class Piston(object):
     def __init__(self, io_card, module_info):
-        self._io_card = io_card
-        self._module_info = module_info
-        self._detect_type()
+        self.__logger = logging.getLogger(__name__)
+        self.__io_card = io_card
+        self.__module_info = module_info
+        self.__detect_type()
 
-    def _detect_type(self):
+    def __detect_type(self):
         output_pattern = compile('.*_output$')
         input_pattern = compile('.*_input$')
-        self._do_list = []
-        self._di_list = []
-        for key, val in self._module_info.items():
+        self.__do_list = []
+        self.__di_list = []
+        for key, val in self.__module_info.items():
             if output_pattern.match(key) and isinstance(val, int):
-                self._do_list.append(val)
+                self.__do_list.append(val)
             elif input_pattern.match(key) and isinstance(val, int):
-                self._di_list.append(val)
-        self._type = "{}_out_{}_in".format(len(self._do_list), len(self._di_list))
+                self.__di_list.append(val)
+        self.__type = "{}_out_{}_in".format(len(self.__do_list), len(self.__di_list))
 
     def action(self, state):
-        if self._type == '1_out_1_in':
-            return self._action_1_out_1_in(state)
-        elif self._type == '1_out_2_in':
-            return self._action_1_out_2_in(state)
-        elif self._type == '1_out_4_in':
-            return self._action_1_out_4_in(state)
-        elif self._type == '2_out_2_in':
-            return self._action_2_out_2_in(state)
+        if self.__type == '1_out_1_in':
+            return self.__action_1_out_1_in(state)
+        elif self.__type == '1_out_2_in':
+            return self.__action_1_out_2_in(state)
+        elif self.__type == '1_out_4_in':
+            return self.__action_1_out_4_in(state)
+        elif self.__type == '2_out_2_in':
+            return self.__action_2_out_2_in(state)
         else:
-            exception_msg = "piston type is {}".format(self._type)
+            exception_msg = "piston type is {}".format(self.__type)
             raise TypeError(exception_msg)
        
     def get_do_status(self):
         do_status = []
-        for port in self._do_list:
-            stat = self._io_card.DO_read(port)
+        for port in self.__do_list:
+            stat = self.__io_card.DO_read(port)
             do_status.append(stat)
-        if self._type == '2_out_2_in':
+        if self.__type == '2_out_2_in':
             return do_status
         else:
             return do_status[0]
 
     def get_di_status(self):
         di_status = []
-        for port in self._di_list:
-            stat = self._io_card.DI(port)
+        for port in self.__di_list:
+            stat = self.__io_card.DI(port)
             di_status.append(stat)
         return di_status
             
-    def _action_1_out_1_in(self, state):
+    def __action_1_out_1_in(self, state):
         pass
         
-    def _action_1_out_2_in(self, state):
+    def __action_1_out_2_in(self, state):
         if state:
-            target_sensor = self._module_info['2nd_input']
+            target_sensor = self.__module_info['2nd_input']
         else:
-            target_sensor = self._module_info['1st_input']
+            target_sensor = self.__module_info['1st_input']
 
-        if self._io_card.DI(target_sensor):
+        if self.__io_card.DI(target_sensor):
             return 0
         else:
-            on_port = self._module_info['1st_output']
-            ret = self._io_card.DO(on_port, state) 
+            on_port = self.__module_info['1st_output']
+            ret = self.__io_card.DO(on_port, state) 
             if ret:
                 return ret
-            if self._io_card.check_sensor(target_sensor):
+            if self.__io_card.check_sensor(target_sensor):
                 return 0
         
-    def _action_1_out_4_in(self, state):
+    def __action_1_out_4_in(self, state):
         pass
 
-    def _action_2_out_2_in(self, state):
+    def __action_2_out_2_in(self, state):
         pass
         
