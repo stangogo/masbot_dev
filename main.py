@@ -13,5 +13,6 @@ def sample():
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     mf = MainFlow().start()
-    #logger.debug('main start')
-    pass
+    mf.send('start', wait=False)
+    sleep(12)
+    ret = mf.send('pause')
