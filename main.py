@@ -14,5 +14,5 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     mf = MainFlow().start()
     mf.send('start', wait=False)
-    sleep(12)
+    sleep(5)
     ret = mf.send('pause')

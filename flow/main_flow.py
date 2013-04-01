@@ -19,7 +19,8 @@ class MainFlow(pykka.ThreadingActor):
         self._logger = logging.getLogger(__name__)
         self._state = 'tray_in'
         self._continue = True
-        self._nozzle_count = 4
+        self._max_object_count = 20
+        self._nozzle_count = 10
         self._nozzle_status = [0] * self._nozzle_count
         self._object_count = 0
         
@@ -40,59 +41,63 @@ class MainFlow(pykka.ThreadingActor):
             ret = ret = self.tray_out()
         else:
             ret = 'undefine message format'
-        # message response
+        # check if continue running to next state
         self.check_continue(ret)
         #message['reply_to'].set(ret)
         
-    def check_continue(self, next_event):
+    def check_continue(self, next_state):
         if self._continue:
-            self.actor_ref.send(next_event, wait=False)
+            self.actor_ref.send(next_state, wait=False)
 
     def tray_in(self):
+        self._state = 'tray_in'
         self._object_count = 0
         for i in range(3):
             print('tray_in process ', i)
             sleep(0.1)
         next_state = 'get_object'
-        self._state = next_state
         return next_state
 
     def tray_out(self):
+        self._state = 'tray_out'
         self._object_count = 0
         for i in range(3):
             print('tray_out process ', i)
             sleep(0.1)
         next_state = 'tray_in'
-        self._state = next_state
         return next_state
 
     def get_object(self):
+        self._state = 'get_object'
         for i in range(self._nozzle_count):
             if self._nozzle_status[i] == 0:
-                self._nozzle_status[i] = 1
-                print('nozzle {} get'.format(i))
-                sleep(0.1)
-                
+                cur_nozzle = i
+                break
+        self._nozzle_status[cur_nozzle] = 1
+        print('nozzle {} get'.format(cur_nozzle))
+        sleep(0.1)
+        
         if 0 in self._nozzle_status:
             next_state = 'get_object'
         else:
             next_state = 'put_object'
-        self._state = next_state
         return next_state
 
     def put_object(self):
+        self._state = 'put_object'
         for i in range(self._nozzle_count):
             if self._nozzle_status[i] == 1:
-                self._nozzle_status[i] = 0
-                print('nozzle {} put'.format(i))
-                self._object_count += 1
-                sleep(0.1)
-            if self._object_count >= 20:
-                next_state = 'tray_out'
-                return next_state
+                cur_nozzle = i
+                break
+        self._nozzle_status[cur_nozzle] = 0
+        print('nozzle {} put'.format(cur_nozzle))
+        self._object_count += 1
+        sleep(0.1)
+        if self._object_count >= self._max_object_count:
+            next_state = 'tray_out'
+            return next_state
         if 1 in self._nozzle_status:
             next_state = 'put_object'
         else:
             next_state = 'get_object'
-        self._state = next_state
         return next_state
