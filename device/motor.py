@@ -11,59 +11,73 @@
 import logging
 
 class Motor(object):
-    def __init__(self, motion, axis_list, points_info):
-        self.logger = logging.getLogger(__name__)
-        self._motion = motion
-        self._points_info = points_info
-        self._axis_list = axis_list
-        self._axis_count = len(axis_list)
-        if self._axis_count == 1:
-            self._speed = axis_list[0]['speed']
-            self._acc_time = axis_list[0]['accelerative_time']
+    def __init__(self, motion, axis_list):
+        self.__logger = logging.getLogger(__name__)
+        self.__motion = motion
+        self.__axis_list = axis_list
+        self.__axis_count = len(axis_list)
+        if self.__axis_count == 1:
+            self.__speed = axis_list[0]['speed']
+            self.__acc_time = axis_list[0]['accelerative_time']
         else:
-            self._speed = 50
-            self._acc_time = 0.2
+            self.__speed = 50
+            self.__acc_time = 0.2
         
-    def get_speed():
-        return self._speed
+    def get_speed(self):
+        return self.__speed
 
-    def set_speed(value):
-        self._speed = value
+    def set_speed(self, value):
+        if isinstance(value, int):
+            self.__speed = value
+        else:
+            self.__speed = 50
         
-    def get_acc_time():
-        return self._acc_time
+    def get_acc_time(self):
+        return self.__acc_time
         
-    def set_acc_time(value):
-        self._acc_time = value
-    
-    def servo_on_off(self, on_off):
-        for axis_info in self._axis_list:
-            ret = self._motion.servo_on_off(axis_info['axis_id'], on_off)
+    def set_acc_time(self, value):
+        if isinstance(value, (int, float)):
+            self.__acc_time = value
+        else:
+            self.__acc_time = 0.2
+
+    def servo_on(self):
+        for axis_info in self.__axis_list:
+            ret = self.__motion.servo_on_off(axis_info['axis_id'], 1)
             if ret:
                 msg = "servo on error: {} {}".format(axis_info['key'], ret)
+                self.__logger.critical(msg)
                 return msg
             if axis_info['motor_type'] == 'servo_type':
-                ret = self._sync_pulse()
-            self.logger.debug('%s sync pulse ret = %d', axis_info['key'], ret)
+                ret = self.__sync_pulse(axis_info)
+            self.__logger.debug('%s servo on ret = %s', axis_info['key'], ret)
+        return ret
+
+    def servo_off(self):
+        for axis_info in self.__axis_list:
+            ret = self.__motion.servo_on_off(axis_info['axis_id'], 0)
+            if ret:
+                msg = "servo off error: {} {}".format(axis_info['key'], ret)
+                self.__logger.critical(msg)
+                return msg
+            self.__logger.debug(ret)
         return ret
         
-    def _sync_pulse(self):
-        for axis_info in self._axis_list:
-            ret = self._motion.sync_pulse(axis_info)
-            if ret:
-                msg = "sync position error: {} {}".format(axis_info['key'], ret)
-                return msg
-        return ret
+    def __sync_pulse(self, axis_info):
+        ret = self.__motion.sync_pulse(axis_info)
+        if ret:
+            return ret
+        return 0
         
     def abs_move(self, position_tuple):
         # check if parameter legal
-        if len(position_tuple) != self._axis_count:
-            return 'axis count = {}'.format(self._axis_count)
+        if len(position_tuple) != self.__axis_count:
+            return 'axis count = {}'.format(self.__axis_count)
         # check if position under scope
-        ret = self.check_scope(position_tuple)
+        ret = self.__check_scope(position_tuple)
         if ret:
             return ret
-        axis_list = self._axis_list
+        axis_list = self.__axis_list
         axis_map = []
         for index, position in enumerate(position_tuple):
             dic = {}
@@ -71,8 +85,9 @@ class Motor(object):
             proportion = axis_list[index]['proportion']
             dic['pulse'] = proportion * position
             axis_map.append(dic)
-        ret = self._motion.absolute_move(
-            axis_map, self._speed, self._acc_time, self._acc_time)
+        speed = self.__speed * proportion
+        ret = self.__motion.absolute_move(
+            axis_map, speed, self.__acc_time, self.__acc_time)
         if ret:
             msg = "abs move error: {}".format(ret)
             return msg
@@ -80,17 +95,17 @@ class Motor(object):
             
     def rel_move(self, rel_position_tuple):
         # check if parameter legal
-        if len(rel_position_tuple) != self._axis_count:
-            return "axis count = {}".format(self._axis_count)
+        if len(rel_position_tuple) != self.__axis_count:
+            return "axis count = {}".format(self.__axis_count)
         # check if position under scope
         now_position_list = self.get_position()
         position_list = []
-        for index in range(self._axis_count):
+        for index in range(self.__axis_count):
             position_list.append(now_position_list[index] + rel_position_tuple[index])
-        ret = self.check_scope(position_list)
+        ret = self.__check_scope(position_list)
         if ret:
             return ret
-        axis_list = self._axis_list
+        axis_list = self.__axis_list
         axis_map = []
         for index, position in enumerate(rel_position_tuple):
             dic = {}
@@ -98,25 +113,19 @@ class Motor(object):
             proportion = axis_list[index]['proportion']
             dic['pulse'] = proportion * position
             axis_map.append(dic)
-        ret = self._motion.relative_move(
-            axis_map, self._speed, self._acc_time, self._acc_time)
+        speed = self.__speed * proportion
+        ret = self.__motion.relative_move(
+            axis_map, speed, self.__acc_time, self.__acc_time)
         if ret:
             msg = "rel move error: {}".format(ret)
             return msg
         return ret
         
-    def pt_move(self, point_key):
-        if point_key not in self._points_info:
-            return 'undefine point key: {}'.format(point_key)
-        target_point = self._points_info[point_key]
-        target_point = tuple(target_point)
-        return self.abs_move(target_point)
-        
-    def check_scope(self, position_tuple):
+    def __check_scope(self, position_tuple):
         # check if parameter legal
-        if len(position_tuple) != self._axis_count:
-            return "axis count = {}".format(self._axis_count)
-        axis_list = self._axis_list
+        if len(position_tuple) != self.__axis_count:
+            return "axis count = {}".format(self.__axis_count)
+        axis_list = self.__axis_list
         for index, position in enumerate(position_tuple):
             min = axis_list[index]['scope_min']
             max = axis_list[index]['scope_max']
@@ -128,44 +137,44 @@ class Motor(object):
         
     def get_pulse(self):
         pulse_list = []
-        for axis_info in self._axis_list:
-            pulse = self._motion.get_pulse(axis_info['axis_id'])
+        for axis_info in self.__axis_list:
+            pulse = self.__motion.get_pulse(axis_info['axis_id'])
             pulse_list.append(pulse)
-        if self._axis_count == 1:
+        if self.__axis_count == 1:
             return pulse
         else:
             return pulse_list
             
     def get_position(self):
         position_list = []
-        for axis_info in self._axis_list:
-            pulse = self._motion.get_pulse(axis_info['axis_id'])
+        for axis_info in self.__axis_list:
+            pulse = self.__motion.get_pulse(axis_info['axis_id'])
             position = pulse / axis_info['proportion']
             position_list.append(position)
-            #self.logger.debug('%s position = %f', axis_info['key'], position)
-        if self._axis_count == 1:
+            #self.__logger.debug('%s position = %f', axis_info['key'], position)
+        if self.__axis_count == 1:
             return position
         else:
             return position_list
             
     def get_motion_status(self):
         status_list = []
-        for axis_info in self._axis_list:
-            stat = self._motion.get_motion_status(axis_info['axis_id'])
+        for axis_info in self.__axis_list:
+            stat = self.__motion.get_motion_status(axis_info['axis_id'])
             pulse_list.append(stat)
-            self.logger.debug('%s motion_status = %d', axis_info['key'], stat)
-        if self._axis_count == 1:
+            self.__logger.debug('%s motion_status = %d', axis_info['key'], stat)
+        if self.__axis_count == 1:
             return stat
         else:
             return status_list
 
     def get_io_status(self):
         status_list = []
-        for axis_info in self._axis_list:
-            stat = self._motion.get_io_status(axis_info['axis_id'])
+        for axis_info in self.__axis_list:
+            stat = self.__motion.get_io_status(axis_info['axis_id'])
             pulse_list.append(stat)
-            self.logger.debug('%s io_status = %d', axis_info['key'], stat)
-        if self._axis_count == 1:
+            self.__logger.debug('%s io_status = %d', axis_info['key'], stat)
+        if self.__axis_count == 1:
             return stat
         else:
             return status_list

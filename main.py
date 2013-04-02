@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from masbot.config.common_lib import *
+from masbot.flow.main_flow import *
+from time import sleep
 
 def sample():
     motor['tbar'].send('servo_on', wait = False)
@@ -10,5 +12,7 @@ def sample():
     
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
-    #logger.debug('main start')
-    pass
+    mf = MainFlow().start()
+    mf.send('start', wait=False)
+    sleep(12)
+    ret = mf.send('pause')

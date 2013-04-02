@@ -13,15 +13,7 @@ from abc import ABCMeta, abstractmethod
 
 class Motion(metaclass=ABCMeta):
     @abstractmethod
-    def initial(self, manual_id):
-        pass
-
-    @abstractmethod
     def close(self):
-        pass
-
-    @abstractmethod
-    def join_io_cards(self):
         pass
 
     @abstractmethod

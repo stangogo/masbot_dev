@@ -13,37 +13,37 @@ from masbot.device.motor import Motor
 class MajorWidgetCtrl:
 
     def __init__(self):
-        self._proxy_switch = 1
-        self._servo_status = 0
-        UISignals.GetSignal(SigName.SERVO_ON).connect(self._servo_on)
-        self._device_proxy()
-        timer = threading.Timer(1, self._update_position)
+        self.__proxy_switch = 1
+        self.__servo_status = 0
+        UISignals.GetSignal(SigName.SERVO_ON).connect(self.__servo_on)
+        self.__device_proxy()
+        timer = threading.Timer(1, self.__update_position)
         timer.daemon = True
         timer.start()
 
     def set_proxy_switch(self, on_off=0):
-        self._proxy_switch = on_off
+        self.__proxy_switch = on_off
 
-    def _device_proxy(self):
+    def __device_proxy(self):
         DM = DeviceManager()
-        self.motion = DM._device_proxy()
+        self.__motion = DM._device_proxy()
         
-        self.motor_proxy = {}
+        self.__motor_proxy = {}
         for rec in motor_info:
             points_info = {}
             if not rec['composite']:
                 points_info = single_axis_points[rec['key']]
-            self.motor_proxy[rec['key']] = Motor(self.motion, [rec], points_info)
+            self.__motor_proxy[rec['key']] = Motor(self.__motion, [rec], points_info)
         
     def _servo_on(self):
-        if self._servo_status == 0:
+        if self.__servo_status == 0:
             ret = motor['tbar'].send('servo_on')
             if ret:
                 return ret
             ret = motor['axis_z'].send('servo_on')
             if ret:
                 return ret
-            self._servo_status = 1
+            self.__servo_status = 1
             return 0
         else:
             ret = motor['tbar'].send('servo_off', wait=False)
@@ -52,17 +52,17 @@ class MajorWidgetCtrl:
             ret = motor['axis_z'].send('servo_off')
             if ret:
                 return ret
-            self._servo_status = 0
+            self.__servo_status = 0
             return 0
 
     def _update_position(self):
         slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE) 
 
         while True:
-            if self._proxy_switch:
+            if self.__proxy_switch:
                 for axis in motor_info:
                     key = axis['key']
-                    position = self.motor_proxy[key].get_position()
+                    position = self.__motor_proxy[key].get_position()
                     display = '{0:.3f}'.format(position)
                     slot.emit('position', key, float(display))
             sleep(0.3)
