@@ -9,7 +9,7 @@ from PySide import QtGui, QtCore
 from datetime import datetime
 
 
-class Motor(QtGui.QDockWidget):
+class Motor(QtGui.QWidget):
     """    
     RobotIO_Motor is including two columns.
     
@@ -20,7 +20,7 @@ class Motor(QtGui.QDockWidget):
         self.initUI(title)
     
     def initUI(self, title):
-        widget_base = QtGui.QWidget()  
+        #widget_base = QtGui.QWidget()  
         
         # Axis Status Table 
         v_layout = QtGui.QVBoxLayout()        
@@ -30,9 +30,10 @@ class Motor(QtGui.QDockWidget):
         v_layout.addWidget(self.motor_table)
         
         #widget_base.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        widget_base.setLayout(v_layout)
+        #widget_base.setLayout(v_layout)
         
-        self.setWidget(widget_base)       
+        #self.setWidget(widget_base)       
+        self.setLayout(v_layout)
         self.setWindowTitle(title)
         self.show()
         
@@ -87,6 +88,9 @@ class Motor(QtGui.QDockWidget):
     @QtCore.Slot(str)
     def combobox_text_changed(self, text):
         print(self.combobox.currentText())
+    
+    def save(self):
+        print('Motor save')
         
         
 def main():

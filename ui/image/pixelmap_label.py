@@ -7,7 +7,9 @@
 # notes          : 
 
 import sys
+import logging
 from PySide import QtGui, QtCore
+
 
 class PixelMapLabel(QtGui.QLabel):
     
@@ -16,6 +18,7 @@ class PixelMapLabel(QtGui.QLabel):
     
     def __init__(self):
         super(PixelMapLabel, self).__init__()
+        self.logger = logging.getLogger('ui.log')
 
     def set_height(self, height):
         self.height = height
@@ -28,5 +31,5 @@ class PixelMapLabel(QtGui.QLabel):
         
     @QtCore.Slot(str)
     def change_image(self, image_path):
-        print('new image path:', image_path)
         self.update_pixmap(image_path)
+        self.logger.debug("new image path: {0}".format(image_path))

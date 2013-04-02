@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 """
-
 author: Cigar Huang
 website: 
 last edited: Mar. 2013
@@ -53,6 +52,7 @@ class MainUI(QtGui.QMainWindow):
         #main_splitter.setSizes([width*4/7, width*3/7])
         main_splitter.setSizes([width/2, width/2])
         
+        
         self.setCentralWidget(main_splitter)
         self.setGeometry(30, 30, width, height)
         self.setWindowTitle(self.init_caption())
@@ -71,7 +71,7 @@ class MainUI(QtGui.QMainWindow):
     def init_caption(self):
         now_time = datetime.now()
         
-        caption = "Masbot - {0} Ver.{1} Ÿå‚é: {2}".format(Constants.MACHINE_NAME, 
+        caption = "Masbot - {0} Ver.{1} - start time: {2}".format(Constants.MACHINE_NAME, 
                                                     Constants.VERSION,
                                                     now_time.strftime("%Y/%m/%d %H:%M:%S"))
         return caption

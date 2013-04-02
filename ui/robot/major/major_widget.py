@@ -4,6 +4,11 @@
 import sys
 import threading
 import time 
+import os
+import yaml
+
+import logging.config
+import codecs
 
 from PySide import QtGui, QtCore
 from datetime import datetime
@@ -25,7 +30,7 @@ class Signals(QtCore.QObject):
 class MajorWidget(QtGui.QDockWidget):
     def __init__(self, title = 'Major Widget', parent = None):
         super(MajorWidget, self).__init__(parent)
-        
+
         self.init_ui(title)
     
     def init_ui(self, title):
@@ -76,15 +81,17 @@ class MajorWidget(QtGui.QDockWidget):
         btn_panel.addWidget(message_edit)
                 
 
-        flow_box = QtGui.QGroupBox('流程訊息(Flow Message)')        
-        self.flow_message = MessageAndLog('FlowMessage')
+        flow_box = QtGui.QGroupBox('流程訊息(Flow Message)')                
+        self.flow_message = MessageAndLog('ui.flow_message')
+        
         flow_layout = QtGui.QVBoxLayout()
         flow_layout.addWidget(self.flow_message)
         flow_box.setLayout(flow_layout)
         
         
         alarm_box = QtGui.QGroupBox('警報訊息(Alarm Message)')
-        self.alarm_message = MessageAndLog('AlarmMessage')
+        self.alarm_message = MessageAndLog('ui.alarm_message')
+        
         alarm_layout = QtGui.QVBoxLayout()
         alarm_layout.addWidget(self.alarm_message)
         alarm_box.setLayout(alarm_layout)

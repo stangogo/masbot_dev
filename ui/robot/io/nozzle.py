@@ -8,12 +8,12 @@ import time
 from PySide import QtGui, QtCore
 from datetime import datetime
 
-from masbot.ui.robot.io.nozzle_tablewidget import NozzleTable
+from masbot.ui.robot.io.nozzle_table import NozzleTable
 
 
-class Nozzle(QtGui.QDockWidget):
+class Nozzle(QtGui.QWidget):
     """    
-    Nozzle is including two columns.
+    Nozzle is a QDockWidget embeded nozzle_table and docked on io_dock
     
     """
     def __init__(self, title = 'Nozzle', parent = None):
@@ -22,16 +22,13 @@ class Nozzle(QtGui.QDockWidget):
         self.init_ui(title)
     
     def init_ui(self, title):
-        widget_base = QtGui.QWidget()  
-                
         v_layout = QtGui.QVBoxLayout()        
-        
-        self.nozzle_table = NozzleTable('Nozzle', 'nozzle_ui')        
+        self.nozzle_table = NozzleTable('Nozzle', 'nozzle_ui', True)        
         v_layout.addWidget(self.nozzle_table)
         
-        widget_base.setLayout(v_layout)
         
-        self.setWidget(widget_base)       
+        
+        self.setLayout(v_layout)
         self.setWindowTitle(title)
         self.show()
         
@@ -40,6 +37,9 @@ class Nozzle(QtGui.QDockWidget):
         print(self.combobox.currentText())
         
         
+    def save(self):
+            print('Nozzle save')
+
 def main():
     
     app = QtGui.QApplication(sys.argv)

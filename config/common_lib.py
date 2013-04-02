@@ -11,6 +11,7 @@
 import os
 import logging.config
 import yaml
+import codecs
 from masbot.config.global_settings import *
 from masbot.actor.piston_actor import PistonActor
 from masbot.actor.motor_actor import MotorActor
@@ -18,9 +19,7 @@ from masbot.actor.motor_actor import MotorActor
 # setup logging  
 path = 'config/logging.yaml'
 if os.path.exists(path):
-    with open(path, 'rt') as f:
-        config = yaml.load(f.read())
-    logging.config.dictConfig(config)
+    logging.config.dictConfig(yaml.load(codecs.open(path,'r','utf-8')))
 else:
     logging.basicConfig(level=logging.INFO)
 

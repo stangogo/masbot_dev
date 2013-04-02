@@ -25,16 +25,16 @@ class MessageAndLog(QtGui.QListWidget):
         self.name = name                        # name is used in handle of logger and log file path
         self.time_str = ""                      # save the date str in log file, if the log opened over one day, time_str must be updated.
         self.logger = logging.getLogger(name)
-        self.logger.setLevel(logging.DEBUG)
+        #self.logger.setLevel(logging.DEBUG)
         self.talker = Communicate()             # asynchronous to update the message to list
         self.talker.speak_word.connect(self.__add_message)
-        current_dir= os.path.abspath(__file__ +  "//..//..//")
-        self.log_dir = "{0}\\{1}\\{2}\\{3}".format(current_dir,
-                                               Constants.DAT_FOLDER,
-                                               Constants.MACHINE_NAME, 
-                                               Constants.LOG)         
-        if not os.path.exists(self.log_dir):
-                        os.makedirs(self.log_dir)
+        #current_dir= os.path.abspath(__file__ +  "//..//..//")
+        #self.log_dir = "{0}\\{1}\\{2}\\{3}".format(current_dir,
+                                               #Constants.DAT_FOLDER,
+                                               #Constants.MACHINE_NAME, 
+                                               #Constants.LOG)         
+        #if not os.path.exists(self.log_dir):
+                        #os.makedirs(self.log_dir)
         
         #self.initUI()
         self.show()
@@ -65,24 +65,24 @@ class MessageAndLog(QtGui.QListWidget):
     """
         
     def save_message(self, msg):
-        self.set_save_info()
+        #self.set_save_info()
         self.logger.info(msg)
                
-    def set_save_info(self):
-        local_time = date.today()
-        new_time_str = local_time.__str__()
-        #new_time_str = local_time.strftime("%Y%m%d")
+    #def set_save_info(self):
+        #local_time = date.today()
+        #new_time_str = local_time.__str__()
+        ##new_time_str = local_time.strftime("%Y%m%d")
 
-        if new_time_str != self.time_str:   #檢查是否已經跨天
-            self.time_str = new_time_str
+        #if new_time_str != self.time_str:   #檢查是否已經跨天
+            #self.time_str = new_time_str
             
-            #folder = "{0}\\{1}\\{2}".format(Constants.LARGAN_FOLDER, Constants.MACHINE_NAME, Constants.LOG)      #資料夾
-            full_path = "{0}\\{1}_{2}.log".format(self.log_dir, self.name, self.time_str) #完整路徑
+            ##folder = "{0}\\{1}\\{2}".format(Constants.LARGAN_FOLDER, Constants.MACHINE_NAME, Constants.LOG)      #資料夾
+            #full_path = "{0}\\{1}_{2}.log".format(self.log_dir, self.name, self.time_str) #完整路徑
 
-            formatter = logging.Formatter('%(asctime)s - %(message)s')
-            file_handler = logging.FileHandler(full_path)
-            file_handler.setFormatter(formatter)
-            self.logger.addHandler(file_handler)            
+            #formatter = logging.Formatter('%(asctime)s - %(message)s')
+            #file_handler = logging.FileHandler(full_path)
+            #file_handler.setFormatter(formatter)
+            #self.logger.addHandler(file_handler)            
             
 def main():
     
