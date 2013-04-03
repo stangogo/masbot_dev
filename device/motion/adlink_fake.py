@@ -157,15 +157,17 @@ class ADLinkMotion(Motion):
         self.set_position(axis_id, proportion*current_position)
         return 0
         
-    def check_sensor(self, port, timeout=5000):
+    def check_sensor(self, port, timeout=5000, on_off=1):
         """ check if sensor is on
         
         Example:
-            _check_sensor(12, 200)
+            check_sensor(12, 200)
+            check_sensor(20, on_off=0)
             
         Args:
             axis(integer): sensor port
             timeout(integer): timeout (ms)
+            on_off(0 or 1): expect the sensor is 0 or 1
         
         Returns:
             1: in place

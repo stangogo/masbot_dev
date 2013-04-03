@@ -24,17 +24,19 @@ if os.path.exists(path):
 else:
     logging.basicConfig(level=logging.INFO)
 
-# initial actors
-piston = {}
+# initial all actors
+actor = {}
 for rec in piston_info:
-    piston[rec['key']] = PistonActor.start(rec)
+    actor_name = rec['key']
+    actor[actor_name] = PistonActor.start(rec)
 
-motor = {}
 for rec in motor_info:
     if not rec['composite']:
-        points_info = single_axis_points[rec['key']]
-        motor[rec['key']] = MotorActor.start([rec], points_info)
+        actor_name = rec['key']
+        points_info = single_axis_points[actor_name]
+        actor[actor_name] = MotorActor.start([rec], points_info)
 
-for key, rec in double_axis_info.items():
-    points_info = double_axis_points[key]
-    motor[key] = MotorActor.start(rec, points_info)
+for actor_name, rec in double_axis_info.items():
+    points_info = double_axis_points[actor_name]
+    actor[actor_name] = MotorActor.start(rec, points_info)
+

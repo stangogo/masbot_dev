@@ -13,6 +13,20 @@ from masbot.device.device_manager import DeviceManager
 
 class PistonActor(pykka.ThreadingActor):
     def __init__(self, module_info):
+        """ initial the Piston as an Actor
+        
+        Example:
+            None
+            
+        Args:
+            module_info(dict): resource infomation includes all DOs and DIs
+        
+        Returns:
+            None
+
+        Raises:
+        
+        """
         super(PistonActor, self).__init__()
         self.__state = 'ready'
         DM = DeviceManager()

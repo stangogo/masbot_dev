@@ -17,13 +17,29 @@ import pykka
 from masbot.device.device_manager import DeviceManager
 
 class MotorActor(pykka.ThreadingActor):
-    def __init__(self, require, points_info):
+    def __init__(self, module_info, points_info):
+        """ initial the Motor as an Actor
+        
+        Example:
+            None
+            
+        Args:
+            module_info(dict): resource infomation includes all DOs and DIs
+                configurations of the motor
+            points_info(dict): all points in this motor
+        
+        Returns:
+            None
+
+        Raises:
+        
+        """
         super(MotorActor, self).__init__()
         self.__logger = logging.getLogger(__name__)
         self.__points_info = points_info
         self.__state = 0
         DM = DeviceManager()
-        self.__motor_obj = DM.request('motor', require)
+        self.__motor_obj = DM.request('motor', module_info)
         
     def on_receive(self, message):
         # action on

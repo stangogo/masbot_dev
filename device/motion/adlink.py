@@ -616,18 +616,20 @@ class ADLinkMotion(Motion):
             self.__logger.error('undefine adlink card type')
             return -1
 
-    def check_sensor(self, port, timeout=5000):
+    def check_sensor(self, port, timeout, on_off=1):
         """ check if sensor is on
         
         Example:
-            _check_sensor(12, 200)
+            check_sensor(12, 200)
+            check_sensor(20, on_off=0)
             
         Args:
             axis(integer): sensor port
             timeout(integer): timeout (ms)
+            on_off(0 or 1): expect the sensor is 0 or 1
         
         Returns:
-            1: in place
+            0: sensor in position
             timeout message
 
         Raises:
@@ -638,10 +640,13 @@ class ADLinkMotion(Motion):
         interval_time = interval / 1000
         while True:
             ret = self.DI(port)
-            if ret:
-                return ret
+            if ret == on_off:
+                return 0
             else:
                 count = count + interval                
             if count >= timeout:
-                return '[check sensor timeout] port = {}'.format(port)
+                msg = 'expect DI port {} become to {}, timeout = {}'.format(
+                    port, on_off, timeout)
+                self.__logger.error(msg)
+                return msg
             sleep(interval_time)
