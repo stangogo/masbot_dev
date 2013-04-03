@@ -34,21 +34,31 @@ class PistonActor(pykka.ThreadingActor):
         
     def on_receive(self, message):
         # action on
-        if message.get('msg') == 'state':
+        msg = message.get('msg')
+        if msg == 'state':
             message['reply_to'].set(self.__state)
-        elif message.get('msg') == 'action_on':
+        elif msg == 'action_on':
             self.__state = 'actioning'
             ret = self.__piston_obj.action(1)
         # action off
-        elif message.get('msg') == 'action_off':
+        elif msg == 'action_off':
             self.__state = 'actioning'
             ret = self.__piston_obj.action(0)
         # sensor status
-        elif message.get('msg') == 'sensor_status':
+        elif msg == 'sensor_status':
             ret = self.__piston_obj.get_di_status()
         # action status
-        elif message.get('msg') == 'action_status':
+        elif msg == 'action_status':
             ret = self.__piston_obj.get_do_status()
+        elif msg == 'declare':
+            who = message.get('who')
+            action = message.get('action')
+            ret = self.__piston_obj.declare(who, action)
+        elif msg == 'wipe':
+            who = message.get('who')
+            ret = self.__piston_obj.wipe(who)
+        elif msg == 'board_info':
+            ret = self.__piston_obj.board_info()
         else:
             ret = 'undefine message format'
             print(msg)

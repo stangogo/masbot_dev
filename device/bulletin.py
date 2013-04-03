@@ -29,6 +29,7 @@ class Bulletin(object):
         self.__logger = logging.getLogger(__name__)
         self.__author = author
         self.__board = board
+        self.__board[self.__author] = []
 
     def declare(self, actor_name, restrict):
         """ declare the restriction to some actor on the board
@@ -47,8 +48,8 @@ class Bulletin(object):
         
         Raises:
             
-        """
-        self.__board[self.__author] = {actor_name: restrict}
+        """     
+        self.__board[self.__author].append([actor_name, restrict])
         self.__logger.debug("%s declares %s can't %s", self.__author, actor_name, restrict)
 
     def wipe(self, actor_name):
@@ -66,8 +67,13 @@ class Bulletin(object):
         Raises:
             
         """
-        del self.__board[self.__author][actor_name]
-        self.__logger.debug("%s wipes %s", self.__author, actor_name)
+        for i, rec in enumerate(self.__board[self.__author]):
+            if rec[0] == actor_name:
+                del self.__board[self.__author][i]
+        # when restriction of the author is empty , wipe it from the dictionary
+        if not self.__board[self.__author]:
+            del self.__board[self.__author]
+        self.__logger.debug("%s wipes restriction of %s", self.__author, actor_name)
 
     def wipe_all(self):
         """ wipe all the restrictions to some actor on the board
@@ -86,4 +92,21 @@ class Bulletin(object):
         """
         del self.__board[self.__author]
         self.__logger.debug("%s wipes his restriction", self.__author)
+        
+    def board_info(self):
+        """ show the information from the shared board
+        
+        Example:
+            nozzle.show_board()
+            
+        Args:
+            None
+        
+        Returns:
+            dict
+        
+        Raises:
+            
+        """
+        return self.__board
     
