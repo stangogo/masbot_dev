@@ -9,19 +9,22 @@
 # notes          : 
 
 import logging
+from masbot.device.bulletin import Bulletin
 
-class Motor(object):
-    def __init__(self, motion, axis_list):
-        self.__logger = logging.getLogger(__name__)
-        self.__motion = motion
-        self.__axis_list = axis_list
+class Motor(Bulletin):
+    def __init__(self, owner, motion, axis_list, board):
         self.__axis_count = len(axis_list)
         if self.__axis_count == 1:
+            super(Motor, self).__init__(owner, board)
             self.__speed = axis_list[0]['speed']
             self.__acc_time = axis_list[0]['accelerative_time']
         else:
+            super(Motor, self).__init__(owner, board)
             self.__speed = 50
             self.__acc_time = 0.2
+        self.__logger = logging.getLogger(__name__)
+        self.__axis_list = axis_list
+        self.__motion = motion
         
     def get_speed(self):
         return self.__speed

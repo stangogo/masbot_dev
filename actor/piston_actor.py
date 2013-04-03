@@ -30,7 +30,7 @@ class PistonActor(pykka.ThreadingActor):
         super(PistonActor, self).__init__()
         self.__state = 'ready'
         DM = DeviceManager()
-        self.__piston_obj = DM.request('piston', module_info)
+        self.__piston_obj = DM.request(module_info['key'], 'piston', module_info)
         
     def on_receive(self, message):
         # action on

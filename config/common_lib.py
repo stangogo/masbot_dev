@@ -33,9 +33,9 @@ for rec in motor_info:
     if not rec['composite']:
         actor_name = rec['key']
         points_info = single_axis_points[actor_name]
-        actor[actor_name] = MotorActor.start([rec], points_info)
+        actor[actor_name] = MotorActor.start(actor_name, [rec], points_info)
 
 for actor_name, rec in double_axis_info.items():
     points_info = double_axis_points[actor_name]
-    actor[actor_name] = MotorActor.start(rec, points_info)
+    actor[actor_name] = MotorActor.start(actor_name, rec, points_info)
 

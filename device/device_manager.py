@@ -26,6 +26,7 @@ class DeviceManager(object):
 
     def __initial(self):
         self.__logger = logging.getLogger(__name__)
+        self.__bulletin = {}
         self.__motion = Motion(io_card_info)
         di_count = self.__motion.di_card_count() * 32
         do_count = self.__motion.do_card_count() * 32
@@ -45,11 +46,11 @@ class DeviceManager(object):
         resource['AXIS'] = self.__axis_in_service
         return resource
 
-    def request(self, resource_type, module_info):
+    def request(self, actor_name, resource_type, module_info):
         if resource_type == 'piston':
             return self.__allocate_piston(module_info)
         elif resource_type == 'motor':
-            return self.__allocate_axis(module_info)
+            return self.__allocate_axis(actor_name, module_info)
 
     def __allocate_piston(self, module_info):
         output_pattern = compile('.*_output$')
@@ -65,9 +66,9 @@ class DeviceManager(object):
             self.__logger.error(ret)
             return ret
         else:
-            return Piston(self.__motion, module_info)
+            return Piston(self.__motion, module_info, self.__bulletin)
 
-    def __allocate_axis(self, module_info):
+    def __allocate_axis(self, actor_name, module_info):
         for axis in module_info:
             require = {'DO': [], 'DI': [], 'AXIS': []}
             if axis['motor_type'] == 'servo_type':             
@@ -81,7 +82,7 @@ class DeviceManager(object):
             if ret:
                 self.__logger.error(ret)
                 return ret
-        return Motor(self.__motion, module_info)
+        return Motor(actor_name, self.__motion, module_info, self.__bulletin)
             
     def __resource_check(self, require):
         if 'DO' in require:

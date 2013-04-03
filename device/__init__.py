@@ -1,1 +1,1 @@
-__all__ = ['device_manager', 'motor', 'piston']
+__all__ = ['device_manager', 'motor', 'piston', 'bulletin']

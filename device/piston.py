@@ -10,14 +10,16 @@
 
 import logging
 from re import compile
+from masbot.device.bulletin import Bulletin
 
-class Piston(object):
-    def __init__(self, io_card, module_info):
+class Piston(Bulletin):
+    def __init__(self, io_card, module_info, board):
+        super(Piston, self).__init__(module_info['key'], board)
         self.__logger = logging.getLogger(__name__)
         self.__io_card = io_card
         self.__module_info = module_info
         self.__detect_type()
-
+        
     def __detect_type(self):
         """ detect which piston type (ex. 1 output and 2 input)
         
