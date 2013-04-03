@@ -1,15 +1,23 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+import yaml
+import logging
+import logging.config
+import codecs
 
 from PySide import QtCore, QtGui
 import unittest
 from masbot.ui.utils import SigName, UISignals
-
 from masbot.ui.robot.major.major_widget import MajorWidget
+from masbot.ui.test.test_init_lib import *
 
     
 class RobotPageDock(QtGui.QMainWindow):
+    """
+    要移到masbot資料夾底下執行, 才會work
+    """
     
     index_changed = QtCore.Signal(bool)
     
@@ -18,11 +26,10 @@ class RobotPageDock(QtGui.QMainWindow):
         self.pages = {}
         self.createDockWindows()
         
-        
     def createDockWindows(self):
         main_title_widget = QtGui.QWidget()
         
-        self.pages['main_page'] = MajorWidget('主�', self)
+        self.pages['main_page'] = MajorWidget('主頁', self)
         self.pages['main_page'].setTitleBarWidget(main_title_widget)
 
         self.setDockOptions(self.AnimatedDocks | self.ForceTabbedDocks)
@@ -31,6 +38,12 @@ class RobotPageDock(QtGui.QMainWindow):
         self.setTabPosition(QtCore.Qt.AllDockWidgetAreas, QtGui.QTabWidget.West)
 
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.pages['main_page'])  
+        
+        UISignals.GetSignal(SigName.START_MAIN).connect(self.btn_click)
+        
+    def btn_click(self):
+        UISignals.GetSignal(SigName.ALARM_MSG).emit("test alarm msg")
+        UISignals.GetSignal(SigName.FLOW_MSG).emit("test flow message")
         
 class CalculatorTest(unittest.TestCase):                 
 
@@ -59,6 +72,9 @@ class CalculatorTest(unittest.TestCase):
     def servo_on_btn(self):
         print('servo on button is clicked')
         
+    def login_btn(self):
+        print('login_btn button is clicked')
+        
     def test_star_btn(self):
         btn = UISignals.GetSignal(SigName.START_MAIN)
         btn.connect(self.start_btn)    
@@ -73,6 +89,11 @@ class CalculatorTest(unittest.TestCase):
         btn = UISignals.GetSignal(SigName.SERVO_ON)
         btn.connect(self.servo_on_btn)    
         btn.emit()
+        
+    def test_login_on_btn(self):
+        btn = UISignals.GetSignal(SigName.LOG_IN)
+        btn.connect(self.login_btn)
+        btn.emit()        
     
 if __name__ == '__main__':  
     import sys  

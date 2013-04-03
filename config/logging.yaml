@@ -2,6 +2,17 @@ version: 1
 formatters:
     simple:
         format: "%(asctime)s - %(module)s - %(levelname)s - %(message)s"
+        
+    message_log:
+        format: "%(asctime)s[%(levelname)s] - %(message)s"
+        datefmt: '%Y-%m-%d %H:%M:%S'
+        
+    ui_log:
+        format: "%(asctime)s[%(levelname)s] - %(module)s - %(message)s"
+        
+    default:
+        format: "%(asctime)s - %(module)s - %(levelname)s - %(message)s"
+        datefmt: '%Y-%m-%d %H:%M:%S'     
 
 handlers:
     console:
@@ -36,7 +47,34 @@ handlers:
         maxBytes: 10485760 # 10MB
         backupCount: 20
         encoding: utf8
-
+        
+    flow_message_handler:        # Cigar
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        formatter: message_log
+        filename: log/flow_message.log
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
+        
+    alarm_message_handler:        # Cigar
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        formatter: message_log
+        filename: log/alarm_message.log
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8   
+        
+    ui_handler:                 # Cigar
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        formatter: ui_log
+        filename: log/ui.log
+        maxBytes: 10485760 # 100MB
+        backupCount: 20
+        encoding: utf8
+        
 loggers:
     masbot.device.motor:
         level: DEBUG
@@ -52,7 +90,21 @@ loggers:
         level: DEBUG
         handlers: [console, adlink_file_handler]
         propagate: false
-
+        
+    ui.flow_message:        # Cigar
+        level: DEBUG
+        handlers: [console, flow_message_handler]
+        propagate: false
+        
+    ui.alarm_message:       # Cigar
+        level: DEBUG
+        handlers: [console, alarm_message_handler]
+        propagate: false
+    
+    ui.log:
+        level: DEBUG        # Cigar
+        handlers: [console, ui_handler]
+        propagate: false
 root:
     level: DEBUG
-    handlers: [console, info_file_handler, error_file_handler, adlink_file_handler]
+    handlers: [console]

@@ -45,18 +45,33 @@ class SigName:
     FROM_AXIS_TABLE = 'FROM_AXIS_TABLE'     
         #data from axis table - axis_name(str), value(int), action (1:add, -1 minus)
     
-    #DIO map
-    ENTER_IO_MAP_DI = 'ENTER_IO_MAP_DI'
-        #set DI in io map - DI status (list), on/off (bool)
-    ENTER_IO_MAP_DO = 'ENTER_IO_MAP_DO'
-        #set DO in io map - DO status (list), on/off (bool)
-    FROM_IO_MAP = 'FROM_IO_MAP'
-        #send DO clicked - DO number (int), on/off (bool)
+    # DIO map is replaced by DIO agent
+    # DIO map
+#    ENTER_IO_MAP_DI = 'ENTER_IO_MAP_DI'
+        # set DI in io map - DI status (list), on/off (bool)
+#    ENTER_IO_MAP_DO = 'ENTER_IO_MAP_DO'
+        # set DO in io map - DO status (list), on/off (bool)
+#    FROM_IO_MAP = 'FROM_IO_MAP'
+        # send DO clicked - DO number (int), on/off (bool)        
+        
+    # DIO agent
+    DO_IN = 'DIO_AGENT_DO_IN'
+        # Signals of DO from outside - DO status (list), on/off (bool)
+    DI_IN = 'DIO_AGENT_DI_IN'
+        # Signals of DI from outside - DI status (list), on/off (bool)
+    DO_OUT = 'DIO_AGENT_DO_OUT'
+        # Send DO signal out - DO number (int), on/off (bool)
     
 class UISignals():
     signal_dict = {}
     @staticmethod
     def RegisterSignal(signal, name):
+        """
+        registere signal object with a name in UISignal for used by others later.
+        @ signal: the signal object
+        @ name: the name for dictionary, defined in SigName class.
+        
+        """
         UISignals.signal_dict[name] = signal
         
     @staticmethod

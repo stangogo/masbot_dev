@@ -12,6 +12,10 @@ class IODock(QtGui.QMainWindow):
         
         
     def createDockWindows(self):
+        #page = Nozzle('吸嘴', self)
+        
+                
+        
         self.pages['taker'] = Nozzle('吸嘴', self)
         self.pages['motor'] = Motor('馬達', self)
         self.pages['point'] = QtGui.QDockWidget('點位', self)
@@ -30,10 +34,24 @@ class IODock(QtGui.QMainWindow):
         self.tabifyDockWidget(self.pages['motor'], self.pages['point'])
         self.tabifyDockWidget(self.pages['point'], self.pages['stock'])
         self.tabifyDockWidget(self.pages['stock'], self.pages['alarm'])
-        self.tabifyDockWidget(self.pages['alarm'], self.pages['lock'])        
+        self.tabifyDockWidget(self.pages['alarm'], self.pages['lock'])
 
         self.pages['taker'].raise_()
+        
         self.setWindowTitle('IO dock')
+
+    def save(self):
+        
+        if self.pages['taker'].isVisible():
+            print('taker')
+        elif self.pages['motor'].isVisible():
+            print('motor')
+        elif self.pages['point'].isVisible():
+            print('point')
+        elif self.pages['stock'].isVisible():
+            print('stock')
+        elif self.pages['alarm'].isVisible():
+            print('alarm')
 
 if __name__ == '__main__':  
     import sys  

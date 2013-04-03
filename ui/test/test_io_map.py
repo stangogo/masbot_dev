@@ -21,6 +21,7 @@ from PySide import QtGui
 from PySide import QtCore
 
 from masbot.ui.robot.io.io_map import IOMap
+from masbot.ui.robot.io.nozzle_table import NozzleTable
 
 from masbot.ui.utils import Path, Constants, UISignals, SigName
 
@@ -40,15 +41,20 @@ class MainUI(QtGui.QWidget):
         top_layout.addWidget(start_btn)
         top_layout.addWidget(stop_btn)
         
-        right_layout = QtGui.QVBoxLayout()
-        right_layout.addLayout(top_layout)
-        right_layout.addWidget(IOMap(8))
+        bottom_layout = QtGui.QHBoxLayout()
+        bottom_layout.addWidget(IOMap(8))
+        bottom_layout.addWidget(NozzleTable('Nozzle', 'nozzle_ui', True))
+        
+        whole_layout = QtGui.QVBoxLayout()
+        whole_layout.addLayout(top_layout)
+        whole_layout.addLayout(bottom_layout)
+        
                 
-        do_out = UISignals.GetSignal(SigName.FROM_IO_MAP)
+        do_out = UISignals.GetSignal(SigName.DO_OUT)
         do_out.connect(self.do_changed)
         
                                 
-        self.setLayout(right_layout)
+        self.setLayout(whole_layout)
         
         self.setWindowTitle(self.init_caption())
         imgs_dir = Path.imgs_dir()
@@ -71,8 +77,8 @@ class MainUI(QtGui.QWidget):
         self.stop_thread = False
         index = 0
         
-        set_do = UISignals.GetSignal(SigName.ENTER_IO_MAP_DO)
-        set_di = UISignals.GetSignal(SigName.ENTER_IO_MAP_DI)
+        set_do = UISignals.GetSignal(SigName.DO_IN)
+        set_di = UISignals.GetSignal(SigName.DI_IN)
         
         do = [0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,
               0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,
@@ -88,11 +94,11 @@ class MainUI(QtGui.QWidget):
             #0,1,0,1,1,0,1,0,0,0,0,1,0,0,1,1,0,0,0,0,0,1,0,1,1,0,0,1,0,0,0,1,0,1,1,0,1,0,0,0,1,1,0,1,1,0,1,0,0,0,
             #1,1,1,1,0,1]         
         do1 = [1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,
-              1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,
-              1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,
-              1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,
-              1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,0,0,1,0,1,1,1,
-              0,1,1,0,1,0]
+               0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,
+              0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,
+              0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,
+              0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,0,1,0,1,1,0,1,0,0,0,
+              1,0,0,1,0,1] 
         
         while self.stop_thread == False:
             if index % 2==1 :
@@ -102,7 +108,7 @@ class MainUI(QtGui.QWidget):
                 set_do.emit(do1, False)
                 set_di.emit(do1, False)
             index += 1
-            time.sleep(0.3)            
+            time.sleep(0.4)            
             
         #while self.stop_thread == False:
             #for i in range (0, len(do)):
@@ -116,7 +122,10 @@ class MainUI(QtGui.QWidget):
             #time.sleep(0.2)
           
     def do_changed(self, do_index, on):
+        #set_do = UISignals.GetSignal(SigName.DO_IN)
+        #set_do.emit([do_index], on)
         print("DO {0}, is {1}".format(do_index, on))
+        
     
     def init_caption(self):
         now_time = datetime.now()

@@ -6,5 +6,6 @@ temp
 *.log
 *.db
 ui/imgs/*.JPG
-ui/大圖/*.png
-ui/回收/*
+ui/大�/*.png
+ui/�收/*
+ui/imgs/*.tif

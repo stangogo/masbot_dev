@@ -7,7 +7,7 @@ import time
 
 from PySide import QtGui, QtCore
 from datetime import datetime
-from masbot.ui.robot.io.io_dock import IODock
+from masbot.ui.robot.io.io_tab import IOTab
 
 
 class IOWidget(QtGui.QDockWidget):
@@ -26,17 +26,20 @@ class IOWidget(QtGui.QDockWidget):
         
         whole_layout = QtGui.QVBoxLayout()      # 水平佈局, 左側: RobotIOPageDock, 右側 axis_v_layout
         buttons_layout = QtGui.QHBoxLayout() # Table 垂直佈局: axis_op_table, save, load, apply buttons
-        io_dock = IODock()
+        self.io_dock = IOTab()
 
         # Axis Operation Table                    
-        buttons_layout.addWidget(QtGui.QPushButton('儲存(Save)'), 1, QtCore.Qt.AlignRight)
+        save_button = QtGui.QPushButton('儲存(Save)')
+        save_button.clicked.connect(self.save)
+        buttons_layout.addWidget(save_button, 1, QtCore.Qt.AlignRight)
         buttons_layout.addWidget(QtGui.QPushButton('讀取(Load)'), 0, QtCore.Qt.AlignRight)
         #apply_button = QtGui.QPushButton('套用(Apply)')
         #apply_button.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         #apply_button.resize(100, 25)
         buttons_layout.addWidget(QtGui.QPushButton('套用(Apply)'), 0, QtCore.Qt.AlignRight)
                 
-        whole_layout.addWidget(io_dock, 3)
+        whole_layout.addWidget(self.io_dock, 3)
+        whole_layout.addWidget(QtGui.QTabWidget())
         whole_layout.addLayout(buttons_layout, 1)
                               
         widget_base.setLayout(whole_layout)
@@ -44,6 +47,9 @@ class IOWidget(QtGui.QDockWidget):
         self.setWidget(widget_base)       
         self.setWindowTitle(title)
         self.show()
+    
+    def save(self):
+        self.io_dock.save()
         
 def main():
     

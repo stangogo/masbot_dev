@@ -51,14 +51,14 @@ class DBTableDefine():
                                     ('top_sensor', ['int']),
                                     ('low_senser', ['int']),
                                     ('pressure_sensor', ['int']),
-                                    ('header_name', ['varchar(20)']),
+                                    ('display_text', ['varchar(20)']),
                                     ('get_delay', ['int']),
                                     ('suck_delay', ['int']),
                                     ('put_delay', ['int'])
                                 ])
                                 ,
-            'Nozzle_UI': OrderedDict([ ('nozzle_property', ['varchar(30)']),
-                                       ('header_name', ['varchar(30)']),
+            'Nozzle_UI': OrderedDict([ ('reference_val', ['varchar(30)']),
+                                       ('display_text', ['varchar(30)']),
                                        ('col_order', ['int']),
                                        ('display_type', ['int']),
                                        ('btn_on_str', ['varchar(10)']),
