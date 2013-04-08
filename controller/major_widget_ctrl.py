@@ -16,6 +16,10 @@ class MajorWidgetCtrl:
         self.__proxy_switch = 1
         self.__servo_status = 0
         UISignals.GetSignal(SigName.SERVO_ON).connect(self.__servo_on)
+        
+        
+        UISignals.GetSignal(SigName.DO_OUT).connect(self.__do_clicked)
+        
         self.__device_proxy()
         timer = threading.Timer(1, self.__update_position)
         timer.daemon = True
@@ -33,7 +37,10 @@ class MajorWidgetCtrl:
             points_info = {}
             if not rec['composite']:
                 points_info = single_axis_points[rec['key']]
-            self.__motor_proxy[rec['key']] = Motor(self.__motion, [rec])#, points_info)
+            #self.__motor_proxy[rec['key']] = Motor(self.__motion, [rec], points_info)
+        
+    def __do_clicked(self, do_port, on_off):
+        print("ctrl:  do : {0}, {1}".format(do_port, on_off))
         
     def __servo_on(self):
         if self.__servo_status == 0:
@@ -62,8 +69,8 @@ class MajorWidgetCtrl:
             if self.__proxy_switch:
                 for axis in motor_info:
                     key = axis['key']
-                    position = self.__motor_proxy[key].get_position()
-                    display = '{0:.3f}'.format(position)
-                    slot.emit('position', key, float(display))
+                    #position = self.__motor_proxy[key].get_position()
+                    #display = '{0:.3f}'.format(position)
+                    #slot.emit('position', key, float(display))
             sleep(0.3)
         
