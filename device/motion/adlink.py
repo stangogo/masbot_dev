@@ -643,7 +643,7 @@ class ADLinkMotion(Motion):
             if ret == on_off:
                 return 0
             else:
-                count = count + interval                
+                count = count + interval
             if count >= timeout:
                 msg = 'expect DI port {} become to {}, timeout = {}'.format(
                     port, on_off, timeout)
