@@ -1,1 +1,1 @@
-__all__ = ['io_dock', 'io_widget', 'motor', 'nozzle', 'nozzle_table', 'point_table', 'point', 'io_map', 'IO_table_template']
+__all__ = ['io_tab', 'io_widget', 'motor', 'nozzle_table', 'point_table', 'io_map', 'IO_table_template']

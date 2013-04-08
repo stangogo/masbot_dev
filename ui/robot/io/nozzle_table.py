@@ -11,7 +11,7 @@ from PySide import QtGui, QtCore, QtSql
 from masbot.ui.sqldb import SqlDB
 from masbot.ui.utils import Path
 from masbot.ui.control.dio_button import *
-from masbot.ui import signal_agent
+from masbot.ui import preaction
 
 from masbot.ui.robot.io.IO_table_template import IOTableTemplate
 
@@ -52,19 +52,51 @@ class NozzleTable(IOTableTemplate):
     def di_changed(self, di_list, on_off):
         self.do_di_changed(di_list, self.di_dict, on_off)
         
-    def save(self):
-        pass
-        
+    #def save(self):
+        #pass
+
+
+class Nozzle(QtGui.QWidget):
+    """    
+    Nozzle is a QDockWidget embeded nozzle_table and docked on io_dock
     
+    """
+    def __init__(self, title = 'Nozzle', parent = None):
+        super(Nozzle, self).__init__(parent)        
+        
+        self.init_ui(title)
+    
+    def init_ui(self, title):
+        
+        self.nozzle_table = NozzleTable('Nozzle', 'nozzle_ui', True)        
+        
+        v_layout = QtGui.QVBoxLayout()
+        v_layout.addWidget(self.nozzle_table)
+        
+        self.setLayout(v_layout)
+        self.setWindowTitle(title)
+        self.show()
+        
+    @QtCore.Slot(str)
+    def combobox_text_changed(self, text):
+        print(self.combobox.currentText())
+        
+    def save(self):
+        self.nozzle_table.save()
+        
+    def reload(self):
+        self.nozzle_table.reload()
+
 def main():
     
     app = QtGui.QApplication(sys.argv)
-    ex = NozzleTable('Nozzle', 'nozzle_ui', True)
+
+    ex = Nozzle()
     sys.exit(app.exec_())
 
-if __name__ == '__main__':
-    main()        
 
+if __name__ == '__main__':
+    main()          
 
 
 

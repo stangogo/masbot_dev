@@ -81,6 +81,10 @@ class DIOButton(QtGui.QPushButton):
 
 
 class NozzleDOButtonSignal(QtCore.QObject):
+    """ 建立這個Signal 和 NozzleDoButton clicked 間的連結
+        在原來的clicked被觸發時, 由此Signal送出更多參數
+        
+    """
     clicked = QtCore.Signal(int, bool, int, int, str)  #io_num, on or off, row, column, table_name
 
 class NozzleDoButton(QtGui.QPushButton):

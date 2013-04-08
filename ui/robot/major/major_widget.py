@@ -27,14 +27,14 @@ class Signals(QtCore.QObject):
     product_info_speak = QtCore.Signal(dict)
 
 
-class MajorWidget(QtGui.QDockWidget):
+class MajorWidget(QtGui.QWidget):
     def __init__(self, title = 'Major Widget', parent = None):
         super(MajorWidget, self).__init__(parent)
 
         self.init_ui(title)
     
     def init_ui(self, title):
-        widget_base = QtGui.QWidget()    
+        # widget_base = QtGui.QWidget()    
         v_layout = QtGui.QVBoxLayout()
         
         self.msg_in = Signals()
@@ -107,9 +107,9 @@ class MajorWidget(QtGui.QDockWidget):
         v_layout.addWidget(alarm_box)
         v_layout.addWidget(product_box)
 
-        widget_base.setLayout(v_layout)
+        self.setLayout(v_layout)
         
-        self.setWidget(widget_base)       
+        #self.setWidget(widget_base)       
         self.setWindowTitle(title)
         self.show()
 

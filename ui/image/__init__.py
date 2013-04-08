@@ -1,1 +1,1 @@
-__all__ = ['pixelmap_label', 'image_tools_dock_widget']
+__all__ = ['pixelmap_label', 'image_tools_dock', 'image_thumbnail']

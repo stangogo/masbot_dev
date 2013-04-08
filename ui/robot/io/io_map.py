@@ -11,7 +11,7 @@ from PySide import QtGui, QtCore
 
 from masbot.ui.utils import Path, SigName, UISignals
 from masbot.ui.control.dio_button import *
-from masbot.ui import signal_agent
+from masbot.ui import preaction
 
 #class Signals(QtCore.QObject):
     #to_do = QtCore.Signal(list, bool)

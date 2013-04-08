@@ -49,7 +49,7 @@ class DBTableDefine():
                                     ('blow_action',['int']),
                                     ('suck_action', ['int']),
                                     ('top_sensor', ['int']),
-                                    ('low_senser', ['int']),
+                                    ('low_sensor', ['int']),
                                     ('pressure_sensor', ['int']),
                                     ('display_text', ['varchar(20)']),
                                     ('get_delay', ['int']),

@@ -21,16 +21,9 @@ from threading import Thread
 from PySide import QtGui, QtCore
 
 from masbot.ui.image.pixelmap_label import PixelMapLabel
-from masbot.ui.image.image_tools_dock_widget import ImageToolsDockWidget
+from masbot.ui.image.image_tools_dock import ImageToolsDock
+from masbot.ui.image.image_thumbnail import ImageThumbnail
 
-
-class Communicate(QtCore.QObject):
-    """
-    create two new signals on the fly: one will handle
-    int type, the other will handle strings
-    """
-    speak_number = QtCore.Signal(int)
-    speak_word = QtCore.Signal(str)
 
 class ImageWidget(QtGui.QWidget):
 
@@ -54,19 +47,20 @@ class ImageWidget(QtGui.QWidget):
     def threadFunc(self):
         self.stop_thread = False
         index = 0
-        someone = Communicate()
-        someone.speak_word.connect(self.preview_label.change_image)
-        someone.speak_word.connect(self.image_label_1.change_image)
-        someone.speak_word.connect(self.image_label_2.change_image)
-        someone.speak_word.connect(self.image_label_3.change_image)
-        someone.speak_word.connect(self.image_label_4.change_image)
-        someone.speak_word.connect(self.image_label_5.change_image)
-        someone.speak_word.connect(self.image_label_6.change_image)
         
         while self.stop_thread == False:
             index = (index + 1) % 15        
-            image_path = "{0}\\{1}.tif".format( self.imgs_dir, index + 1)            
-            someone.speak_word.emit(image_path)
+            image_path = "{0}\\{1}.tif".format( self.imgs_dir, index + 1)
+            
+            self.preview_label.change_image(image_path)
+            self.img_thumbnail.change_image(image_path, 0)
+            self.img_thumbnail.change_image(image_path, 1)
+            self.img_thumbnail.change_image(image_path, 2)
+            self.img_thumbnail.change_image(image_path, 3)
+            self.img_thumbnail.change_image(image_path, 4)
+            self.img_thumbnail.change_image(image_path, 5)
+            
+            
             time.sleep(0.1)
         
     def init_ui(self):
@@ -76,7 +70,7 @@ class ImageWidget(QtGui.QWidget):
         self.imgs_dir = os.path.abspath(__file__ + "//..//")+"//Imgs"
 
         #preview image
-        self.preview_label = PixelMapLabel() #QtGui.QLabel()
+        self.preview_label = PixelMapLabel(0) #QtGui.QLabel()
         self.preview_label.update_pixmap("{0}//Water_lilies.jpg".format(self.imgs_dir))
         
         #pixel_map = QtGui.QPixmap('Imgs\\Sunset.jpg').scaledToHeight(400)
@@ -122,35 +116,15 @@ class ImageWidget(QtGui.QWidget):
         tools_bar_layout.addWidget(self.file_path_edit, 1, QtCore.Qt.AlignLeft)
 
         #Image List
-        img_list_layout = QtGui.QHBoxLayout()
-        img_list_layout.addStretch(0)
-        
-        self.image_label_1 = PixelMapLabel()
-        self.image_label_1.update_pixmap("{0}//Sunset.jpg".format(self.imgs_dir), 70)
-        self.image_label_2 = PixelMapLabel()
-        self.image_label_2.update_pixmap("{0}//Sunset.jpg".format(self.imgs_dir), 50)
-        self.image_label_3 = PixelMapLabel()
-        self.image_label_3.update_pixmap("{0}//Sunset.jpg".format(self.imgs_dir), 40)
-        self.image_label_4 = PixelMapLabel()
-        self.image_label_4.update_pixmap("{0}//Sunset.jpg".format(self.imgs_dir), 80)
-        self.image_label_5 = PixelMapLabel()
-        self.image_label_5.update_pixmap("{0}//Sunset.jpg".format(self.imgs_dir), 20)
-        self.image_label_6 = PixelMapLabel()
-        self.image_label_6.update_pixmap("{0}//Sunset.jpg".format(self.imgs_dir), 40)
-        
-        img_list_layout.addWidget(self.image_label_1, 0, QtCore.Qt.AlignLeft)
-        img_list_layout.addWidget(self.image_label_2, 0, QtCore.Qt.AlignLeft)
-        img_list_layout.addWidget(self.image_label_3, 0, QtCore.Qt.AlignLeft)
-        img_list_layout.addWidget(self.image_label_4, 0, QtCore.Qt.AlignLeft)
-        img_list_layout.addWidget(self.image_label_5, 0, QtCore.Qt.AlignLeft)
-        img_list_layout.addWidget(self.image_label_6, 1, QtCore.Qt.AlignLeft)  #stretch of last is 1
+        self.img_thumbnail = ImageThumbnail()
+        self.img_thumbnail.thumbnail_clicked.connect(self.thumbnail_clicked)
         
         #IPI result table (方法1)
-        image_tools = ImageToolsDockWidget()
+        image_tools = ImageToolsDock()
      
         v_layout.addWidget(self.preview_label)
         v_layout.addLayout(tools_bar_layout)
-        v_layout.addLayout(img_list_layout)
+        v_layout.addWidget(self.img_thumbnail)
         v_layout.addWidget(image_tools)
 
         self.setLayout(v_layout)
@@ -159,8 +133,9 @@ class ImageWidget(QtGui.QWidget):
         self.setWindowTitle('Image Vertical Layout')
         self.show()
         
-   
-            
+    def thumbnail_clicked(self, thumbnail_index):
+        print("thumbnail {0} is clicked".format(thumbnail_index))
+
             
             
 def main():
