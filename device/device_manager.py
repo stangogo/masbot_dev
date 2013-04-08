@@ -88,7 +88,7 @@ class DeviceManager(object):
         if 'DO' in require:
             for port in require['DO']:
                 if self.__do_in_service[port]:
-                    msg = 'DO port {} is occupied'.format(port)
+                    msg = 'DO port {} was occupied'.format(port)
                     self.__logger.error(msg)
                     return msg
                 else:
@@ -96,7 +96,7 @@ class DeviceManager(object):
         if 'DI' in require:
             for port in require['DI']:
                 if self.__di_in_service[port]:
-                    msg = 'DI port {} is occupied'.format(port)
+                    msg = 'DI port {} was occupied'.format(port)
                     self.__logger.error(msg)
                     return msg
                 else:
@@ -104,7 +104,7 @@ class DeviceManager(object):
         if 'AXIS' in require:
             for port in require['AXIS']:
                 if self.__axis_in_service[port]:
-                    msg = 'AXIS {} is occupied'.format(port)
+                    msg = 'AXIS {} was occupied'.format(port)
                     self.__logger.error(msg)
                     return msg
                 else:

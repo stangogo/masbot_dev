@@ -29,7 +29,6 @@ class Bulletin(object):
         self.__logger = logging.getLogger(__name__)
         self.__author = author
         self.__board = board
-        self.__board[self.__author] = []
 
     def declare(self, actor_name, restrict):
         """ declare the restriction to some actor on the board
@@ -49,7 +48,9 @@ class Bulletin(object):
         Raises:
             
         """     
-        self.__board[self.__author].append([actor_name, restrict])
+        if self.__author not in self.__board:
+            self.__board[self.__author] = {}
+        self.__board[self.__author][actor_name] = restrict
         self.__logger.debug("%s declares %s can't %s", self.__author, actor_name, restrict)
 
     def wipe(self, actor_name):
@@ -67,9 +68,7 @@ class Bulletin(object):
         Raises:
             
         """
-        for i, rec in enumerate(self.__board[self.__author]):
-            if rec[0] == actor_name:
-                del self.__board[self.__author][i]
+        del self.__board[self.__author][actor_name]
         # when restriction of the author is empty , wipe it from the dictionary
         if not self.__board[self.__author]:
             del self.__board[self.__author]
@@ -97,7 +96,7 @@ class Bulletin(object):
         """ show the information from the shared board
         
         Example:
-            nozzle.show_board()
+            nozzle.board_info()
             
         Args:
             None

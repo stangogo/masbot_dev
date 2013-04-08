@@ -8,6 +8,7 @@
 # usage          : 
 # notes          : 
 
+import logging
 import pykka
 from masbot.device.device_manager import DeviceManager
 
@@ -28,6 +29,7 @@ class PistonActor(pykka.ThreadingActor):
         
         """
         super(PistonActor, self).__init__()
+        self.__logger = logging.getLogger(__name__)
         self.__state = 'ready'
         DM = DeviceManager()
         self.__piston_obj = DM.request(module_info['key'], 'piston', module_info)
@@ -61,7 +63,7 @@ class PistonActor(pykka.ThreadingActor):
             ret = self.__piston_obj.board_info()
         else:
             ret = 'undefine message format'
-            print(msg)
+            self.__logger.debug(ret)
         # message response
         message['reply_to'].set(ret)
 
