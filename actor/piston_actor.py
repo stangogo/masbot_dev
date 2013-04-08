@@ -65,15 +65,6 @@ class PistonActor(pykka.ThreadingActor):
         # action status
         elif msg == 'action_status':
             ret = self.get_do_status()
-        elif msg == 'declare':
-            name = message.get('name')
-            action = message.get('action')
-            ret = self.__piston_obj.declare(name, action)
-        elif msg == 'wipe':
-            name = message.get('name')
-            ret = self.__piston_obj.wipe(name)
-        elif msg == 'board_info':
-            ret = self.__piston_obj.board_info()
         else:
             ret = 'undefine message format'
             self.__logger.debug(ret)
