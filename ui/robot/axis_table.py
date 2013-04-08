@@ -11,7 +11,7 @@ from masbot.ui.db_table_def import DBTableDefine
 from masbot.ui.sqldb import SqlDB
 from masbot.ui.utils import Path
 from masbot.ui.utils import UISignals, SigName
-from masbot.ui import signal_agent
+from masbot.ui import preaction
 
 class AxisButton(QtGui.QPushButton):
     row = -1
@@ -135,8 +135,8 @@ class AxisTable(QtGui.QTableWidget):
     def scale_clicked(self):
         sender = self.sender()
         sender.scale = sender.scale *10
-        if sender.scale > 100:
-            sender.scale = 0.1
+        if sender.scale > 10:
+            sender.scale = 0.01
         sender.setText("{0}".format(sender.scale))
         
         print("scale_clicked - axis: {0}".format(sender.axis))
@@ -151,8 +151,8 @@ class AxisTable(QtGui.QTableWidget):
             _key == QtCore.Qt.Key.Key_Right:
             
             # win32api and win32com 需要安裝pywin32            
-            if win32api.GetAsyncKeyState(win32con.VK_SHIFT) < 0:
-            #if win32api.GetAsyncKeyState(win32con.VK_CONTROL) < 0:
+            #if win32api.GetAsyncKeyState(win32con.VK_SHIFT) < 0:
+            if win32api.GetAsyncKeyState(win32con.VK_CONTROL) < 0:
                 print("{0}".format(event.key()))
             
         

@@ -3,7 +3,7 @@
 
 import sys
 from PySide import QtGui, QtCore
-from masbot.ui.robot.robot_dock import RobotPageDock
+from masbot.ui.robot.robot_tab import RobotPageDock
 from masbot.ui.robot.robot_banner import RobotBanner
 from masbot.ui.robot.axis_banner import AxisBanner
 
@@ -22,8 +22,8 @@ class RobotWidget(QtGui.QWidget):
         v_layout.setSpacing(0)
         v_layout.setContentsMargins(0,0,0,0)
 
-        robot_dock = RobotPageDock()
-        robot_dock.index_changed.connect(self.page_changed)
+        robot_tab = RobotPageDock()
+        robot_tab.currentChanged.connect(self.page_changed)
         self.stack_layout = QtGui.QStackedLayout()
         self.stack_layout.addWidget(RobotBanner())
         
@@ -34,18 +34,18 @@ class RobotWidget(QtGui.QWidget):
         
         v_layout.addLayout(self.stack_layout, 2)
         #v_layout.addWidget(di_do_btn, 1, QtCore.Qt.AlignRight)
-        v_layout.addWidget(robot_dock, 9)
+        v_layout.addWidget(robot_tab, 9)
 
         self.setLayout(v_layout)
         
         self.setWindowTitle('Robot')
         self.show()
     
-    def page_changed(self, visible):    # 改變stacklayout 的顯示頁面
-        if visible:
-            self.stack_layout.setCurrentIndex(0)
-        else: 
+    def page_changed(self, index):    # 改變stacklayout 的顯示頁面
+        if index:
             self.stack_layout.setCurrentIndex(1)
+        else: 
+            self.stack_layout.setCurrentIndex(0)
             
         
     

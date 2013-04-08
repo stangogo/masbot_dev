@@ -33,9 +33,9 @@ class MajorWidgetCtrl:
             points_info = {}
             if not rec['composite']:
                 points_info = single_axis_points[rec['key']]
-            self.__motor_proxy[rec['key']] = Motor(self.__motion, [rec], points_info)
+            self.__motor_proxy[rec['key']] = Motor(self.__motion, [rec])#, points_info)
         
-    def _servo_on(self):
+    def __servo_on(self):
         if self.__servo_status == 0:
             ret = motor['tbar'].send('servo_on')
             if ret:
@@ -55,7 +55,7 @@ class MajorWidgetCtrl:
             self.__servo_status = 0
             return 0
 
-    def _update_position(self):
+    def __update_position(self):
         slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE) 
 
         while True:
