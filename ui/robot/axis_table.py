@@ -89,6 +89,7 @@ class AxisTable(QtGui.QTableWidget):
         
     def fill_table(self, query):
         query.exec_("select axis_key from SingleAxis")
+        index = 0
         for i in range(0, self.columnCount()):
             #btn_add = AxisButton(QtGui.QIcon("{0}/Start.bmp".format(Path.imgs_dir())),"+")
             #btn_add = AxisButton(QtGui.QIcon("C:\Python33\Lib\site-packages\masbot\ui/imgs/Start.bmp"),"+")
@@ -97,7 +98,6 @@ class AxisTable(QtGui.QTableWidget):
             btn_scale = AxisButton('1')
             
             btn_add.column = btn_minus.column= btn_scale.column = i
-            index = 0
             if query.next():
                 btn_add.axis = btn_minus.axis = btn_scale.axis = query.value(0)
                 self.column_dict[btn_add.axis] = index

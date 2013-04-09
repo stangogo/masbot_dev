@@ -13,7 +13,7 @@ import logging
 from masbot.device.bulletin import Bulletin
 
 class Piston(Bulletin):
-    def __init__(self, io_card, module_info, board):
+    def __init__(self, io_card, module_info, board={}):
         super(Piston, self).__init__(module_info['key'], board)
         self.__logger = logging.getLogger(__name__)
         self.__module_info = module_info
