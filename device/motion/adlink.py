@@ -55,17 +55,17 @@ class ADLinkMotion(Motion):
             return -1
         
         ret = pci_8154._8154_config_from_file()
-        self.__logger('8154 read config...ret = %d', ret)
+        self.__logger.debug('8154 read config...ret = %d', ret)
         ret = pci_8158._8158_config_from_file()
-        self.__logger('8158 read config...ret = %d', ret)
+        self.__logger.debug('8158 read config...ret = %d', ret)
         if ret_8154 == 0:
             self.__mode == 'pci8154'
-            self.__logger('ADLink card detection : PCI8154')
+            self.__logger.debug('ADLink card detection : PCI8154')
             self.__join_io_cards()
             return 0
         elif ret_8158 == 0:
             self.__mode == 'pci8158'
-            self.__logger('ADLink card detection : PCI8158')
+            self.__logger.debug('ADLink card detection : PCI8158')
             self.__join_io_cards()
             return 0
         else:
