@@ -8,7 +8,7 @@
 # usage          : import global_settings
 # notes          : 
 
-hardware_simulation = True
+hardware_simulation = False
 
 io_card_info = [ 
     (1, 'DI_CARD'),
@@ -31,9 +31,9 @@ motor_info = [
         'speed': 50,
         'ABSM': 122,
         'ABSR': 123,
-        'TLC': 124,
         'DO1': 122,
         'ZSP': 123,
+        'TLC': 124,
         'scope_min': 5,
         'scope_max': 400,
         'composite': 1
@@ -47,9 +47,9 @@ motor_info = [
         'speed': 50,
         'ABSM': 125,
         'ABSR': 126,
-        'TLC': 127,
         'DO1': 125,
         'ZSP': 126,
+        'TLC': 127,
         'scope_min': 5,
         'scope_max': 400,
         'composite': 1
@@ -61,11 +61,11 @@ motor_info = [
         'proportion': 500,
         'accelerative_time': 0.2,
         'speed': 50,
-        'ABSM': 107,
-        'ABSR': 108,
-        'TLC': 109,
-        'DO1': 108,
-        'ZSP': 107,
+        'ABSM': 113,
+        'ABSR': 114,
+        'DO1': 93,
+        'ZSP': 94,
+        'TLC': 95,
         'scope_min': 20,
         'scope_max': 300,
         'composite': 0
@@ -101,8 +101,8 @@ piston_info = [
 
 double_axis_points = {
     'tbar':{
-        'get_pt': [100, 170],
-        'put_pt': [150, 270],
+        'get_pt': [100, 200],
+        'put_pt': [150, 230],
         'avoid_pt': [210, 330]
     }
 }
