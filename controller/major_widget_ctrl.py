@@ -42,14 +42,14 @@ class MajorWidgetCtrl:
 
     def __device_proxy(self):
         DM = DeviceManager()
-        self.__motion = DM._device_proxy()
+        self.__adlink = DM._get_device_proxy('ADLink')
         
         self.__motor_proxy = {}
         for rec in motor_info:
         #    points_info = {}
         #    if not rec['composite']:
         #        points_info = single_axis_points[rec['key']]
-            self.__motor_proxy[rec['key']] = Motor(rec['key'], self.__motion, [rec])
+            self.__motor_proxy[rec['key']] = Motor(rec['key'], self.__adlink, [rec])
         
     def __do_clicked(self, do_port, on_off):
         print("ctrl:  do : {0}, {1}".format(do_port, on_off))
