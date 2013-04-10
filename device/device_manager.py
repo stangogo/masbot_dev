@@ -13,9 +13,9 @@ from re import compile
 from masbot.config.global_settings import *
 # hardware detecttion
 if hardware_simulation:
-    from masbot.device.motion.adlink_fake import ADLinkMotion as Motion
+    from masbot.device.motion.adlink_fake import ADLinkMotion
 else:
-    from masbot.device.motion.adlink import ADLinkMotion as Motion
+    from masbot.device.motion.adlink import ADLinkMotion
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
 
@@ -31,17 +31,17 @@ class DeviceManager(object):
     def __initial(self):
         self.__logger = logging.getLogger(__name__)
         self.__bulletin = {}
-        self.__motion = Motion(io_card_info)
-        di_count = self.__motion.di_card_count() * 32
-        do_count = self.__motion.do_card_count() * 32
-        axis_count = len(motor_info)
-        self.__di_in_service = [0] * di_count
-        self.__do_in_service = [0] * do_count
-        self.__axis_in_service = [0] * axis_count
+        self.__adlink = ADLinkMotion(io_card_info)
+        self.__di_count = self.__adlink.di_card_count() * 32
+        self.__do_count = self.__adlink.do_card_count() * 32
+        self.__axis_count = len(motor_info)
+        self.__di_in_service = [0] * self.__di_count
+        self.__do_in_service = [0] * self.__do_count
+        self.__axis_in_service = [0] * self.__axis_count
         #self.serial_in_service = [0] * serial_count
 
     def _device_proxy(self):
-        return self.__motion
+        return self.__adlink
 
     def resource_status(self):
         resource = {}
@@ -70,7 +70,7 @@ class DeviceManager(object):
             self.__logger.error(ret)
             return ret
         else:
-            return Piston(self.__motion, module_info, self.__bulletin)
+            return Piston(self.__adlink, module_info, self.__bulletin)
 
     def __allocate_axis(self, actor_name, module_info):
         for axis in module_info:
@@ -86,12 +86,17 @@ class DeviceManager(object):
             if ret:
                 self.__logger.error(ret)
                 return ret
-        return Motor(actor_name, self.__motion, module_info, self.__bulletin)
+        return Motor(actor_name, self.__adlink, module_info, self.__bulletin)
             
     def __resource_check(self, require):
         if 'DO' in require:
             for port in require['DO']:
-                if self.__do_in_service[port]:
+                if port >= self.__do_count:
+                    msg = 'DO port {} exceeds the max port ({})'.format(
+                        port, self.__do_count)
+                    self.__logger.error(msg)
+                    return msg
+                elif self.__do_in_service[port]:
                     msg = 'DO port {} was occupied'.format(port)
                     self.__logger.error(msg)
                     return msg
@@ -99,7 +104,12 @@ class DeviceManager(object):
                     self.__do_in_service[port] = 1
         if 'DI' in require:
             for port in require['DI']:
-                if self.__di_in_service[port]:
+                if port >= self.__di_count:
+                    msg = 'DI port {} exceeds the max port ({})'.format(
+                        port, self.__di_count)
+                    self.__logger.error(msg)
+                    return msg
+                elif self.__di_in_service[port]:
                     msg = 'DI port {} was occupied'.format(port)
                     self.__logger.error(msg)
                     return msg
@@ -107,7 +117,12 @@ class DeviceManager(object):
                     self.__di_in_service[port] = 1
         if 'AXIS' in require:
             for port in require['AXIS']:
-                if self.__axis_in_service[port]:
+                if port >= self.__axis_count:
+                    msg = 'AXIS id {} exceeds the max port ({})'.format(
+                        port, self.__axis_count)
+                    self.__logger.error(msg)
+                    return msg
+                elif self.__axis_in_service[port]:
                     msg = 'AXIS {} was occupied'.format(port)
                     self.__logger.error(msg)
                     return msg
