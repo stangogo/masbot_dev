@@ -12,7 +12,7 @@ import logging
 from masbot.device.bulletin import Bulletin
 
 class Motor(Bulletin):
-    def __init__(self, owner, motion, axis_list, board):
+    def __init__(self, owner, motion, axis_list, board={}):
         self.__axis_count = len(axis_list)
         if self.__axis_count == 1:
             super(Motor, self).__init__(owner, board)
@@ -101,10 +101,12 @@ class Motor(Bulletin):
         if len(rel_position_tuple) != self.__axis_count:
             return "axis count = {}".format(self.__axis_count)
         # check if position under scope
-        now_position_list = self.get_position()
+        now_position_tuple = self.get_position()
+        if len(rel_position_tuple) == 1:
+            now_position_tuple = (now_position_tuple, )
         position_list = []
         for index in range(self.__axis_count):
-            position_list.append(now_position_list[index] + rel_position_tuple[index])
+            position_list.append(now_position_tuple[index] + rel_position_tuple[index])
         ret = self.__check_scope(position_list)
         if ret:
             return ret

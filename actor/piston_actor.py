@@ -99,7 +99,6 @@ class PistonActor(pykka.ThreadingActor):
             elif input_pattern.match(key) and isinstance(val, int):
                 self.__di_list.append(val)
         self.__type = "{}_out_{}_in".format(len(self.__do_list), len(self.__di_list))
-        self.__state = self.detect_state()
 
     def detect_state(self):
         """ detect current state (0 means OFF, 1 means ON)
@@ -203,16 +202,16 @@ class PistonActor(pykka.ThreadingActor):
         if ret:
             return ret
         # check if sensor in position
-        sensor_text = '2nd_input' if state else '1st_input'
-        target_sensor = self.__module_info[sensor_text]
-        ret = self.__check_sensor(target_sensor, timeout)
-        if ret:
-            return ret
+        #sensor_text = '2nd_input' if state else '1st_input'
+        #target_sensor = self.__module_info[sensor_text]
+        #ret = self.__check_sensor(target_sensor, timeout)
+        #if ret:
+        #    return ret
         # check if piston state is matched
-        if self.detect_state() == state:
-            return 0
-        else:
-            return -1
+        #if self.detect_state() == state:
+        #    return 0
+        #else:
+        #    return -1
         
     def __action_1_out_4_in(self, state, timeout):
         pass

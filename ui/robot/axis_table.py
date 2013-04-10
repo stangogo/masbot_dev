@@ -55,12 +55,12 @@ class AxisTable(QtGui.QTableWidget):
         self.setColumnCount(axis_table_model.rowCount())
         
         
-        #欄寬 / 列高
+        #欄寬 / ��
         for i in range(0, self.columnCount()):
             self.setColumnWidth(i, 65)
         #self.setColumnWidth(self.columnCount()-1, 50)        
                 
-        #設定表格title的color
+        #設�表格title�color
         self.setStyleSheet("QHeaderView::section { background-color:rgb(184, 198, 137) }");    
 
         #橫軸 bar          
@@ -78,7 +78,7 @@ class AxisTable(QtGui.QTableWidget):
         V_Header = DBTableDefine().get_table_def('AxisOP')
         self.setRowCount(len(V_Header))
         self.setVerticalHeaderLabels(V_Header)
-        #self.resizeRowsToContents()    #符合列高
+        #self.resizeRowsToContents()    #符��
         index = 0
         for op in V_Header:
             self.row_dict[op] = index
@@ -87,8 +87,8 @@ class AxisTable(QtGui.QTableWidget):
         self.fill_table(query)
         self.setWindowTitle('Axis Operation')
         
-        #self.resizeRowsToContents()    #符合列高        
-        #self.verticalHeader().hide()   #隱藏左側欄header
+        #self.resizeRowsToContents()    #符��        
+        #self.verticalHeader().hide()   #��左側欄header
         
     def fill_table(self, query):
         query.exec_("select key from SingleAxis")
@@ -101,7 +101,6 @@ class AxisTable(QtGui.QTableWidget):
             btn_scale = AxisButton('1')
             
             btn_add.column = btn_minus.column= btn_scale.column = i
-            
             if query.next():
                 btn_add.axis = btn_minus.axis = btn_scale.axis = query.value(0)
                 self.column_dict[btn_add.axis] = index
@@ -154,7 +153,7 @@ class AxisTable(QtGui.QTableWidget):
             _key == QtCore.Qt.Key.Key_Left or \
             _key == QtCore.Qt.Key.Key_Right:
             
-            # win32api and win32com 需要安裝pywin32            
+            # win32api and win32com �要�裝pywin32            
             #if win32api.GetAsyncKeyState(win32con.VK_SHIFT) < 0:
             
             if win32api.GetAsyncKeyState(win32con.VK_CONTROL) < 0:
