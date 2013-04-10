@@ -49,8 +49,8 @@ class MainUI(QtGui.QMainWindow):
         main_splitter.addWidget(main_widget)
         main_splitter.addWidget(right_widget) 
         
-        #main_splitter.setSizes([width*4/7, width*3/7])
-        main_splitter.setSizes([width/2, width/2])
+        main_splitter.setSizes([width*4/7, width*3/7])
+        #main_splitter.setSizes([width/2, width/2])
         
         
         self.setCentralWidget(main_splitter)

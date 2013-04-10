@@ -16,7 +16,7 @@ class DIOButton(QtGui.QPushButton):
     DO模式, 可按, 為checkable型態.
     DI模式, 僅能透過函式呼叫變化。
     """
-    bOn = True
+    nOn = 1
     io_num = -1
     
     def __init__(self, io_num, do):
@@ -42,12 +42,12 @@ class DIOButton(QtGui.QPushButton):
         self.setFixedHeight(height)       
         
     def on_clicked(self):        
-        self.on_off(not self.bOn)
+        self.on_off(not self.nOn)
     
     def on_off(self, on):
-        if self.bOn == on:
+        if self.nOn == on:
             return    
-        self.bOn = on
+        self.nOn = on
         if on:                  #light on
             self.setStyleSheet(self.on_style)                
             if not self.isChecked() and self.isCheckable():
@@ -88,7 +88,7 @@ class NozzleDOButtonSignal(QtCore.QObject):
     clicked = QtCore.Signal(int, bool, int, int, str)  #io_num, on or off, row, column, table_name
 
 class NozzleDoButton(QtGui.QPushButton):
-    bOn = True
+    nOn = 1
     io_num = -1
     
     __on_str = "On"
@@ -119,9 +119,9 @@ class NozzleDoButton(QtGui.QPushButton):
         self.__off_str = off_str
         self.key = key
         self.action = action
-        self.bOn = not self.bOn 
+        self.nOn = not self.nOn 
         
-        self.on_off(not self.bOn)
+        self.on_off(not self.nOn)
     
     def set_row_column(self, row, colum):
         self.row = row
@@ -129,13 +129,13 @@ class NozzleDoButton(QtGui.QPushButton):
     
         
     def on_clicked(self):        
-        self.on_off(not self.bOn)
+        self.on_off(not self.nOn)
     
     def on_off(self, on):
-        if self.bOn == on:
+        if self.nOn == on:
             return
         
-        self.bOn = on
+        self.nOn = on
         if on:
             self.setText(self.__on_str)
         else: 
@@ -144,7 +144,7 @@ class NozzleDoButton(QtGui.QPushButton):
         self.signals.clicked.emit(self.io_num, on, self.row, self.column, self.table)
 
 class DIOLabel(QtGui.QLabel):
-    bOn = True
+    nOn = 1
     io_num = -1
     key = ""            #屬誰
     action =""          #動作; blow, suck, up/down ...etc.    
@@ -190,18 +190,18 @@ class DIOLabel(QtGui.QLabel):
         self.action = action    
     
     def on_off(self, on):
-        if on == self.bOn:
+        if on == self.nOn:
             return
         
-        self.bOn = on
+        self.nOn = on
         if on:
             self.setStyleSheet(self.on_style)
         else: 
             self.setStyleSheet(self.off_style)
 
     #def on_clicked(self):
-        #self.bOn = not self.bOn
-        #self.on_off(self.bOn)
+        #self.nOn = not self.nOn
+        #self.on_off(self.nOn)
 
     #def mousePressEvent(self, event):    
         #self.clicked.emit("emit the signal")

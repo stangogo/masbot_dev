@@ -49,7 +49,8 @@ class TrayInfoTable(QtGui.QTableView):
         
         self.bind_to_table_model(table_name)
             
-        self.setStyleSheet("QTableView{selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0.5, y2: 0.5, stop: 0 #FF92BB, stop: 1 yellow)}")        
+        #self.setStyleSheet("QTableView{selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0.5, y2: 0.5, stop: 0 #FF92BB, stop: 1 green)}")        
+        self.setStyleSheet("QTableView{selection-background-color:yellow}")
         self.setWindowTitle('Tray Info Table')
         self.show()
     

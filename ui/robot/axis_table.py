@@ -4,6 +4,7 @@
 
 import win32api
 import win32con
+import sys
 
 from PySide import QtGui, QtCore
 
@@ -39,11 +40,13 @@ class AxisTable(QtGui.QTableWidget):
         super(AxisTable, self).__init__()
         self.init_ui()
         
+        self.setStyleSheet("QTableView{selection-background-color:green}")
         UISignals.GetSignal(SigName.ENTER_AXIS_TABLE).connect(self.from_outside)
         #self.cellClicked.connect(self.new_cell)
         
-    def new_cell(self, row, column):
-        print("row: {0}, column: {1}, currentRow:{2}, currentColumn:{3}".format(row, column, self.currentRow(), self.currentColumn()))
+        
+    #def new_cell(self, row, column):
+        #print("row: {0}, column: {1}, currentRow:{2}, currentColumn:{3}".format(row, column, self.currentRow(), self.currentColumn()))
         
     def init_ui(self):
         db = SqlDB()
@@ -54,10 +57,10 @@ class AxisTable(QtGui.QTableWidget):
         
         #欄寬 / 列高
         for i in range(0, self.columnCount()):
-            self.setColumnWidth(i, 50)
+            self.setColumnWidth(i, 65)
         #self.setColumnWidth(self.columnCount()-1, 50)        
                 
-        #設定表格title的color                
+        #設定表格title的color
         self.setStyleSheet("QHeaderView::section { background-color:rgb(184, 198, 137) }");    
 
         #橫軸 bar          
@@ -75,7 +78,7 @@ class AxisTable(QtGui.QTableWidget):
         V_Header = DBTableDefine().get_table_def('AxisOP')
         self.setRowCount(len(V_Header))
         self.setVerticalHeaderLabels(V_Header)
-        self.resizeRowsToContents()    #符合列高
+        #self.resizeRowsToContents()    #符合列高
         index = 0
         for op in V_Header:
             self.row_dict[op] = index
@@ -88,7 +91,8 @@ class AxisTable(QtGui.QTableWidget):
         #self.verticalHeader().hide()   #隱藏左側欄header
         
     def fill_table(self, query):
-        query.exec_("select axis_key from SingleAxis")
+        query.exec_("select key from SingleAxis")
+        index = 0
         for i in range(0, self.columnCount()):
             #btn_add = AxisButton(QtGui.QIcon("{0}/Start.bmp".format(Path.imgs_dir())),"+")
             #btn_add = AxisButton(QtGui.QIcon("C:\Python33\Lib\site-packages\masbot\ui/imgs/Start.bmp"),"+")
@@ -97,7 +101,7 @@ class AxisTable(QtGui.QTableWidget):
             btn_scale = AxisButton('1')
             
             btn_add.column = btn_minus.column= btn_scale.column = i
-            index = 0
+            
             if query.next():
                 btn_add.axis = btn_minus.axis = btn_scale.axis = query.value(0)
                 self.column_dict[btn_add.axis] = index
@@ -111,13 +115,13 @@ class AxisTable(QtGui.QTableWidget):
             self.setCellWidget(3, i, btn_minus)
             self.setCellWidget(4, i, btn_scale)
             
-            self.scale_list.append(btn_scale)         
+            self.scale_list.append(btn_scale)
             
     def from_outside(self, row, axis, value):
         try:
             n_row = self.row_dict[row]
             n_col = self.column_dict[axis]
-            item = QtGui.QTableWidgetItem("{0:.3f}".format(value))            
+            item = QtGui.QTableWidgetItem("{0:.3f}".format(value))
             self.setItem(n_row, n_col, item)
         except:
             print("from_outside error: {0}".format(sys.exc_info()[1]))
@@ -125,12 +129,12 @@ class AxisTable(QtGui.QTableWidget):
     def minus_clicked(self):
         sender = self.sender()
         scale_value = self.scale_list[sender.column].scale    
-        UISignals.GetSignal(SigName.FROM_AXIS_TABLE).emit(sender.axis, scale_value, -1)
+        UISignals.GetSignal(SigName.FROM_AXIS_TABLE).emit(sender.axis, -scale_value  )
         
     def add_clicked(self):
         sender = self.sender()
         scale_value = self.scale_list[sender.column].scale
-        UISignals.GetSignal(SigName.FROM_AXIS_TABLE).emit(sender.axis, scale_value, 1)
+        UISignals.GetSignal(SigName.FROM_AXIS_TABLE).emit(sender.axis, scale_value)
         
     def scale_clicked(self):
         sender = self.sender()
@@ -152,11 +156,23 @@ class AxisTable(QtGui.QTableWidget):
             
             # win32api and win32com 需要安裝pywin32            
             #if win32api.GetAsyncKeyState(win32con.VK_SHIFT) < 0:
+            
             if win32api.GetAsyncKeyState(win32con.VK_CONTROL) < 0:
                 print("{0}".format(event.key()))
-            
-        
-
+                if not self.currentRow == 0:
+                    axis_name = self.get_axis_name(self.currentColumn())
+                    scale_value = self.scale_list[self.currentColumn()].scale
+                    dest = UISignals.GetSignal(SigName.FROM_AXIS_TABLE)
+                    
+                    if _key == QtCore.Qt.Key.Key_Up:
+                        dest.emit(axis_name, scale_value)
+                    elif _key == QtCore.Qt.Key.Key_Down: 
+                        dest.emit(axis_name, scale_value * -1)
+                        
+    def get_axis_name(self, index):
+        for key, value in self.column_dict.items():
+            if value == index:
+                return key
         
 if __name__ == '__main__':  
     import sys  

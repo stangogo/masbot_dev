@@ -32,9 +32,9 @@ class RobotWidget(QtGui.QWidget):
         #di_do_btn = QtGui.QPushButton("Test")
         #di_do_btn.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
-        v_layout.addLayout(self.stack_layout, 2)
+        v_layout.addLayout(self.stack_layout, 1)
         #v_layout.addWidget(di_do_btn, 1, QtCore.Qt.AlignRight)
-        v_layout.addWidget(robot_tab, 9)
+        v_layout.addWidget(robot_tab, 3)
 
         self.setLayout(v_layout)
         

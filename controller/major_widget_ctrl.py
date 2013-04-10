@@ -22,6 +22,7 @@ class MajorWidgetCtrl:
         
         self.__device_proxy()
         timer = threading.Timer(1, self.__update_position)
+        timer.setDaemon(True)
         timer.daemon = True
         timer.start()
 
@@ -65,12 +66,14 @@ class MajorWidgetCtrl:
     def __update_position(self):
         slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE) 
 
+        a = 0.0
         while True:
             if self.__proxy_switch:
+                a += 0.1
                 for axis in motor_info:
                     key = axis['key']
                     #position = self.__motor_proxy[key].get_position()
                     #display = '{0:.3f}'.format(position)
-                    #slot.emit('position', key, float(display))
+                    slot.emit('position', key, a)
             sleep(0.3)
         

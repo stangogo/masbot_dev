@@ -87,11 +87,11 @@ class IOTableTemplate(QtGui.QTableWidget):
             return widget_item
 
     def get_value_set(self, value_set):
-        option_table = SqlDB().get_table_model('option_value')
+        option_table = SqlDB().get_table_model('options')
         option_table.select()
         
         query= option_table.query()
-        query.exec_("select value from option_value where option = '{0}'".format(value_set))        
+        query.exec_("select value from options where id = '{0}'".format(value_set))        
 
         options = []        
         while query.next():
@@ -101,7 +101,7 @@ class IOTableTemplate(QtGui.QTableWidget):
     def get_property_value(self, table_name, property_name):
         self.data_table.select()
         query = self.data_table.query()
-        query.exec_("select {0} from {1} order by id".format(property_name, table_name) )
+        query.exec_("select {0} from {1}".format(property_name, table_name) )
         
         data = []        
         while query.next():

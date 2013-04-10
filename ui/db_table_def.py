@@ -72,6 +72,9 @@ class DBTableDefine():
                                     ,
                     
              'AxisOP': ['position', 'state', ' + ', ' - ', 'scale']
+             #                       ,
+             #'ImageThumbnailID': ['1stCorrect', 'GlueIdentify', '2stCorrect', '66Six']
+             
             }           
     
     def get_table_def(self, table_name):

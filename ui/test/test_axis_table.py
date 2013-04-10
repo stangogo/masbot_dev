@@ -35,22 +35,14 @@ class AxisBanner(QtGui.QWidget):
         self.setWindowTitle('Axis Banner')
         self.show()
     
-    def start_btn(self, axis, value, action):
-        if action == 1 :
-            value += 1
-        elif action == -1:
-            value -= 1
+    def start_btn(self, axis, value):
         
         slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE)
         slot.emit('position', axis, value)
 
 class CalculatorTest(unittest.TestCase):                 
 
-    def start_btn(self, axis, value, action):
-        if action == 1 :
-            value += 1
-        elif action == -1:
-            value -= 1
+    def start_btn(self, axis, value):
         
         slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE)
         slot.emit('position', axis, value)
@@ -58,7 +50,7 @@ class CalculatorTest(unittest.TestCase):
     def test_star_btn(self):
         btn = UISignals.GetSignal(SigName.FROM_AXIS_TABLE)
         btn.connect(self.start_btn)
-        btn.emit('axis_y', '10', 1)
+        btn.emit('axis_y', '10')
         btn.emit('axis_y', '10', -1)
         
 def main():    
