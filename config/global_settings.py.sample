@@ -8,6 +8,8 @@
 # usage          : import global_settings
 # notes          : 
 
+hardware_simulation = True
+
 io_card_info = [ 
     (1, 'DI_CARD'),
     (3, 'DI_CARD'),
@@ -99,9 +101,9 @@ piston_info = [
 
 double_axis_points = {
     'tbar':{
-        'p1': [100, 200],
-        'p2': [150, 230],
-        'p3': [210, 330]
+        'get_pt': [100, 170],
+        'put_pt': [150, 270],
+        'avoid_pt': [210, 330]
     }
 }
 

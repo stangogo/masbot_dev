@@ -11,7 +11,11 @@
 import logging
 from re import compile
 from masbot.config.global_settings import *
-from masbot.device.motion.adlink import ADLinkMotion as Motion
+# hardware detecttion
+if hardware_simulation:
+    from masbot.device.motion.adlink_fake import ADLinkMotion as Motion
+else:
+    from masbot.device.motion.adlink import ADLinkMotion as Motion
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
 
