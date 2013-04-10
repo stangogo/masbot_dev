@@ -18,41 +18,47 @@ class SigAgent(QtCore.QObject):
     """
     
     
-    di_in = QtCore.Signal(list, bool)
+    di_in = QtCore.Signal(list, int)
     """
     external DI signals - the index of list is the port number of DI, 
                           and the value means on or off. If the number
                           of list only one. The value presents the port
                           number of DI and bool is the status.
     @ list: DI port status
-    @ on_off: on or off (True or False)
+    @ int : on or off (1 or 0)
     
     #"""
     
-    do_in = QtCore.Signal(list, bool)
-    """
-    external DO signal 
+    do_in = QtCore.Signal(list, int)
+    """ external DO signal 
     @ list: DO port staus
-    @ on_off: on or off (True or False)
+    @ int : on or off (1 or 0)
     
     #"""
     
-    do_out = QtCore.Signal(int, bool)
+    do_out = QtCore.Signal(int, int)
+    """ 提供 DIOButton, NozzleDoButton clicked時, 輸出DO port 和 on-off的接口
+    @ int: do port number
+    @ int: on or off (1 or 0)
     """
-    提供 DIOButton, NozzleDoButton clicked時, 輸出DO port 和 on-off的接口
-    """
-    
     
     into_single_axis = QtCore.Signal(str, str, float)
+    """ 提供單軸表格內容填入的接口
+    @ str: row 定義在 db_table_def.py 裡的 AxisOP 
+    @ str: 定義在database 的 SingleAxis 資料表裡的 axis_key 欄
+    @ float: 填入的值
     """
-    row     - string.    定義在 db_table_def.py 裡的 AxisOP 
-    column  - string     定義在database 的 SingleAxis 資料表裡的 axis_key 欄
-    value   - 填入的值
+    out_single_axis = QtCore.Signal(str, float)#, int)
+    """ 提供單軸發出控制訊號
+    @ str: axis name
+    @ int: 單軸位置的 value
     """
-    out_single_axis = QtCore.Signal(str, float, int)
-    """axis name, value, action (1: add, -1: minus) """
-    
 
+    img_preview = QtCore.Signal(str, str)
+    """影像預覽資料傳入
+    @ str: 影像檔案路徑
+    @ str: 辨別 ID
+    """
 
 """初始化所有的接口, 並註冊到UISignals Dictionary
 """
@@ -62,6 +68,7 @@ UISignals.RegisterSignal(sig_agent.do_in, SigName.DO_IN)
 UISignals.RegisterSignal(sig_agent.do_out, SigName.DO_OUT)
 UISignals.RegisterSignal(sig_agent.into_single_axis, SigName.ENTER_AXIS_TABLE)
 UISignals.RegisterSignal(sig_agent.out_single_axis, SigName.FROM_AXIS_TABLE)
+UISignals.RegisterSignal(sig_agent.img_preview, SigName.IMG_THUMBNAIL)
 
 
 """測試用

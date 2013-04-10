@@ -1,8 +1,7 @@
 ﻿import os
 from PySide import QtGui, QtCore
   
-class ImageToolsDock(QtGui.QTabWidget):
-    
+class ImageUtilsTab(QtGui.QTabWidget):    
     imgs_dir = ""
     
     def __init__(self):  
@@ -31,12 +30,11 @@ class ImageToolsDock(QtGui.QTabWidget):
         IPI_result_table.setItem(0,0, QtGui.QTableWidgetItem('A'))
         IPI_result_table.setItem(1, 0, QtGui.QTableWidgetItem('Time'))
 
-
         #icon_path = "{0}//Start.bmp".format(self.imgs_dir)
         IPI_result_table.setItem(2,0, QtGui.QTableWidgetItem(QtGui.QIcon("{0}//Start.bmp".format(self.imgs_dir)), "data"));
         IPI_result_table.setRowCount(4)
         IPI_result_table.setItem(3,0, QtGui.QTableWidgetItem(QtGui.QIcon("{0}//Stop.bmp".format(self.imgs_dir)), "data"));
-        IPI_result_table.resize(420, 200)
+        IPI_result_table.resize(320, 200)
         
         #IPI result table (方法2)
         # IPI_result_table = QtGui.QTableView()

@@ -11,16 +11,16 @@ class Constants:
     VERSION = '1.0.0.0'
 
 class SigName:
-    #axis_banner
+    """axis_banner"""
     DI_DO_SHOW = 'DI_DO_SHOW'   
         # DIOÅã¥Ü«ö¶s
     
-    #Major widget
-    FLOW_MSG = 'FLOW_MSG'       
+    """Major widget"""
+    FLOW_MSG = 'FLOW_MSG'
         #show flow message, send into a string
-    ALARM_MSG = 'ALARM_MSG'     
+    ALARM_MSG = 'ALARM_MSG'
         #show alarm message, send into a string
-    PRODUCT_INFO = 'PRODUCT_INOF' 
+    PRODUCT_INFO = 'PRODUCT_INOF'
         #show product info,send into dictionary, ex.
             #{'CT': 4.25, 
             #'ProdName': '9552A1', 
@@ -39,28 +39,24 @@ class SigName:
     PAUSE_MAIN = 'PAUSE_MAIN'   
         #Pause button
     
-    #Axis table
+    """Axis table"""
     ENTER_AXIS_TABLE = 'ENTER_AXIS_TABLE'   
         #set data to axis table - row_name(str), axis_name(str), value (int)
     FROM_AXIS_TABLE = 'FROM_AXIS_TABLE'     
         #data from axis table - axis_name(str), value(int), action (1:add, -1 minus)
     
-    # DIO map is replaced by DIO agent
-    # DIO map
-#    ENTER_IO_MAP_DI = 'ENTER_IO_MAP_DI'
-        # set DI in io map - DI status (list), on/off (bool)
-#    ENTER_IO_MAP_DO = 'ENTER_IO_MAP_DO'
-        # set DO in io map - DO status (list), on/off (bool)
-#    FROM_IO_MAP = 'FROM_IO_MAP'
-        # send DO clicked - DO number (int), on/off (bool)        
-        
-    # DIO agent
+    """ DIO agent"""
     DO_IN = 'DIO_AGENT_DO_IN'
         # Signals of DO from outside - DO status (list), on/off (bool)
     DI_IN = 'DIO_AGENT_DI_IN'
         # Signals of DI from outside - DI status (list), on/off (bool)
     DO_OUT = 'DIO_AGENT_DO_OUT'
         # Send DO signal out - DO number (int), on/off (bool)
+                
+    IMG_THUMBNAIL = 'IMG_THUMBNAIL'
+        # Receive the preview data of image, applied at image thumbnail and preview label
+        # id (str), file path(str)
+    
     
 class UISignals():
     signal_dict = {}

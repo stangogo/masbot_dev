@@ -115,9 +115,9 @@ class IOMap(QtGui.QWidget):
         self.show()
     def do_clicked(self):
         sender = self.sender()
-        UISignals.GetSignal(SigName.DO_OUT).emit(sender.io_num, sender.bOn)
+        UISignals.GetSignal(SigName.DO_OUT).emit(sender.io_num, sender.nOn)
             
-    def do_di_changed(self, new_status, old_list, bOn):
+    def do_di_changed(self, new_status, old_list, On):
         if new_status == None:
             return
         
@@ -128,17 +128,17 @@ class IOMap(QtGui.QWidget):
             if new_status[0] >= len(old_list):
                 print("out of range: max - {0}".format(len(old_list)))
             else :
-                old_list[new_status[0]].on_off(bOn)
+                old_list[new_status[0]].on_off(On)
             
-    def do_changed(self, do_new, bOn):
+    def do_changed(self, do_new, On):
         """
         do_new: list for setting DO status. if the length = 1, it means the index of DO, and "on" is status 
         if the lenght > 1, each element means the status and index of list is the nubmer of DO
         """
-        self.do_di_changed(do_new, self.do_list, bOn)
+        self.do_di_changed(do_new, self.do_list, On)
     
-    def di_changed(self, di_new, bOn):
-        self.do_di_changed(di_new, self.di_list, bOn)
+    def di_changed(self, di_new, On):
+        self.do_di_changed(di_new, self.di_list, On)
             
 def main():
     
