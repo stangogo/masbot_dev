@@ -23,7 +23,7 @@ class MajorWidgetCtrl:
         UISignals.GetSignal(SigName.DO_OUT).connect(self.__do_clicked)
         
         self.__device_proxy()
-        timer = threading.Timer(1, self.__update_position)
+        timer = threading.Timer(1, self.__update_ui)
         timer.daemon = True
         timer.start()
         # initail the flow actor
@@ -74,18 +74,20 @@ class MajorWidgetCtrl:
             self.__servo_status = 0
             return 0
 
-    def __update_position(self):
-        slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE) 
+    def __update_ui(self):
+        slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE)
 
         while True:
             if self.__proxy_switch:        
                 for axis in motor_info:
                     key = axis['key']
                     position = self.__motor_proxy[key].get_position()
+                    status = self.__motor_proxy[key].get_io_status()
                     slot.emit('position', key, position)
+                    slot.emit('state', key, status)
             sleep(0.3)
         
-    def __tuning_position(self, axis_name, offset, action):
+    def __tuning_position(self, axis_name, offset):
         if self.__proxy_switch:
-            target_offset = (action * offset, )
-            return self.__motor_proxy[axis_name].rel_move(target_offset)
+            offset = (offset, )
+            return self.__motor_proxy[axis_name].rel_move(offset)

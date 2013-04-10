@@ -25,7 +25,6 @@ class NozzleTable(IOTableTemplate):
         if not table == self.data_table_name:
             return        
         
-        print('do {0} clicked {1}'.format(io_num, on_off))
         sig = UISignals.GetSignal(SigName.DO_OUT)
         sig.emit(io_num, on_off)
     

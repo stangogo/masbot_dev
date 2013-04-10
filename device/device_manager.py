@@ -17,7 +17,8 @@ if hardware_simulation:
     from masbot.device.motion.lplink_fake import LPLink
 else:
     from masbot.device.motion.adlink import ADLink
-    from masbot.device.motion.lplink import LPLink
+    #from masbot.device.motion.lplink import LPLink
+    from masbot.device.motion.lplink_fake import LPLink
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
 
