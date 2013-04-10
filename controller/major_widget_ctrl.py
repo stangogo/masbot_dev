@@ -82,7 +82,7 @@ class MajorWidgetCtrl:
                 for axis in motor_info:
                     key = axis['key']
                     position = self.__motor_proxy[key].get_position()
-                    status = self.__motor_proxy[key].get_io_status()
+                    status = self.__motor_proxy[key].get_motion_status()
                     slot.emit('position', key, position)
                     slot.emit('state', key, status)
             sleep(0.3)
