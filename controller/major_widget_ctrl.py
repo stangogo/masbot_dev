@@ -62,6 +62,9 @@ class MajorWidgetCtrl:
             ret = actor['axis_z'].send('servo_on')
             if ret:
                 return ret
+            print(self.__adlink.DO_read(0))
+            self.__adlink.DO(0, 1)
+            print(self.__adlink.DO_read(0))
             self.__servo_status = 1
             return 0
         else:

@@ -11,15 +11,18 @@
 import os
 import logging.config
 import yaml
-import codecs
+#import codecs
 from masbot.config.global_settings import *
 from masbot.actor.piston_actor import PistonActor
 from masbot.actor.motor_actor import MotorActor
 
-# setup logging  
-path = 'config/logging.yaml'
+# setup logging
+masbot_dir = os.path.abspath(__file__ + "/../../")
+os.chdir(masbot_dir)
+path = masbot_dir + "/config/logging.yaml"
 if os.path.exists(path):
-    logging.config.dictConfig(yaml.load(codecs.open(path,'r','utf-8')))
+    #logging.config.dictConfig(yaml.load(codecs.open(path,'r','utf-8')))
+    logging.config.dictConfig(yaml.load(open(path,'r')))
 else:
     logging.basicConfig(level=logging.INFO)
 
