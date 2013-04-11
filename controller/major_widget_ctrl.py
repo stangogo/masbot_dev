@@ -10,6 +10,7 @@ from masbot.device.device_manager import DeviceManager
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
 from masbot.flow.main_flow import MainFlow
+from imp import reload
 
 class MajorWidgetCtrl:
 
@@ -20,6 +21,7 @@ class MajorWidgetCtrl:
         UISignals.GetSignal(SigName.FROM_AXIS_TABLE).connect(self.__tuning_position)
         UISignals.GetSignal(SigName.START_MAIN).connect(self.__start_flow)
         UISignals.GetSignal(SigName.PAUSE_MAIN).connect(self.__pause_flow)
+        UISignals.GetSignal(SigName.LOG_IN).connect(self.__login_out)
         UISignals.GetSignal(SigName.DO_OUT).connect(self.__do_clicked)
         
         self.__device_proxy()
@@ -28,6 +30,7 @@ class MajorWidgetCtrl:
         timer.start()
         # initail the flow actor
         self.__main_flow = MainFlow().start()
+        self.__first_import = True
         
     def set_proxy_switch(self, on_off=0):
         self.__proxy_switch = on_off
@@ -94,3 +97,9 @@ class MajorWidgetCtrl:
         if self.__proxy_switch:
             offset = (offset, )
             return self.__motor_proxy[axis_name].rel_move(offset)
+
+    def __login_out(self):
+        import masbot.controller.test_flow
+        if not self.__first_import:
+            reload(masbot.controller.test_flow)
+        self.__first_import = False
