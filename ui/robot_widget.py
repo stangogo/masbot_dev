@@ -6,6 +6,7 @@ from PySide import QtGui, QtCore
 from masbot.ui.robot.robot_tab import RobotPageDock
 from masbot.ui.robot.robot_banner import RobotBanner
 from masbot.ui.robot.axis_banner import AxisBanner
+from masbot.config.utils import UISignals, SigName
 
 class RobotWidget(QtGui.QWidget):
     
@@ -28,6 +29,8 @@ class RobotWidget(QtGui.QWidget):
         self.stack_layout.addWidget(RobotBanner())
         
         self.stack_layout.addWidget(AxisBanner())
+        UISignals.GetSignal(SigName.TO_ROBOT_BANNER).connect(self.show_robot_banner)
+        self.stack_layout.setCurrentIndex(1)
 
         #di_do_btn = QtGui.QPushButton("Test")
         #di_do_btn.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -43,18 +46,19 @@ class RobotWidget(QtGui.QWidget):
     
     def page_changed(self, index):    # 改變stacklayout 的顯示頁面
         if index:
-            self.stack_layout.setCurrentIndex(1)
-        else: 
-            self.stack_layout.setCurrentIndex(0)
+            self.stack_layout.setCurrentIndex(1)    # 單軸移動
+        #else: 
+            #self.stack_layout.setCurrentIndex(0)    # 機台資訊
             
-        
+    def show_robot_banner(self):
+        self.stack_layout.setCurrentIndex(0)    # 機台資訊
     
 def main():
     
     app = QtGui.QApplication(sys.argv)
 
     ex = RobotWidget()
-    sys.exit(app.exec_())
+    app.exec_()
 
 
 if __name__ == '__main__':

@@ -8,8 +8,9 @@ import sys
 from datetime import datetime
 from PySide import QtGui, QtCore, QtSql
 
-from masbot.ui.sqldb import SqlDB
-from masbot.ui.utils import Path
+#from masbot.config.sqldb import SqlDB
+#from masbot.config.sqldb import sqldb
+from masbot.config.utils import Path
 from masbot.ui.control.dio_button import *
 from masbot.ui import preaction
 
@@ -24,8 +25,7 @@ class NozzleTable(IOTableTemplate):
     def do_clicked(self, io_num, on_off, row, column, table):
         if not table == self.data_table_name:
             return        
-        
-        print('do {0} clicked {1}'.format(io_num, on_off))
+                
         sig = UISignals.GetSignal(SigName.DO_OUT)
         sig.emit(io_num, on_off)
     
@@ -92,7 +92,7 @@ def main():
     app = QtGui.QApplication(sys.argv)
 
     ex = Nozzle()
-    sys.exit(app.exec_())
+    app.exec_()
 
 
 if __name__ == '__main__':
@@ -279,7 +279,7 @@ if __name__ == '__main__':
     
     #app = QtGui.QApplication(sys.argv)
     #ex = NozzleTable('Nozzle', 'nozzle_ui')
-    #sys.exit(app.exec_())
+    #app.exec_()
 
 #if __name__ == '__main__':
     #main()        

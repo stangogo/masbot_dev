@@ -3,32 +3,43 @@
 
 import os
 import sys
+import site
+
 
 from datetime import datetime
 from collections import OrderedDict
-from PySide import QtCore, QtSql
+from PySide import QtCore, QtSql, QtGui
 
-from masbot.ui.utils import Constants, Path
-from masbot.ui.db_table_def import DBTableDefine
+from masbot.config.utils import Constants, Path
+from masbot.config.db_table_def import DBTableDefine
+
+
+
 
 class SqlDB():
     
     db_opened = False
+    db = None
     def __init__(self):
+        
+        if self.db_opened:
+            return 
+        
         db_dir = "{0}\\{1}\\{2}".format(Path.data_dir(), 
                                         Constants.MACHINE_NAME, 
                                         Constants.DB)
         
-        db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
+
+        self.db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
         
         db_path = "{0}\\{1}".format(db_dir, Constants.SQLITE_DB_NAME)
         
         if not os.path.exists(db_dir):
             os.makedirs(db_dir)
         
-        db.setDatabaseName(db_path)
+        self.db.setDatabaseName(db_path)
         
-        if not db.open():
+        if not self.db.open():
             print("資料庫不能打開: {0}".format(db_path))
         else:
             self.db_opened = True
@@ -66,3 +77,10 @@ class SqlDB():
         query = QtSql.QSqlQuery()
         query.exec_("SELECT * FROM sqlite_master WHERE name ='{0}' and type='table'".format(table_name))
         return query.first()
+    
+
+
+site_pack_path = site.getsitepackages()[1]
+QtGui.QApplication.addLibraryPath('{0}\\PySide\\plugins'.format(site_pack_path))
+sqldb = SqlDB()
+    

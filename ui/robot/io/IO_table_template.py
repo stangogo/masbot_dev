@@ -8,8 +8,9 @@ import sys
 from datetime import datetime
 from PySide import QtGui, QtCore, QtSql
 
-from masbot.ui.sqldb import SqlDB
-from masbot.ui.utils import Path
+#from masbot.config.sqldb import SqlDB
+from masbot.config.sqldb import sqldb
+from masbot.config.utils import Path
 from masbot.ui.control.dio_button import *
 from masbot.ui import preaction
 
@@ -20,8 +21,8 @@ class IOTableTemplate(QtGui.QTableWidget):
         self.do_dict = {}
         self.di_dict = {}        
         
-        self.data_table = SqlDB().get_table_model(data_table_name)        
-        self.ui_table = SqlDB().get_table_model(ui_table_name)
+        self.data_table = sqldb.get_table_model(data_table_name)
+        self.ui_table = sqldb.get_table_model(ui_table_name)
         
         self.ui_table_name = ui_table_name
         self.data_table_name = data_table_name
@@ -87,7 +88,7 @@ class IOTableTemplate(QtGui.QTableWidget):
             return widget_item
 
     def get_value_set(self, value_set):
-        option_table = SqlDB().get_table_model('options')
+        option_table = sqldb.get_table_model('options')
         option_table.select()
         
         query= option_table.query()
@@ -173,7 +174,7 @@ class IOTableTemplate(QtGui.QTableWidget):
             data_count += 1
 
     def init_horizontal_header(self, field, table, table_name, orderby):
-        table.select()
+        #table.select()
         self.setColumnCount(table.rowCount())
         query = table.query()
         
@@ -300,7 +301,7 @@ def main():
     
     app = QtGui.QApplication(sys.argv)
     ex = IOTableTemplate('point', 'point_ui', False)
-    sys.exit(app.exec_())
+    app.exec_()
 
 if __name__ == '__main__':
     main()        

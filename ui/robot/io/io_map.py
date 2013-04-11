@@ -9,15 +9,9 @@ last edited: Mar. 2013
 import sys
 from PySide import QtGui, QtCore
 
-from masbot.ui.utils import Path, SigName, UISignals
+from masbot.config.utils import Path, SigName, UISignals
 from masbot.ui.control.dio_button import *
 from masbot.ui import preaction
-
-#class Signals(QtCore.QObject):
-    #to_do = QtCore.Signal(list, bool)
-    #to_di = QtCore.Signal(list, bool)
-    #from_do = QtCore.Signal(int, bool)
-
 
 class IOMap(QtGui.QWidget):
     
@@ -25,10 +19,6 @@ class IOMap(QtGui.QWidget):
         super(IOMap, self).__init__()
         
         self.init_ui(card_num)
-        #self.signals = Signals()
-        #UISignals.RegisterSignal(self.signals.to_di, SigName.ENTER_IO_MAP_DI)
-        #UISignals.RegisterSignal(self.signals.to_do, SigName.ENTER_IO_MAP_DO)
-        #UISignals.RegisterSignal(self.signals.from_do, SigName.FROM_IO_MAP)
         
         UISignals.GetSignal(SigName.DI_IN).connect(self.di_changed)
         UISignals.GetSignal(SigName.DO_IN).connect(self.do_changed)
@@ -144,7 +134,7 @@ def main():
     
     app = QtGui.QApplication(sys.argv)
     ex = IOMap(8)
-    sys.exit(app.exec_())
+    app.exec_()
 
 
 if __name__ == '__main__':

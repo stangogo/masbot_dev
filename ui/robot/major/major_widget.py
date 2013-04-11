@@ -14,7 +14,7 @@ from PySide import QtGui, QtCore
 from datetime import datetime
 from masbot.ui.message_log import MessageAndLog
 from masbot.ui.robot.major.tray_info_table import TrayInfoTable 
-from masbot.ui.utils import UISignals, SigName
+from masbot.config.utils import UISignals, SigName
 
 class Signals(QtCore.QObject):
     """
@@ -133,7 +133,7 @@ def main():
     app = QtGui.QApplication(sys.argv)
 
     ex = MajorWidget()
-    sys.exit(app.exec_())
+    app.exec_()
 
 
 if __name__ == '__main__':

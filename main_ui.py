@@ -10,6 +10,8 @@ last edited: Mar. 2013
 import sys
 import os
 import logging
+
+import tkinter
 from datetime import datetime
 
 from PySide import QtGui
@@ -18,7 +20,7 @@ from masbot.ui.image_widget import ImageWidget
 from masbot.ui.robot_widget import RobotWidget
 from masbot.ui.robot.io.io_map import IOMap
 
-from masbot.ui.utils import Path, Constants, UISignals, SigName
+from masbot.config.utils import Path, Constants, UISignals, SigName
 from masbot.controller.major_widget_ctrl import MajorWidgetCtrl
 
 class MainUI(QtGui.QMainWindow):
@@ -31,27 +33,33 @@ class MainUI(QtGui.QMainWindow):
    
     def init_ui(self):
         
-        width = 1420
-        height = 880
+        root = tkinter.Tk()
         
-        right_widget = QtGui.QWidget()        
+        width = root.winfo_screenwidth() - 20
+        height = root.winfo_screenheight() - 20
+        
+        #width = 1420
+        #height = 880
+        
+        self.right_widget = QtGui.QWidget()        
         self.right_layout = QtGui.QStackedLayout()
         self.right_layout.addWidget(ImageWidget())
         self.right_layout.addWidget(IOMap(8))
-        right_widget.setLayout(self.right_layout)
+        self.right_widget.setLayout(self.right_layout)
         
         main_widget = RobotWidget()
         
         btn = UISignals.GetSignal(SigName.DI_DO_SHOW)
         btn.connect(self.right_stack_changed)
-                        
+        
         main_splitter = QtGui.QSplitter(QtCore.Qt.Horizontal)
         main_splitter.addWidget(main_widget)
-        main_splitter.addWidget(right_widget) 
+        main_splitter.addWidget(self.right_widget) 
         
         main_splitter.setSizes([width*4/7, width*3/7])
         #main_splitter.setSizes([width/2, width/2])
-        
+
+        UISignals.GetSignal(SigName.REMOVE_IMG_SIDE).connect(self.remove_img_side)
         
         self.setCentralWidget(main_splitter)
         self.setGeometry(30, 30, width, height)
@@ -63,10 +71,15 @@ class MainUI(QtGui.QMainWindow):
     def _init_controller(self):
         self._major_widget_instance = MajorWidgetCtrl()
         
+    def remove_img_side(self):
+        if self.right_widget.isHidden():
+            self.right_widget.show()
+        else:
+            self.right_widget.hide()
+        
     def right_stack_changed(self):
         self.right_layout.setCurrentIndex( (self.right_layout.currentIndex() + 1) %2)
-        #start update 
-        
+        #start update         
         
     def init_caption(self):
         now_time = datetime.now()
@@ -200,7 +213,7 @@ def main():
     #app.setStyleSheet(stylesheet)
 
     ex = MainUI()
-    sys.exit(app.exec_())
+    app.exec_()
 
 if __name__ == '__main__':
     main()

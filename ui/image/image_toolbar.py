@@ -18,7 +18,7 @@ import time
 
 
 from PySide import QtGui, QtCore
-from masbot.ui.utils import Path
+from masbot.config.utils import Path
 
 class ButtonName:
     camera = 'camera_id'
@@ -108,7 +108,7 @@ class ImageToolbar(QtGui.QWidget):
 def main():
     app = QtGui.QApplication(sys.argv)
     ex = ImageToolbar()
-    sys.exit(app.exec_())
+    app.exec_()
 
 if __name__ == '__main__':
     main()        

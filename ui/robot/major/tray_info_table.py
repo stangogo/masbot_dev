@@ -31,16 +31,16 @@ from collections import OrderedDict
 from datetime import datetime
 from PySide import QtGui, QtCore, QtSql
 
-from masbot.ui.sqldb import SqlDB
-from masbot.ui.db_table_def import DBTableDefine
+from masbot.config.sqldb import sqldb
+from masbot.config.db_table_def import DBTableDefine
 
 
 
 class TrayInfoTable(QtGui.QTableView):
     
     def __new__(self, table_name):        
-        self.sqldb = SqlDB()
-        self.table_model = self.sqldb.get_table_model(table_name)
+        
+        self.table_model = sqldb.get_table_model(table_name)
          
         return QtGui.QTableView.__new__(self)            
     
@@ -101,7 +101,7 @@ def main():
     
     app = QtGui.QApplication(sys.argv)
     ex = TrayInfoTable('TrayInfo')
-    sys.exit(app.exec_())
+    app.exec_()
 
 if __name__ == '__main__':
     main()        

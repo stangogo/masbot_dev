@@ -77,6 +77,7 @@ class ImageThumbnail(QtGui.QListWidget):
 
     thumbnail_clicked = QtCore.Signal(str)
     __change_image = QtCore.Signal(str, str) 
+    __change_qimage = QtCore.Signal(QtGui.QPixmap, str) 
    
     def __init__(self, thumbnail_id):
         super(ImageThumbnail, self).__init__()
@@ -87,7 +88,8 @@ class ImageThumbnail(QtGui.QListWidget):
         self.setMaximumHeight(100)
         self.setMaximumWidth(700)
         
-        self.__change_image.connect(self.change_image_)        
+        self.__change_image.connect(self.change_image_)
+        self.__change_qimage.connect(self.change_qimage_)
         
         #self.setMinimumHeight(80)
         
@@ -145,13 +147,25 @@ class ImageThumbnail(QtGui.QListWidget):
         
         self.__change_image.emit(image_path, id_)
         
+    def change_qimage_(self, qimage, id_):
+        self.thumbnail[id_][0].setPixmap( qimage.scaledToHeight(70))
+        #self.thumbnail[id_][0].setPixmap( QtGui.QPixmap.fromImage(qimage).scaledToHeight(70))
+        
+    def change_qimage(self, qimage, id_):
+        if not id_ :
+            return
+        
+        if not self.thumbnail.get(id_):
+            self.add_label(id_)
+        
+        self.__change_qimage.emit(qimage, id_)    
+        
 
 def main(argv):
     app = QApplication(sys.argv)
     myapp = ImageThumbnail(['1','2','3'])
     myapp.show()
-    app.exec_()
-    sys.exit()
+    app.exec_()    
 
 if __name__ == "__main__":
     main(sys.argv)

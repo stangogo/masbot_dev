@@ -8,7 +8,7 @@ last edited: Mar. 2013
 import sys
 from PySide import QtGui, QtCore
 
-from masbot.ui.utils import Path, SigName, UISignals
+from masbot.config.utils import Path, SigName, UISignals
 
 class DIOButton(QtGui.QPushButton):
     """

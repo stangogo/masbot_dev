@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
   
-from masbot.ui.utils import SigName, UISignals
+from masbot.config.utils import SigName, UISignals
 from masbot.config.common_lib import *
 import threading
 from time import sleep
@@ -88,7 +88,6 @@ class MajorWidgetCtrl:
                     slot.emit('position', key, position)
             sleep(0.3)
         
-    def __tuning_position(self, axis_name, offset, action):
-        if self.__proxy_switch:
-            target_offset = (action * offset, )
-            return self.__motor_proxy[axis_name].rel_move(target_offset)
+    def __tuning_position(self, axis_name, offset):
+        if self.__proxy_switch:            
+            return self.__motor_proxy[axis_name].rel_move(offset)

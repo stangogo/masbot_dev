@@ -49,4 +49,4 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)  
     window = ImageToolsDockWidget()  
     window.show()  
-    sys.exit(app.exec_())  
+    app.exec_()

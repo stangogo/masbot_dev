@@ -12,50 +12,61 @@ class Constants:
 
 class SigName:
     """axis_banner"""
-    DI_DO_SHOW = 'DI_DO_SHOW'   
+    DI_DO_SHOW = 'DI_DO_SHOW'
         # DIO顯示按鈕
+    
+    TO_ROBOT_BANNER = 'TO_ROBOT_BANNER'
+        # 顯示機台資訊
+        
+    REMOVE_IMG_SIDE = 'REMOVE_IMG_SIDE'
+        # 移除影像側
     
     """Major widget"""
     FLOW_MSG = 'FLOW_MSG'
-        #show flow message, send into a string
+        # show flow message, send into a string
     ALARM_MSG = 'ALARM_MSG'
-        #show alarm message, send into a string
+        # show alarm message, send into a string
     PRODUCT_INFO = 'PRODUCT_INOF'
-        #show product info,send into dictionary, ex.
+        # show product info,send into dictionary, ex.
             #{'CT': 4.25, 
-            #'ProdName': '9552A1', 
-            #'MatchAngle':3.11, 
-            #'AssembleMode': 'manually', 
-            #'ProdBarCode': 'A222dsd323', 
-            #'ProdNum': '11op98733', 
-            #'Total': 200}
+            # 'ProdName': '9552A1', 
+            # 'MatchAngle':3.11, 
+            # 'AssembleMode': 'manually', 
+            # 'ProdBarCode': 'A222dsd323', 
+            # 'ProdNum': '11op98733', 
+            # 'Total': 200 }
         
     LOG_IN = 'LOG_IN'           
-        #Servo On button
+        # Servo On button
     SERVO_ON = 'SERVO_ON'       
-        #Servo On button
+        # Servo On button
     START_MAIN = 'START_MAIN'   
-        #Start button
+        # Start button
     PAUSE_MAIN = 'PAUSE_MAIN'   
-        #Pause button
+        # Pause button
     
     """Axis table"""
     ENTER_AXIS_TABLE = 'ENTER_AXIS_TABLE'   
-        #set data to axis table - row_name(str), axis_name(str), value (int)
+        # set data to axis table - 
+        # @row_name(str), @axis_name(str), @value (int)
     FROM_AXIS_TABLE = 'FROM_AXIS_TABLE'     
-        #data from axis table - axis_name(str), value(int), action (1:add, -1 minus)
+        # data from axis table - 
+        # @axis_name(str), @value(int)
     
     """ DIO agent"""
     DO_IN = 'DIO_AGENT_DO_IN'
-        # Signals of DO from outside - DO status (list), on/off (bool)
+        # Signals of DO from outside - 
+        # @DO status (list), @on/off (int 1/0)
     DI_IN = 'DIO_AGENT_DI_IN'
-        # Signals of DI from outside - DI status (list), on/off (bool)
+        # Signals of DI from outside - 
+        # @DI status (list), @on/off (int 1/0)
     DO_OUT = 'DIO_AGENT_DO_OUT'
-        # Send DO signal out - DO number (int), on/off (bool)
+        # Send DO signal out - 
+        # @DO number (int), @on/off (int 1/0)
                 
     IMG_THUMBNAIL = 'IMG_THUMBNAIL'
         # Receive the preview data of image, applied at image thumbnail and preview label
-        # id (str), file path(str)
+        # @file path(str), @id (str)
     
     
 class UISignals():
@@ -94,7 +105,7 @@ class Path():
     
     @staticmethod
     def imgs_dir():
-        current_dir= os.path.abspath(__file__ +  "//..//")
-        dir_ =  "{0}\\{1}".format(current_dir, Constants.IMGS_FOLDER)
+        current_dir= os.path.abspath(__file__ +  "//..//..//")
+        dir_ =  "{0}\\ui\\{1}".format(current_dir, Constants.IMGS_FOLDER)
         return dir_
 

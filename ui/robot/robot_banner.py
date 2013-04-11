@@ -48,7 +48,7 @@ class RobotBanner(QtGui.QWidget):
 def main():    
     app = QtGui.QApplication(sys.argv)
     ex = RobotBanner()
-    sys.exit(app.exec_())
+    app.exec_()
 
 if __name__ == '__main__':
     main()        

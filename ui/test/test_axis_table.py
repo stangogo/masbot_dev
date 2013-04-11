@@ -4,7 +4,7 @@
 
 from PySide import QtCore, QtGui
 import unittest
-from masbot.ui.utils import SigName, UISignals, Path
+from masbot.config.utils import SigName, UISignals, Path
 from masbot.ui.robot.axis_table import AxisTable
 from masbot.ui.robot.major.major_widget import MajorWidget
 
@@ -59,7 +59,7 @@ def main():
     ex = AxisBanner()
     ex.show()
     #unittest.main()
-    sys.exit(app.exec_())
+    app.exec_()
 
 if __name__ == '__main__':
     main()        

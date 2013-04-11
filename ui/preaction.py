@@ -11,7 +11,7 @@ import codecs
 
 
 from PySide import QtCore, QtGui
-from masbot.ui.utils import UISignals, SigName
+from masbot.config.utils import UISignals, SigName
 
 class SigAgent(QtCore.QObject):
     """所有UI對外連接的串口的名稱和參數設定. 
@@ -48,10 +48,10 @@ class SigAgent(QtCore.QObject):
     @ str: 定義在database 的 SingleAxis 資料表裡的 axis_key 欄
     @ float: 填入的值
     """
-    out_single_axis = QtCore.Signal(str, float)#, int)
+    out_single_axis = QtCore.Signal(str, float)
     """ 提供單軸發出控制訊號
     @ str: axis name
-    @ int: 單軸位置的 value
+    @ float: 單軸位置的 value
     """
 
     img_preview = QtCore.Signal(str, str)
@@ -73,19 +73,18 @@ UISignals.RegisterSignal(sig_agent.img_preview, SigName.IMG_THUMBNAIL)
 
 """測試用
 """
-def do_out_msg(io_num, on_off):
-    pass
+#def do_out_msg(io_num, on_off):
+    #pass
     #print('{0} : {1} : {2}'.format(SigName.DO_OUT, io_num, on_off))
     #do_status = [io_num]
     #UISignals.GetSignal(SigName.DO_IN).emit(do_status, on_off)
 
-def out_single_axis(axis_name, value, n_action): 
-    if n_action == 1:
-        print('{0} 多 {1}'.format(axis_name, value))
-    else:
-        print('{0} 少 {1}'.format(axis_name, value))
+def out_single_axis(axis_name, value): 
+    print('{0} 移動 {1}'.format(axis_name, value))
+    
+    
 
-#UISignals.GetSignal(SigName.FROM_AXIS_TABLE).connect(out_single_axis)                                                     
+UISignals.GetSignal(SigName.FROM_AXIS_TABLE).connect(out_single_axis)                                                     
 #UISignals.GetSignal(SigName.DO_OUT).connect(do_out_msg)
 
 
