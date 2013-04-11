@@ -10,6 +10,7 @@ from masbot.device.device_manager import DeviceManager
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
 from masbot.flow.main_flow import MainFlow
+from imp import reload
 
 class MajorWidgetCtrl:
 
@@ -20,15 +21,16 @@ class MajorWidgetCtrl:
         UISignals.GetSignal(SigName.FROM_AXIS_TABLE).connect(self.__tuning_position)
         UISignals.GetSignal(SigName.START_MAIN).connect(self.__start_flow)
         UISignals.GetSignal(SigName.PAUSE_MAIN).connect(self.__pause_flow)
+        UISignals.GetSignal(SigName.LOG_IN).connect(self.__login_out)
         UISignals.GetSignal(SigName.DO_OUT).connect(self.__do_clicked)
         
         self.__device_proxy()
-        timer = threading.Timer(1, self.__update_position)
-        timer.setDaemon(True)
+        timer = threading.Timer(1, self.__update_ui)
         timer.daemon = True
         timer.start()
         # initail the flow actor
         self.__main_flow = MainFlow().start()
+        self.__first_import = True
         
     def set_proxy_switch(self, on_off=0):
         self.__proxy_switch = on_off
@@ -43,14 +45,14 @@ class MajorWidgetCtrl:
 
     def __device_proxy(self):
         DM = DeviceManager()
-        self.__motion = DM._device_proxy()
+        self.__adlink = DM._get_device_proxy('ADLink')
         
         self.__motor_proxy = {}
         for rec in motor_info:
         #    points_info = {}
         #    if not rec['composite']:
         #        points_info = single_axis_points[rec['key']]
-            self.__motor_proxy[rec['key']] = Motor(rec['key'], self.__motion, [rec])
+            self.__motor_proxy[rec['key']] = Motor(rec['key'], self.__adlink, [rec])
         
     def __do_clicked(self, do_port, on_off):
         print("ctrl:  do : {0}, {1}".format(do_port, on_off))
@@ -63,6 +65,9 @@ class MajorWidgetCtrl:
             ret = actor['axis_z'].send('servo_on')
             if ret:
                 return ret
+            print(self.__adlink.DO_read(0))
+            self.__adlink.DO(0, 1)
+            print(self.__adlink.DO_read(0))
             self.__servo_status = 1
             return 0
         else:
@@ -75,19 +80,26 @@ class MajorWidgetCtrl:
             self.__servo_status = 0
             return 0
 
-    def __update_position(self):
-        slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE) 
+    def __update_ui(self):
+        slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE)
 
-        a = 0.0
         while True:
             if self.__proxy_switch:        
-                a += 0.1
                 for axis in motor_info:
                     key = axis['key']
                     position = self.__motor_proxy[key].get_position()
+                    status = self.__motor_proxy[key].get_motion_status()
                     slot.emit('position', key, position)
+                    slot.emit('state', key, status)
             sleep(0.3)
         
     def __tuning_position(self, axis_name, offset):
         if self.__proxy_switch:            
+            offset = (offset, )
             return self.__motor_proxy[axis_name].rel_move(offset)
+
+    def __login_out(self):
+        import masbot.controller.test_flow
+        if not self.__first_import:
+            reload(masbot.controller.test_flow)
+        self.__first_import = False

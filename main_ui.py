@@ -214,7 +214,8 @@ def main():
 
     ex = MainUI()
     app.exec_()
-
+    app.exec_()
+    
 if __name__ == '__main__':
     main()
 

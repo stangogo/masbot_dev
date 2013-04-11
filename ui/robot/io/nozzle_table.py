@@ -36,15 +36,15 @@ class NozzleTable(IOTableTemplate):
             return
         
         if len(new_status) > 1: 
-            for i in range(0, len(new_status)): # i 是 io number
-                value = dio_list.get(i)         # 從dict 取得 io_num = i 的 object
+            for i in range(0, len(new_status)): # i io number
+                value = dio_list.get(i)         # 從dict �� io_num = i object
                 if not value == None:           
-                    value.on_off(new_status[i]) # 將On-Off 設進DIO object 裡
+                    value.on_off(new_status[i]) # 將On-Off 設進DIO object �
                     
         elif len(new_status) == 1:
-            value = dio_list.get(new_status[0])    # 從dict 取得 io_num = new_status 的 object
+            value = dio_list.get(new_status[0])    # 從dict �� io_num = new_status object
             if not value == None:           
-                value.on_off(bOn)               # 將bOn 設進DIO object 裡
+                value.on_off(bOn)               # 將bOn 設進DIO object �
 
     def do_changed(self, do_list, on_off):
         self.do_di_changed(do_list, self.do_dict, on_off)        
@@ -123,7 +123,7 @@ if __name__ == '__main__':
         #UISignals.GetSignal(SigName.DI_IN).connect(self.di_changed)
         #UISignals.GetSignal(SigName.DO_IN).connect(self.do_changed)
                 
-        #self.setStyleSheet("QHeaderView::section { background-color:rgb(204, 100, 204) }");    #設定表格title的color
+        #self.setStyleSheet("QHeaderView::section { background-color:rgb(204, 100, 204) }");    #設�表格title�color
         
         #self.setWindowTitle('Nozzle Table')
         #self.show()
@@ -195,12 +195,12 @@ if __name__ == '__main__':
         #while query.next():
             #on_str = query.value(0)
             #off_str = query.value(1)
-            #action = query.value(2) #利用這個值, 取得整個row的資料, 填入.
+            #action = query.value(2) #�用�個� ��個row�� 填入.
             #type_ = query.value(3)
             #value_set = query.value(4)
             #action_data = self.get_property_value(data_table_name, action)            
             #for i in range(0, self.columnCount()):
-                ##取得所有action的值, order by id, 跟著make_cell 填入cell裡.
+                ##�倉action�� order by id, 跟�make_cell 填入cell�
                 #key = self.column_key[i]
                 #cell = self.make_cell(type_, on_str, off_str, key, action, value_set, action_data[i]) 
                 #self.setCellWidget(n_row,i, cell)
@@ -229,7 +229,7 @@ if __name__ == '__main__':
         ##TODO: get DI and DO port and set them in to DO button and DI label.
         #query.exec_("select {0}, key from {1} order by id".format(field, table_name) )
         #while query.next():             
-            #headers.append(query.value(0))      #header的名稱
+            #headers.append(query.value(0))      #header���
             #self.column_key.append(query.value(1))            
         #self.setHorizontalHeaderLabels(headers)
         
@@ -254,15 +254,15 @@ if __name__ == '__main__':
             #return
         
         #if len(new_status) > 1: 
-            #for i in range(0, len(new_status)): # i 是 io number
-                #value = dio_list.get(i)         # 從dict 取得 io_num = i 的 object
+            #for i in range(0, len(new_status)): # i io number
+                #value = dio_list.get(i)         # 從dict �� io_num = i object
                 #if not value == None:           
-                    #value.on_off(new_status[i]) # 將On-Off 設進DIO object 裡
+                    #value.on_off(new_status[i]) # 將On-Off 設進DIO object �
                     
         #elif len(new_status) == 1:
-            #value = dio_list.get(new_status[0])    # 從dict 取得 io_num = new_status 的 object
+            #value = dio_list.get(new_status[0])    # 從dict �� io_num = new_status object
             #if not value == None:           
-                #value.on_off(bOn)               # 將bOn 設進DIO object 裡
+                #value.on_off(bOn)               # 將bOn 設進DIO object �
 
     #def do_changed(self, do_list, on_off):
         #self.do_di_changed(do_list, self.do_dict, on_off)        

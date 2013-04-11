@@ -166,8 +166,8 @@ class Motor(Bulletin):
         status_list = []
         for axis_info in self.__axis_list:
             stat = self.__motion.get_motion_status(axis_info['axis_id'])
-            pulse_list.append(stat)
-            self.__logger.debug('%s motion_status = %d', axis_info['key'], stat)
+            status_list.append(stat)
+            #self.__logger.debug('%s motion_status = %d', axis_info['key'], stat)
         if self.__axis_count == 1:
             return stat
         else:
@@ -177,8 +177,8 @@ class Motor(Bulletin):
         status_list = []
         for axis_info in self.__axis_list:
             stat = self.__motion.get_io_status(axis_info['axis_id'])
-            pulse_list.append(stat)
-            self.__logger.debug('%s io_status = %d', axis_info['key'], stat)
+            status_list.append(stat)
+            #self.__logger.debug('%s io_status = %d', axis_info['key'], stat)
         if self.__axis_count == 1:
             return stat
         else:

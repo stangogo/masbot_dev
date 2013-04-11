@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-# Title          : adlink_fake.py
-# Description    : simulate adlink.py functions
+# Title          : lplink_fake.py
+# Description    : simulate lplink.py functions
 # Author         : Stan Liu
-# Date           : 20130307
+# Date           : 20130410
 # Dependency     : 
-# usage          : import adlink_fake
+# usage          : import lplink_fake
 # notes          : 
 
 import logging
@@ -13,10 +13,9 @@ from time import sleep
 from random import *
 from masbot.device.motion.motion_card import Motion
 
-class ADLink(Motion):
+class LPLink(Motion):
     def __init__(self, cards_config=[]):
         self.__logger = logging.getLogger(__name__)
-        self.__mode = 'pci8158'
         self.__cards_config = cards_config
         self.__do_cards_index = []
         self.__di_cards_index = []
@@ -32,17 +31,17 @@ class ADLink(Motion):
         self.close()
 
     def __initial(self, manual_id = 0):
-        self.__logger.debug('adlink_fake card initial')
+        self.__logger.debug('lplink_fake card initial')
         self.__join_io_cards()
         return 0
 
     def close(self):
-        self.__logger.debug('adlink_fake card close')
+        self.__logger.debug('lplink_fake card close')
 
     def __join_io_cards(self):
         sleep(0.2)
         for num, type in self.__cards_config:
-            self.__logger.debug('adlink_fake %s %d initial', type, num)
+            self.__logger.debug('lplink_fake %s %d initial', type, num)
             empty_card = 32 * [0]
             if type == 'DO_CARD':
                 self.__do_card_status.append(empty_card)
@@ -58,7 +57,7 @@ class ADLink(Motion):
         return len(self.__di_cards_index)
 
     def close_io_cards(self):
-        self.__logger.debug('adlink_fake db51 close')
+        self.__logger.debug('lplink_fake db51 close')
 
     def DO(self, port, state):
         card_order = int(port/32)
