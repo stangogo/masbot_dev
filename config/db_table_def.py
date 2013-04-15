@@ -134,6 +134,7 @@ CREATE TABLE IF NOT EXISTS single_axis(
     DO1 INTEGER,
     ZSP INTEGER,
     TLC INTEGER,
+    electric_brake INTEGER,
     scope_min REAL,
     scope_max REAL,
     composite INTEGER, 
@@ -264,6 +265,15 @@ CREATE TABLE IF NOT EXISTS ui_layout(
     btn_off_str TEXT,
     value_set TEXT,
     PRIMARY KEY(ui_name, col_id)
+);
+"""
+,
+"""
+CREATE TABLE IF NOT EXISTS io_card(
+    card_module TEXT not null,
+    card_id INTEGER not null,
+    card_type TEXT,
+    PRIMARY KEY(card_module, card_id)
 );
 """
 ]

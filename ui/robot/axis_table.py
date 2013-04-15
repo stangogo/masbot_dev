@@ -95,7 +95,7 @@ class AxisTable(QtGui.QTableWidget):
         #self.verticalHeader().hide()   #hide the vertical title header
         
     def fill_table(self, query):
-        query.exec_("select key from SingleAxis")
+        query.exec_("select key from single_axis")
         index = 0
         for i in range(0, self.columnCount()):
             btn_add = AxisButton(QtGui.QIcon("{0}/increase.ico".format(Path.imgs_dir())), "")

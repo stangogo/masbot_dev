@@ -17,7 +17,8 @@ class Motor(Bulletin):
         if self.__axis_count == 1:
             super(Motor, self).__init__(owner, board)
             self.__speed = axis_list[0]['speed']
-            self.__acc_time = axis_list[0]['accelerative_time']
+            #self.__acc_time = axis_list[0]['accelerative_time']
+            self.__acc_time = 0.2
         else:
             super(Motor, self).__init__(owner, board)
             self.__speed = 50
@@ -53,17 +54,24 @@ class Motor(Bulletin):
                 return msg
             if axis_info['motor_type'] == 'servo':
                 ret = self.__sync_pulse(axis_info)
+                if ret:
+                    msg = "sync pulse error: {} {}".format(axis_info['key'], ret)
+                    self.__logger.error(msg)
+            if axis_info['electric_brake'] >= 0:
+                self.__motion.DO(axis_info['electric_brake'], 1)
             self.__logger.debug('%s servo on ret = %s', axis_info['key'], ret)
         return ret
 
     def servo_off(self):
         for axis_info in self.__axis_list:
+            if axis_info['electric_brake'] >= 0:
+                self.__motion.DO(axis_info['electric_brake'], 0)
             ret = self.__motion.servo_on_off(axis_info['axis_id'], 0)
             if ret:
                 msg = "servo off error: {} {}".format(axis_info['key'], ret)
                 self.__logger.critical(msg)
                 return msg
-            self.__logger.debug(ret)
+            self.__logger.debug("%s servo off sucessfully", axis_info['key'])
         return ret
         
     def __sync_pulse(self, axis_info):
@@ -79,6 +87,7 @@ class Motor(Bulletin):
         # check if position under scope
         ret = self.__check_scope(position_tuple)
         if ret:
+            self.__logger.debug(ret)
             return ret
         axis_list = self.__axis_list
         axis_map = []
@@ -93,6 +102,7 @@ class Motor(Bulletin):
             axis_map, speed, self.__acc_time, self.__acc_time)
         if ret:
             msg = "abs move error: {}".format(ret)
+            self.__logger.debug(msg)
             return msg
         return ret
             
@@ -109,6 +119,7 @@ class Motor(Bulletin):
             position_list.append(now_position_tuple[index] + rel_position_tuple[index])
         ret = self.__check_scope(position_list)
         if ret:
+            self.__logger.debug(ret)
             return ret
         axis_list = self.__axis_list
         axis_map = []
@@ -123,6 +134,7 @@ class Motor(Bulletin):
             axis_map, speed, self.__acc_time, self.__acc_time)
         if ret:
             msg = "rel move error: {}".format(ret)
+            self.__logger.debug(msg)
             return msg
         return ret
         
