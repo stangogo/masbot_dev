@@ -51,7 +51,7 @@ class Motor(Bulletin):
                 msg = "servo on error: {} {}".format(axis_info['key'], ret)
                 self.__logger.critical(msg)
                 return msg
-            if axis_info['motor_type'] == 'servo_type':
+            if axis_info['motor_type'] == 'servo':
                 ret = self.__sync_pulse(axis_info)
             self.__logger.debug('%s servo on ret = %s', axis_info['key'], ret)
         return ret

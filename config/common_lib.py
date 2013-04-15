@@ -39,6 +39,8 @@ for rec in motor_info:
         actor[actor_name] = MotorActor.start(actor_name, [rec], points_info)
 
 for actor_name, rec in double_axis_info.items():
-    points_info = double_axis_points[actor_name]
+    points_info = {}
+    if actor_name in double_axis_points:
+        points_info = double_axis_points[actor_name]
     actor[actor_name] = MotorActor.start(actor_name, rec, points_info)
 

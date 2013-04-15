@@ -50,7 +50,7 @@ class AxisTable(QtGui.QTableWidget):
         
     def init_ui(self):
         
-        axis_table_model = sqldb.get_table_model('SingleAxis')
+        axis_table_model = sqldb.get_table_model('single_axis')
         
         self.setColumnCount(axis_table_model.rowCount())
         
