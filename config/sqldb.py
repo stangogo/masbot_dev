@@ -41,7 +41,7 @@ class SqlDB():
         self.db.setDatabaseName(db_path)
         
         if not self.db.open():
-            print("θ³‡ζεΊ«δ½ζ {0}".format(db_path))
+            print("database can not be opened: {0}".format(db_path))
         else:
             self.db_opened = True
 

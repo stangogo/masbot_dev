@@ -58,7 +58,7 @@ class AxisTable(QtGui.QTableWidget):
         self.setColumnCount(axis_table_model.rowCount())
         
         
-        #欄寬 / ��        
+        #column width
         for i in range(0, self.columnCount()):
             self.setColumnWidth(i, 65)
         #self.setColumnWidth(self.columnCount()-1, 50)        
@@ -66,7 +66,7 @@ class AxisTable(QtGui.QTableWidget):
         
         #self.setStyleSheet("QHeaderView::section { background-color:#BDC4C4 }");    
 
-        #橫軸 bar
+        #horizontal title bar
         H_headers = []
         query = axis_table_model.query()
         query.exec_("select display_text from SingleAxis")
@@ -77,12 +77,12 @@ class AxisTable(QtGui.QTableWidget):
             
         self.setHorizontalHeaderLabels(H_headers)
         
-        #縱軸 bar
+        #Vertical Title Bar
         v_name = DBTableDefine().get_table_def('AxisOP')
         V_Header = list(name[1] for name in v_name) 
         self.setRowCount(len(V_Header))
         self.setVerticalHeaderLabels(V_Header)
-        #self.resizeRowsToContents()    #符�
+        #self.resizeRowsToContents()
         index = 0
         for op in list(name[0] for name in v_name):
             self.row_dict[op] = index
@@ -91,8 +91,8 @@ class AxisTable(QtGui.QTableWidget):
         self.fill_table(query)
         self.setWindowTitle('Axis Operation')
         
-        #self.resizeRowsToContents()    #符�        
-        #self.verticalHeader().hide()   #���側欄header
+        #self.resizeRowsToContents()    #
+        #self.verticalHeader().hide()   #hide the vertical title header
         
     def fill_table(self, query):
         query.exec_("select key from SingleAxis")
@@ -158,7 +158,7 @@ class AxisTable(QtGui.QTableWidget):
             _key == QtCore.Qt.Key.Key_Left or \
             _key == QtCore.Qt.Key.Key_Right:
             
-            # win32api and win32com ����pywin32            
+            # win32api and win32com: install pywin32
             #if win32api.GetAsyncKeyState(win32con.VK_SHIFT) < 0:
             
             if win32api.GetAsyncKeyState(win32con.VK_CONTROL) < 0:
