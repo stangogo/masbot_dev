@@ -4,14 +4,15 @@
 import os
 import sys
 import site
-
+import logging
 
 from datetime import datetime
 from collections import OrderedDict
 from PySide import QtCore, QtSql, QtGui
 
 from masbot.config.utils import Constants, Path
-from masbot.config.db_table_def import DBTableDefine
+#from masbot.config.db_table_def import DBTableDefine
+from masbot.config.db_table_def import *
 
 
 
@@ -21,7 +22,7 @@ class SqlDB():
     db_opened = False
     db = None
     def __init__(self):
-        
+        self.__logger = logging.getLogger(__name__)
         if self.db_opened:
             return 
         
@@ -40,7 +41,7 @@ class SqlDB():
         self.db.setDatabaseName(db_path)
         
         if not self.db.open():
-            print("資料庫不能打開: {0}".format(db_path))
+            print("資�庫�� {0}".format(db_path))
         else:
             self.db_opened = True
 
@@ -78,9 +79,18 @@ class SqlDB():
         query.exec_("SELECT * FROM sqlite_master WHERE name ='{0}' and type='table'".format(table_name))
         return query.first()
     
-
+    """
+    Stan test
+    """
+    def initial_table(self):
+        query = QtSql.QSqlQuery()
+        for cmd in table_schemas:
+            result = query.exec_(cmd)
+            if not result:
+                error_msg = 'error when creating tables, cmd = {}'.format(cmd)
+                self.__logger.critical(error_msg)
 
 site_pack_path = site.getsitepackages()[1]
 QtGui.QApplication.addLibraryPath('{0}\\PySide\\plugins'.format(site_pack_path))
 sqldb = SqlDB()
-    
+sqldb.initial_table()

@@ -68,7 +68,7 @@ class Nozzle(QtGui.QWidget):
     
     def init_ui(self, title):
         
-        self.nozzle_table = NozzleTable('Nozzle', 'nozzle_ui', True)        
+        self.nozzle_table = NozzleTable('nozzle', 'nozzle_ui', True)        
         
         v_layout = QtGui.QVBoxLayout()
         v_layout.addWidget(self.nozzle_table)

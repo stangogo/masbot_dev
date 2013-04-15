@@ -53,7 +53,7 @@ class AxisTable(QtGui.QTableWidget):
         
     def init_ui(self):
         
-        axis_table_model = sqldb.get_table_model('SingleAxis')
+        axis_table_model = sqldb.get_table_model('single_axis')
         
         self.setColumnCount(axis_table_model.rowCount())
         
@@ -158,7 +158,7 @@ class AxisTable(QtGui.QTableWidget):
             _key == QtCore.Qt.Key.Key_Left or \
             _key == QtCore.Qt.Key.Key_Right:
             
-            # win32api and win32com ÔøΩË¶ÅÔøΩÔøΩpywin32            
+            # win32api and win32com ÔøΩËÔøΩÔøΩpywin32            
             #if win32api.GetAsyncKeyState(win32con.VK_SHIFT) < 0:
             
             if win32api.GetAsyncKeyState(win32con.VK_CONTROL) < 0:
