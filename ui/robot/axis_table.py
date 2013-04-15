@@ -20,14 +20,17 @@ class AxisButton(QtGui.QPushButton):
     axis = ""
     scale = 1.0
    
-    def __new__(self, icon, text=None):
-        if text == None:
-            if type(icon) == type(""):
-                self.text = icon
-            return QtGui.QPushButton.__new__(self, icon, "")
-        else:
-            self.text = text
-            return QtGui.QPushButton.__new__(self, icon, text)
+    def __init__(self, *args):
+        super(AxisButton, self).__init__(*args)
+        
+    #def __new__(self, icon, text=None):
+        #if text == None:
+            #if type(icon) == type(""):
+                #self.text = icon
+            #return QtGui.QPushButton.__new__(self, icon, "")
+        #else:
+            #self.text = text
+            #return QtGui.QPushButton.__new__(self, icon, text)
             
             
 class AxisTable(QtGui.QTableWidget):
@@ -40,7 +43,7 @@ class AxisTable(QtGui.QTableWidget):
         super(AxisTable, self).__init__()
         self.init_ui()
         
-        self.setStyleSheet("QTableView{selection-background-color:green}")
+        #self.setStyleSheet("QTableView{selection-background-color:#17B6FF}")
         UISignals.GetSignal(SigName.ENTER_AXIS_TABLE).connect(self.from_outside)
         #self.cellClicked.connect(self.new_cell)
         
@@ -60,10 +63,10 @@ class AxisTable(QtGui.QTableWidget):
             self.setColumnWidth(i, 65)
         #self.setColumnWidth(self.columnCount()-1, 50)        
                 
-        #設��格title�color
-        self.setStyleSheet("QHeaderView::section { background-color:rgb(184, 198, 137) }");    
+        
+        #self.setStyleSheet("QHeaderView::section { background-color:#BDC4C4 }");    
 
-        #橫軸 bar          
+        #橫軸 bar
         H_headers = []
         query = axis_table_model.query()
         query.exec_("select display_text from SingleAxis")
@@ -74,13 +77,14 @@ class AxisTable(QtGui.QTableWidget):
             
         self.setHorizontalHeaderLabels(H_headers)
         
-        #縱軸 bar        
-        V_Header = DBTableDefine().get_table_def('AxisOP')
+        #縱軸 bar
+        v_name = DBTableDefine().get_table_def('AxisOP')
+        V_Header = list(name[1] for name in v_name) 
         self.setRowCount(len(V_Header))
         self.setVerticalHeaderLabels(V_Header)
         #self.resizeRowsToContents()    #符�
         index = 0
-        for op in V_Header:
+        for op in list(name[0] for name in v_name):
             self.row_dict[op] = index
             index +=1
         
@@ -94,10 +98,11 @@ class AxisTable(QtGui.QTableWidget):
         query.exec_("select key from SingleAxis")
         index = 0
         for i in range(0, self.columnCount()):
-            #btn_add = AxisButton(QtGui.QIcon("{0}/Start.bmp".format(Path.imgs_dir())),"+")
+            btn_add = AxisButton(QtGui.QIcon("{0}/increase.ico".format(Path.imgs_dir())), "")
+            btn_minus = AxisButton(QtGui.QIcon("{0}/decrease.png".format(Path.imgs_dir())), "")
             #btn_add = AxisButton(QtGui.QIcon("C:\Python33\Lib\site-packages\masbot\ui/imgs/Start.bmp"),"+")
-            btn_add = AxisButton("+")
-            btn_minus = AxisButton('-')
+            #btn_add = AxisButton("+")
+            #btn_minus = AxisButton('-')
             btn_scale = AxisButton('1')
             
             btn_add.column = btn_minus.column= btn_scale.column = i

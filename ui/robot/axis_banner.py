@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-author: Cigar Huang
-website: zetcode.com 
-last edited: 18 Mar. 2013
+顯示單軸狀態, 控制表單
+                        author: Cigar Huang
+                        website: zetcode.com 
+                        last edited: 18 Mar. 2013
 """
 
 import sys
@@ -46,11 +47,12 @@ class AxisBanner(QtGui.QWidget):
         to_robot_banner_btn.setFixedHeight(50)
         UISignals.RegisterSignal(to_robot_banner_btn.clicked, SigName.TO_ROBOT_BANNER)
         
-        self.remove_image_btn = QtGui.QPushButton('影像側\n開關')
+        self.remove_image_btn = QtGui.QPushButton('右側\n開關')
         self.remove_image_btn.setCheckable(True)
         self.remove_image_btn.setChecked(True)
         self.remove_image_btn.setFixedWidth(50)
-        self.remove_image_btn.setFixedHeight(50)        
+        self.remove_image_btn.setFixedHeight(50)
+        self.remove_image_btn.clicked.connect(self.remove_image_btn_clicked)
         UISignals.RegisterSignal(self.remove_image_btn.clicked, SigName.REMOVE_IMG_SIDE)
         
         btn_v_layout = QtGui.QVBoxLayout()
@@ -71,7 +73,9 @@ class AxisBanner(QtGui.QWidget):
                 
         self.setWindowTitle('Axis Banner')
         self.show()
-
+    
+    def remove_image_btn_clicked(self):
+        self.di_do_btn.setEnabled(self.remove_image_btn.isChecked()) 
 def main():    
     app = QtGui.QApplication(sys.argv)
     ex = AxisBanner()

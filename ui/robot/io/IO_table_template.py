@@ -41,9 +41,7 @@ class IOTableTemplate(QtGui.QTableWidget):
         
         for i in range(0, self.columnCount()):
             self.setColumnWidth(i, 50)
-            
-        self.setStyleSheet("QHeaderView::section { background-color:rgb(204, 100, 204) }");    #設定表格title的color
-
+        
         self.resizeRowsToContents()
         self.logger = logging.getLogger('ui.log')
         

@@ -19,15 +19,9 @@ class RobotPageDock(QtGui.QTabWidget):
         self.addTab(QtGui.QWidget(), self.get_rotate_icon('message.png', 90), '')
         self.addTab(QtGui.QWidget(), self.get_rotate_icon('test.png', 90), '')
         
-        #self.addTab(MajorWidget(),  QtGui.QIcon("{0}/main.png".format(Path.imgs_dir())), '')
-        #self.addTab(IOWidget(), QtGui.QIcon("{0}/IO.png".format(Path.imgs_dir())), '')#'I/O設定')
-        #self.addTab(QtGui.QWidget(), QtGui.QIcon("{0}/system_settings.png".format(Path.imgs_dir())), '')#'系統設定')
-        #self.addTab(QtGui.QWidget(), QtGui.QIcon("{0}/message.png".format(Path.imgs_dir())), '')#'訊息')
-        #self.addTab(QtGui.QWidget(), QtGui.QIcon("{0}/test.png".format(Path.imgs_dir())), '')#'測試模式')
-             
         self.sizeHint()
         
-        self.setStyleSheet('QTabBar::tab { min-width:60px ; min-height:30px ; font:12px ;}')   # 橫向 (West or East) 要設 width
+        #self.setStyleSheet('QTabBar::tab { min-width:60px ; min-height:30px ; font:12px ;}')   # 橫向 (West or East) 要設 width
         self.setTabPosition(QtGui.QTabWidget.West)
         
         #self.setStyleSheet('QTabBar::tab { height: 50px}') # 縱向 (North or South) 要設 height

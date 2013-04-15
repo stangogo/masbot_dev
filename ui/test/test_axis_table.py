@@ -21,6 +21,7 @@ class AxisBanner(QtGui.QWidget):
         style = "QLabel { color:green; font-family: sans-serif; font-size: 18px;}"
         title_label = QtGui.QLabel('單\n軸\n移\n動')
         title_label.setStyleSheet(style)
+        
     
     
         self.axis_banner = QtGui.QHBoxLayout(self)    

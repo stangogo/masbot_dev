@@ -47,7 +47,7 @@ class SqlDB():
     def get_table_model(self, table_name):
         if self.db_opened:
             if not self.check_table_exist(table_name):
-                self.create_table(self, table_name)
+                self.create_table(table_name)
                 
             table_model = QtSql.QSqlTableModel()
             table_model.setTable(table_name)

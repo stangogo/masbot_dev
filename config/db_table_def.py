@@ -71,7 +71,7 @@ class DBTableDefine():
                                     ])
                                     ,
                     
-             'AxisOP': ['position', 'state', ' + ', ' - ', 'scale']
+             'AxisOP': [['position', '位置'], ['state','狀態'], [' + ','加'], [' - ','減'], ['scale','單位']]
              #                       ,
              #'ImageThumbnailID': ['1stCorrect', 'GlueIdentify', '2stCorrect', '66Six']
              

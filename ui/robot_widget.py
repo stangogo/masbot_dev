@@ -21,7 +21,7 @@ class RobotWidget(QtGui.QWidget):
         v_layout
 
         v_layout.setSpacing(0)
-        v_layout.setContentsMargins(0,0,0,0)
+        v_layout.setContentsMargins(5,0,0,0)
 
         robot_tab = RobotPageDock()
         robot_tab.currentChanged.connect(self.page_changed)

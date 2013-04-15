@@ -92,128 +92,16 @@ class MainUI(QtGui.QMainWindow):
 def main():
     
     app = QtGui.QApplication(sys.argv)
-    #with open("stylesheet.css", 'r') as cssFile:
-        #styleSheet =cssFile.read()
+    with open("stylesheet.css", 'r') as cssFile:
+        styleSheet =cssFile.read()
 
-    #app.setStyleSheet(styleSheet)
-        
-    Settings = { "tabcolor":"#17B6FF", "fontsize":"10px" }
-    
-    stylesheet = """
-    QToolBar{
-        icon-size:16px;
-        max-height:20px;
-        min-height:20px;
-        padding:1px;
-    }
-    
-    QToolBar QToolButton{
-        max-width:24px;
-    }
-    
-    QToolBar::handle{
-        width:0px;
-    }
-    
-    QToolBar QComboBox{
-        font-size:%(fontsize)s;
-        height:12px;
-    }
-    
-    QTabBar{
-        text-align: left;
-        font-size:12px;
-        icon-size:0px;
-    }
-    
-    QTabBar::tab {
-        padding: 2px;
-        font-size:12px;
-        border-top-left-radius: 1px;
-        border-top-right-radius: 1px;
-        border: 1px solid #C4C4C3;
-        margin:1px;
-        spacing:0px;
-        text-align: left;
-        max-height:150px;
-    }
-    
-    QTabBar::tab:top{
-        padding-left:3px;
-        padding-right:3px;
-    }
-    
-    QTabBar::tab:selected {
-         background: %(tabcolor)s;
-         padding:1px;
-    }
-    
-    QMenuBar{
-        font-size:%(fontsize)s;
-    }
-    
-    QStatusBar QLabel{
-        font-size:%(fontsize)s;
-    }
-    
-    QSplitter::handle {
-        width:2px;
-    }
-    
-    QTreeView{
-        font-size:%(fontsize)s;
-    }
-    
-    QToolTip{
-        color:black;
-    }
-    
-    QScrollBar:vertical {
-         width: 6px;
-         padding:0px;
-         border:0px;
-         background-color:gray;
-     }
-    
-    QScrollBar::handle:vertical {
-         background: %(tabcolor)s;
-         min-height:30px;
-    }
-    
-    QScrollBar:horizontal {
-         height: 6px;
-         padding:0px;
-         border:0px;
-         background-color:gray;
-    }
-    
-    QScrollBar::handle:horizontal {
-         background: %(tabcolor)s;
-         min-width:30px;
-    }
-    
-    .bbb { 
-    background-color : red; 
-    color: rgba(0, 255, 0, 90); 
-    font-size:30pt ;
-    }
-    
-    .title_lable { 
-    background-color : lightblue; 
-    color: rgb(0, 0, 0); 
-    font-size:30pt ;
-    font-family: ms pmincho;
-    }    
-    
-    """ % Settings    
-    
-    
+    Settings = { "tabcolor":"#17B6FF", "fontsize":"10px" , "tablecolor":"#17B6BB"}
+    styleSheet = styleSheet % Settings 
+    app.setStyleSheet(styleSheet)
+ 
     app.setStyle(QtGui.QStyleFactory.create("plastique"))
-    
-    #app.setStyleSheet(stylesheet)
 
     ex = MainUI()
-    app.exec_()
     app.exec_()
     
 if __name__ == '__main__':

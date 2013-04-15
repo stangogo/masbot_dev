@@ -108,4 +108,7 @@ class Path():
         current_dir= os.path.abspath(__file__ +  "//..//..//")
         dir_ =  "{0}\\ui\\{1}".format(current_dir, Constants.IMGS_FOLDER)
         return dir_
-
+    
+    def mosbot_dir():
+        return os.path.abspath(__file__ +  "//..//..//")
+        

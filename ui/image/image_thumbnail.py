@@ -61,7 +61,9 @@ class ImageThumbnail(QtGui.QListWidget):
         item.setSizeHint(QtCore.QSize(100,74))      # 每個item的大小
         self.addItem(item)
         self.setItemWidget(item, img_label)
-        self.thumbnail[id_] = [img_label, index]    # 第一欄是label, 這二欄是index 
+        
+        if not self.thumbnail.get(id_):
+            self.thumbnail[id_] = [img_label, index]    # 第一欄是label, 這二欄是index 
         
     def __thumbnail_clicked(self, thumbnail_id):
         index = self.thumbnail[thumbnail_id][1]     # 第二欄是index

@@ -73,7 +73,7 @@ class MajorWidget(QtGui.QWidget):
         button_grid_layout.addWidget(servo_on_btn, 1, 0)
         button_grid_layout.addWidget(pause_btn, 1, 1)
         
-        message_edit = QtGui.QTextEdit()
+        message_edit = QtGui.QLabel("ABC")# QtGui.QTextEdit()
         message_edit.resize(500, 600)
         
         
