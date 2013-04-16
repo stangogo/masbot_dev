@@ -30,47 +30,7 @@ class DBTableDefine():
                                         ('ProdBarCode', ['varchar(20)', '成品盤條碼']),
                                         ('ProdNum',     ['varchar(20)', '成品盤號']),
                                         ('Total',       ['int',         '成品總數'])] )
-            #                            ,
-            # 'SingleAxis': OrderedDict( [('axis_key', ['varchar(20)']),
-            #                            ('axis_name',['varchar(20)']),
-            #                            ('motor_type', ['int']),
-            #                            ('proportion', ['int']),
-            #                            ('ABSM', ['int']),
-            #                            ('ABSR', ['int']),
-            #                            ('TLC', ['int']),
-            #                            ('DO1', ['int']),
-            #                            ('ZSP', ['int']),
-            #                            ('scope_min', ['int']),
-            #                            ('scope_max', ['int']),
-            #                            ('state', ['int'])] )
-            #                            , 
-            #'Nozzle': OrderedDict([ ('key', ['varchar(20)']),
-            #                        ('updown_action', ['int']),
-            #                        ('blow_action',['int']),
-            #                        ('suck_action', ['int']),
-            #                        ('top_sensor', ['int']),
-            #                        ('low_sensor', ['int']),
-            #                        ('pressure_sensor', ['int']),
-            #                        ('display_text', ['varchar(20)']),
-            #                        ('get_delay', ['int']),
-            #                        ('suck_delay', ['int']),
-            #                        ('put_delay', ['int'])
-            #                    ])
-            #                    ,
-            #'Nozzle_UI': OrderedDict([ ('reference_val', ['varchar(30)']),
-            #                           ('display_text', ['varchar(30)']),
-            #                           ('col_order', ['int']),
-            #                           ('display_type', ['int']),
-            #                           ('btn_on_str', ['varchar(10)']),
-            #                           ('btn_off_str', ['varchar(10)']),
-            #                           ('value_set', ['int'])
-            #                         ])
-            #                    ,
-            #'options': OrderedDict([ ('id', ['varchar(30)']),
-            #                         ('value', ['varchar(30)'])
-            #                        ])
                                     ,
-                    
              'AxisOP': [['position', '位置'], ['state','狀態'], [' + ','加'], [' - ','減'], ['scale','單位']]
              #                       ,
              #'ImageThumbnailID': ['1stCorrect', 'GlueIdentify', '2stCorrect', '66Six']
@@ -99,9 +59,9 @@ CREATE TABLE IF NOT EXISTS nozzle(
     low_sensor INTEGER,
     pressure_sensor INTEGER,
     display_text TEXT,
-    get_delay INTEGER,
-    suck_delay INTEGER,
-    put_delay INTEGER,
+    get_delay INTEGER DEFAULT 200,
+    suck_delay INTEGER DEFAULT 200,
+    put_delay INTEGER DEFAULT 200,
     PRIMARY KEY(key)
 );
 """
@@ -125,19 +85,20 @@ CREATE TABLE IF NOT EXISTS single_axis(
     key TEXT not null,
     axis_id INTEGER,
     display_text TEXT,
-    motion_module TEXT,
-    motor_type TEXT,
-    proportion INTEGER,
-    speed INTEGER,
+    motion_module TEXT DEFAULT 'ADLink',
+    motor_type TEXT DEFAULT 'servo',
+    proportion INTEGER DEFAULT 500,
+    speed INTEGER DEFAULT 200,
+    safe_speed INTEGER DEFAULT 50,
     ABSM INTEGER,
     ABSR INTEGER,
     DO1 INTEGER,
     ZSP INTEGER,
     TLC INTEGER,
     electric_brake INTEGER,
-    scope_min REAL,
-    scope_max REAL,
-    composite INTEGER, 
+    scope_min REAL DEFAULT -999,
+    scope_max REAL DEFAULT 999,
+    individual INTEGER DEFAULT 1,
     PRIMARY KEY(key)
 );
 """
@@ -157,12 +118,12 @@ CREATE TABLE IF NOT EXISTS single_axis_points(
 CREATE TABLE IF NOT EXISTS double_axis(
     key TEXT not null,
     display_text TEXT,
-    motion_module INTEGER,
+    motion_module INTEGER DEFAULT 'ADLink',
     group_id INTEGER,
     axis1 TEXT,
     axis2 TEXT,
-    safe_speed INTEGER,
-    speed INTEGER,
+    safe_speed INTEGER DEFAULT 50,
+    speed INTEGER DEFAULT 200,
     PRIMARY KEY(key),
     FOREIGN KEY(axis1) REFERENCES single_axis(key) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY(axis2) REFERENCES single_axis(key) ON UPDATE CASCADE ON DELETE CASCADE
@@ -185,13 +146,13 @@ CREATE TABLE IF NOT EXISTS double_axis_points(
 CREATE TABLE IF NOT EXISTS triple_axis(
     key TEXT not null,
     display_text TEXT,
-    motion_module INTEGER,
+    motion_module INTEGER DEFAULT 'ADLink',
     group_id INTEGER,
     axis1 TEXT,
     axis2 TEXT,
     axis3 TEXT,
-    safe_speed INTEGER,
-    speed INTEGER,
+    safe_speed INTEGER DEFAULT 50,
+    speed INTEGER DEFAULT 200,
     PRIMARY KEY(key),
     FOREIGN KEY(axis1) REFERENCES single_axis(key) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY(axis2) REFERENCES single_axis(key) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -270,16 +231,10 @@ CREATE TABLE IF NOT EXISTS ui_layout(
 ,
 """
 CREATE TABLE IF NOT EXISTS io_card(
-    card_module TEXT not null,
-    card_id INTEGER not null,
-    card_type TEXT,
-    PRIMARY KEY(card_module, card_id)
+    card_module TEXT not null DEFAULT 'ADLink',
+    card_num INTEGER not null,
+    card_type TEXT DEFAULT 'DO_CARD',
+    PRIMARY KEY(card_module, card_num)
 );
 """
 ]
-
-
-"""
-SELECT trackid as id, trackname, artistname FROM artist inner join track on
-artist.artistid = track.trackartist
-"""

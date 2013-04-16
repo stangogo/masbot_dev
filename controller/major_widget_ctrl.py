@@ -50,7 +50,7 @@ class MajorWidgetCtrl:
         self.__motor_proxy = {}
         for rec in motor_info:
         #    points_info = {}
-        #    if not rec['composite']:
+        #    if not rec['individual']:
         #        points_info = single_axis_points[rec['key']]
             self.__motor_proxy[rec['key']] = Motor(rec['key'], self.__adlink, [rec])
         
@@ -70,7 +70,7 @@ class MajorWidgetCtrl:
                     return ret
             # single axis servo on
             for axis in motor_info:
-                if not axis['composite']:
+                if axis['individual']:
                     key = axis['key']
                     ret = actor[actor_key].send('servo_on')
                     if ret:
@@ -87,7 +87,7 @@ class MajorWidgetCtrl:
                     return ret
             # single axis servo off
             for axis in motor_info:
-                if not axis['composite']:
+                if axis['individual']:
                     actor_key = axis['key']
                     ret = actor[actor_key].send('servo_off')
                     if ret:
