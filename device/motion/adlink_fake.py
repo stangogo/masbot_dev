@@ -124,7 +124,7 @@ class ADLink(Motion):
             self.__motion_status[axis['axis_id']] = 14
             for count in range(simulate_count):
                 self.__axis_pulse[axis['axis_id']] += axis['pulse'] / simulate_count
-                sleep(0.01)
+                sleep(0.02)
             self.__motion_status[axis['axis_id']] = 0
         return 0
 
@@ -139,7 +139,7 @@ class ADLink(Motion):
             for count in range(simulate_count):
                 shift_position = axis['pulse'] - now_position[axis['axis_id']]
                 self.__axis_pulse[axis['axis_id']] += shift_position / simulate_count
-                sleep(0.01)
+                sleep(0.02)
             self.__motion_status[axis['axis_id']] = 0
         return 0
 

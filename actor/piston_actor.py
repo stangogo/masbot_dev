@@ -34,7 +34,8 @@ class PistonActor(pykka.ThreadingActor):
         self.__logger = logging.getLogger(__name__)
         self.__state = 'ready'
         DM = DeviceManager()
-        self.__piston_obj = DM.request(actor_info['key'], actor_info, 'piston', 'ADLink')
+        actor_info['module_type'] = 'ADLink'
+        self.__piston_obj = DM.request(actor_info, 'piston')
         self.__actor_info = actor_info
         self.__detect_type()
         
@@ -89,8 +90,8 @@ class PistonActor(pykka.ThreadingActor):
         Raises:
             
         """
-        output_pattern = compile('.*_output$')
-        input_pattern = compile('.*_input$')
+        output_pattern = compile('^output[0-9]$')
+        input_pattern = compile('^input[0-9]$')
         self.__do_list = []
         self.__di_list = []
         for key, val in self.__actor_info.items():
@@ -115,8 +116,8 @@ class PistonActor(pykka.ThreadingActor):
         """
         # correspond to the funtion by piston type
         if self.__type == '1_out_1_in':
-            o_port = self.__actor_info['1st_output']
-            i_port = self.__actor_info['1st_input']
+            o_port = self.__actor_info['output1']
+            i_port = self.__actor_info['input1']
             o_status = self.__piston_obj.DO_read(o_port)
             i_status = self.__piston_obj.DI(i_port)
             if i_status == 1 and o_status == 0:
@@ -124,9 +125,9 @@ class PistonActor(pykka.ThreadingActor):
             elif i_status == 0 and o_status == 1:
                 return 1
         elif self.__type == '1_out_2_in':
-            o_port = self.__actor_info['1st_output']
-            i_port1 = self.__actor_info['1st_input']
-            i_port2 = self.__actor_info['2nd_input']
+            o_port = self.__actor_info['output1']
+            i_port1 = self.__actor_info['input1']
+            i_port2 = self.__actor_info['input2']
             o_status = self.__piston_obj.DO_read(o_port)
             i_status1 = self.__piston_obj.DI(i_port1)
             i_status2 = self.__piston_obj.DI(i_port2)
@@ -180,13 +181,13 @@ class PistonActor(pykka.ThreadingActor):
         return di_status
             
     def __action_1_out_1_in(self, state, timeout):
-        action_port = self.__actor_info['1st_output']
+        action_port = self.__actor_info['output1']
         ret = self.__piston_obj.DO(action_port, state)
         if ret:
             return ret
         # check if sensor in position
         on_off = state & 1
-        target_sensor = self.__actor_info['1st_input']
+        target_sensor = self.__actor_info['input1']
         ret = self.__check_sensor(target_sensor, timeout, on_off)
         if ret:
             return ret
@@ -197,12 +198,12 @@ class PistonActor(pykka.ThreadingActor):
             return -1
         
     def __action_1_out_2_in(self, state, timeout):
-        action_port = self.__actor_info['1st_output']
+        action_port = self.__actor_info['output1']
         ret = self.__piston_obj.DO(action_port, state) 
         if ret:
             return ret
         # check if sensor in position
-        #sensor_text = '2nd_input' if state else '1st_input'
+        #sensor_text = 'input2' if state else 'input1'
         #target_sensor = self.__actor_info[sensor_text]
         #ret = self.__check_sensor(target_sensor, timeout)
         #if ret:

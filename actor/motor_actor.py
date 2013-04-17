@@ -17,16 +17,14 @@ import pykka
 from masbot.device.device_manager import DeviceManager
 
 class MotorActor(pykka.ThreadingActor):
-    def __init__(self, actor_name, actor_info, points_info):
+    def __init__(self, motor_info):
         """ initial the Motor as an Actor
         
         Example:
             None
             
         Args:
-            actor_info(dict): resource infomation includes all DOs and DIs
-                configurations of the motor
-            points_info(dict): all points in this motor
+            motor_info(dict): motor infomation
         
         Returns:
             None
@@ -36,10 +34,10 @@ class MotorActor(pykka.ThreadingActor):
         """
         super(MotorActor, self).__init__()
         self.__logger = logging.getLogger(__name__)
-        self.__points_info = points_info
+        self.__points_info = motor_info['points_info']
         self.__state = 0
         DM = DeviceManager()
-        self.__motor_obj = DM.request(actor_name, actor_info, 'motor', 'ADLink')
+        self.__motor_obj = DM.request(motor_info, 'motor')
         
     def on_receive(self, message):
         # action on
@@ -51,6 +49,8 @@ class MotorActor(pykka.ThreadingActor):
             ret = self.__motor_obj.servo_off()
         elif message.get('msg') == 'get_position':
             ret = self.__motor_obj.get_position()
+        elif message.get('msg') == 'get_status':
+            ret = self.__motor_obj.get_motion_status()
         elif message.get('msg') == 'set_speed':
             new_speed = message.get('speed')
             ret = self.__motor_obj.set_speed(new_speed)
