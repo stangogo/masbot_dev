@@ -26,7 +26,7 @@ class LPLink(Motion):
         self.__motion_status = 8 * [0]
         self.__initial()
 
-    def __exit__(self):
+    def __del__(self):
         self.close_io_cards()
         self.close()
 

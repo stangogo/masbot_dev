@@ -50,7 +50,7 @@ class MajorWidgetCtrl:
         self.__motor_proxy = {}
         for rec in motor_info:
         #    points_info = {}
-        #    if not rec['composite']:
+        #    if not rec['individual']:
         #        points_info = single_axis_points[rec['key']]
             self.__motor_proxy[rec['key']] = Motor(rec['key'], self.__adlink, [rec])
         
@@ -59,24 +59,39 @@ class MajorWidgetCtrl:
         
     def __servo_on_off(self):
         if self.__servo_status == 0:
-            ret = actor['tbar'].send('servo_on')
-            if ret:
-                return ret
-            ret = actor['axis_z'].send('servo_on')
-            if ret:
-                return ret
-            print(self.__adlink.DO_read(0))
-            self.__adlink.DO(0, 1)
-            print(self.__adlink.DO_read(0))
+            # double axis servo on
+            axis_list = []
+            for actor_key, axis in double_axis_info.items():
+                axis_list.append(actor_key)
+                ret = actor[actor_key].send('servo_on')
+                if ret:
+                    for key in axis_list:
+                        actor[key].send('servo_off')
+                    return ret
+            # single axis servo on
+            for axis in motor_info:
+                if axis['individual']:
+                    key = axis['key']
+                    ret = actor[actor_key].send('servo_on')
+                    if ret:
+                        for key in axis_list:
+                            actor[key].send('servo_off')
+                        return ret
             self.__servo_status = 1
             return 0
         else:
-            ret = actor['tbar'].send('servo_off', wait=False)
-            if ret:
-                return ret
-            ret = actor['axis_z'].send('servo_off')
-            if ret:
-                return ret
+            # double axis servo on
+            for actor_key, axis in double_axis_info.items():
+                ret = actor[actor_key].send('servo_off')
+                if ret:
+                    return ret
+            # single axis servo off
+            for axis in motor_info:
+                if axis['individual']:
+                    actor_key = axis['key']
+                    ret = actor[actor_key].send('servo_off')
+                    if ret:
+                        return ret
             self.__servo_status = 0
             return 0
 
@@ -94,7 +109,7 @@ class MajorWidgetCtrl:
             sleep(0.3)
         
     def __tuning_position(self, axis_name, offset):
-        if self.__proxy_switch:            
+        if self.__proxy_switch:
             offset = (offset, )
             return self.__motor_proxy[axis_name].rel_move(offset)
 

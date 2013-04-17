@@ -19,7 +19,7 @@ class LPLink(Motion):
         self.__logger = logging.getLogger(__name__)
         self.__initial()
 
-    def __exit__(self):
+    def __del__(self):
         #self.close_io_cards()
         #self.close()
 
