@@ -49,11 +49,11 @@ class DIOButton(QtGui.QPushButton):
             return    
         self.nOn = on
         if on:                  #light on
-            self.setStyleSheet(self.on_style)                
+            self.setStyleSheet(self.on_style)
             if not self.isChecked() and self.isCheckable():
                 self.setChecked(True)
         else:
-            self.setStyleSheet(self.off_style)                
+            self.setStyleSheet(self.off_style)
             if self.isChecked() and self.isCheckable():
                 self.setChecked(False)
             

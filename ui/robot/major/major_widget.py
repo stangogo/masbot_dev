@@ -62,8 +62,7 @@ class MajorWidget(QtGui.QWidget):
         servo_on_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         UISignals.RegisterSignal(servo_on_btn.clicked, SigName.SERVO_ON)
         
-        pause_btn = QtGui.QPushButton('Pause')
-        pause_btn.setStyleSheet("QPushButton{color:red;font-size:17px;font-family:courier;font-style:italic}")
+        pause_btn = QtGui.QPushButton('Pause')        
         pause_btn.setCheckable(True)
         pause_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         UISignals.RegisterSignal(pause_btn.clicked, SigName.PAUSE_MAIN)

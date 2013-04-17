@@ -60,9 +60,10 @@ class ImageWidget(QtGui.QWidget):
         image_utils_tab = ImageUtilsTab()
      
         v_layout = QtGui.QVBoxLayout(self)
-        v_layout.addWidget(self.preview_label)
-        v_layout.addWidget(toolbar)
         v_layout.addWidget(self.img_thumbnail)
+        v_layout.addWidget(self.preview_label)
+        #v_layout.addWidget(toolbar)
+        
         v_layout.addWidget(image_utils_tab)
 
         self.setLayout(v_layout)

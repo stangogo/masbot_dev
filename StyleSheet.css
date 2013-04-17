@@ -74,5 +74,10 @@ RobotBanner .QLabel  {
 background-color : lightblue; 
 font-size:28pt ;
 }    
-    
-    
+/* RobotBanner 裡 所有QLabel都套用 */
+
+
+#DO_underscope{background-color: rgb(31, 232, 3);}
+#DI_underscope{background-color: rgb(232, 113, 6);}
+/* 對特定物件, 在物件初始化後, 呼叫 setObjectName 設定名稱即可 */
+

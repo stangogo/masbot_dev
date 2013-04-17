@@ -99,7 +99,7 @@ def main():
     styleSheet = styleSheet % Settings 
     app.setStyleSheet(styleSheet)
  
-    app.setStyle(QtGui.QStyleFactory.create("plastique"))
+    #app.setStyle(QtGui.QStyleFactory.create("plastique"))
 
     ex = MainUI()
     app.exec_()
