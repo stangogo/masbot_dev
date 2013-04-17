@@ -52,7 +52,7 @@ while result.next():
         dic[col] = result.value(i)
     piston_info.append(dic)
 #==========================================================================
-# motor_info and construct an axis map
+# axis_info and construct an axis map
 #==========================================================================
 result = sqldb.execute("select * from single_axis")
 col_info = result.record()
@@ -62,12 +62,12 @@ for col in range(col_info.count()):
     col_names.append(col_info.fieldName(col))
 
 axis_map = {}
-motor_info = []
+axis_info = []
 while result.next():
     dic = {}
     for i, col in enumerate(col_names):
         dic[col] = result.value(i)
-    motor_info.append(dic)
+    axis_info.append(dic)
     key = dic['key']
     axis_map[key] = dic
 
@@ -119,9 +119,9 @@ while result.next():
 #==========================================================================
 # single_axis_info
 #==========================================================================
-necessary_attribute = ['key', 'speed', 'safe_speed', 'motion_module']
-single_axis_info = []
-for axis in motor_info:
+motor_info = []
+necessary_attribute = ['key', 'speed', 'safe_speed', 'module_type']
+for axis in axis_info:
     if axis['individual']:
         dic = {'axis_info':[]}
         for k, v in axis.items():
@@ -133,10 +133,10 @@ for axis in motor_info:
             dic['points_info'] = points_map[actor_name]
         else:
             dic['points_info'] = {}
-        single_axis_info.append(dic)  
+        motor_info.append(dic)
 
 #==========================================================================
-# double_axis_info
+# double axis_info
 #==========================================================================
 pattern = compile('^axis[0-9]$')
 result = sqldb.execute("select * from double_axis")
@@ -145,14 +145,14 @@ col_names = []
 for col in range(col_info.count()):
     col_names.append(col_info.fieldName(col))
 
-double_axis_info = []
 while result.next():
-    dic = {'axis_info':[]}
+    dic = {'axis_info': [], 'sub_axis': []}
     for i, col in enumerate(col_names):
         cell_value = result.value(i)
         if pattern.match(col):
             key = cell_value
             dic['axis_info'].append(axis_map[key])
+            dic['sub_axis'].append(key)
         else:
             dic[col] = cell_value
         if col == 'key':
@@ -161,4 +161,4 @@ while result.next():
                 dic['points_info'] = points_map[actor_name]
             else:
                 dic['points_info'] = {}
-    double_axis_info.append(dic)
+    motor_info.append(dic)

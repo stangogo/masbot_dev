@@ -11,7 +11,7 @@
 import os
 import logging.config
 import yaml
-from masbot.config.global_settings import *
+from masbot.config.gather_data import *
 from masbot.actor.piston_actor import PistonActor
 from masbot.actor.motor_actor import MotorActor
 
@@ -31,14 +31,5 @@ for rec in piston_info:
     actor[actor_name] = PistonActor.start(rec)
 
 for rec in motor_info:
-    if rec['individual']:
-        actor_name = rec['key']
-        points_info = single_axis_points[actor_name]
-        actor[actor_name] = MotorActor.start(actor_name, [rec], points_info)
-
-for actor_name, rec in double_axis_info.items():
-    points_info = {}
-    if actor_name in double_axis_points:
-        points_info = double_axis_points[actor_name]
-    actor[actor_name] = MotorActor.start(actor_name, rec, points_info)
-
+    actor_name = rec['key']
+    actor[actor_name] = MotorActor.start(rec)

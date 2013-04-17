@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS options(
 """
 CREATE TABLE IF NOT EXISTS nozzle(
     key TEXT not null,
+    module_type TEXT DEFAULT 'ADLink',
     updown_action INTEGER,
     blow_action INTEGER,
     suck_action INTEGER,
@@ -85,7 +86,7 @@ CREATE TABLE IF NOT EXISTS single_axis(
     key TEXT not null,
     axis_id INTEGER,
     display_text TEXT,
-    motion_module TEXT DEFAULT 'ADLink',
+    module_type TEXT DEFAULT 'ADLink',
     motor_type TEXT DEFAULT 'servo',
     proportion INTEGER DEFAULT 500,
     speed INTEGER DEFAULT 200,
@@ -118,7 +119,7 @@ CREATE TABLE IF NOT EXISTS single_axis_points(
 CREATE TABLE IF NOT EXISTS double_axis(
     key TEXT not null,
     display_text TEXT,
-    motion_module INTEGER DEFAULT 'ADLink',
+    module_type INTEGER DEFAULT 'ADLink',
     group_id INTEGER,
     axis1 TEXT,
     axis2 TEXT,
@@ -146,7 +147,7 @@ CREATE TABLE IF NOT EXISTS double_axis_points(
 CREATE TABLE IF NOT EXISTS triple_axis(
     key TEXT not null,
     display_text TEXT,
-    motion_module INTEGER DEFAULT 'ADLink',
+    module_type INTEGER DEFAULT 'ADLink',
     group_id INTEGER,
     axis1 TEXT,
     axis2 TEXT,
@@ -176,12 +177,13 @@ CREATE TABLE IF NOT EXISTS triple_axis_points(
 """
 CREATE TABLE IF NOT EXISTS piston(
     key TEXT not null,
-    `1st_output` INTEGER,
-    `2nd_output` INTEGER,
-    `1st_input` INTEGER,
-    `2nd_input` INTEGER,
-    `3rd_input` INTEGER,
-    `4th_input` INTEGER,
+    module_type TEXT DEFAULT 'ADLink',
+    output1 INTEGER,
+    output2 INTEGER,
+    input1 INTEGER,
+    input2 INTEGER,
+    input3 INTEGER,
+    input4 INTEGER,
     PRIMARY KEY(key)
 );
 """
