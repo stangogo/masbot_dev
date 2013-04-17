@@ -9,7 +9,7 @@ import codecs
 
 from PySide import QtCore, QtGui
 import unittest
-from masbot.ui.utils import SigName, UISignals
+from masbot.config.utils import SigName, UISignals
 from masbot.ui.robot.major.major_widget import MajorWidget
 from masbot.ui.test.test_init_lib import *
 
@@ -102,5 +102,5 @@ if __name__ == '__main__':
     window.show()      
     #unittest.main()
     
-    sys.exit(app.exec_()) 
+    app.exec_()
     

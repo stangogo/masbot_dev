@@ -15,7 +15,7 @@ import logging
 import sys
 from datetime import date
 from PySide import QtGui, QtCore
-from masbot.ui.utils import Constants, Communicate
+from masbot.config.utils import Constants, Communicate
 
 class MessageAndLog(QtGui.QListWidget):
     
@@ -88,7 +88,7 @@ def main():
     
     app = QtGui.QApplication(sys.argv)
     ex = MessageAndLog('test')
-    sys.exit(app.exec_())
+    app.exec_()
 
 if __name__ == '__main__':
     main()        

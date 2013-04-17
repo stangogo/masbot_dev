@@ -23,7 +23,7 @@ from PySide import QtCore
 from masbot.ui.robot.io.io_map import IOMap
 from masbot.ui.robot.io.nozzle_table import NozzleTable
 
-from masbot.ui.utils import Path, Constants, UISignals, SigName
+from masbot.config.utils import Path, Constants, UISignals, SigName
 
 class MainUI(QtGui.QWidget):
     
@@ -141,7 +141,7 @@ def main():
     app.setStyle(QtGui.QStyleFactory.create("plastique"))
     
     ex = MainUI()
-    sys.exit(app.exec_())
+    app.exec_()
 
 if __name__ == '__main__':
     main()

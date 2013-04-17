@@ -14,7 +14,7 @@ from masbot.device.motion.motion_card import Motion
 from masbot.device.motion.adlink_dll import *
 from masbot.device.motion.adlink_table import *
 
-class ADLinkMotion(Motion):
+class ADLink(Motion):
     def __init__(self, cards_config=[]):
         self.__logger = logging.getLogger(__name__)
         self.__mode = 'pci8154'
@@ -24,7 +24,7 @@ class ADLinkMotion(Motion):
         self.__di_cards_index = []
         self.__initial()
 
-    def __exit__(self):
+    def __del__(self):
         self.close_io_cards()
         self.close()
 

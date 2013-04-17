@@ -14,7 +14,7 @@ from PySide import QtGui, QtCore
 from datetime import datetime
 from masbot.ui.message_log import MessageAndLog
 from masbot.ui.robot.major.tray_info_table import TrayInfoTable 
-from masbot.ui.utils import UISignals, SigName
+from masbot.config.utils import UISignals, SigName
 
 class Signals(QtCore.QObject):
     """
@@ -62,8 +62,7 @@ class MajorWidget(QtGui.QWidget):
         servo_on_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         UISignals.RegisterSignal(servo_on_btn.clicked, SigName.SERVO_ON)
         
-        pause_btn = QtGui.QPushButton('Pause')
-        pause_btn.setStyleSheet("QPushButton{color:red;font-size:17px;font-family:courier;font-style:italic}")
+        pause_btn = QtGui.QPushButton('Pause')        
         pause_btn.setCheckable(True)
         pause_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         UISignals.RegisterSignal(pause_btn.clicked, SigName.PAUSE_MAIN)
@@ -73,7 +72,7 @@ class MajorWidget(QtGui.QWidget):
         button_grid_layout.addWidget(servo_on_btn, 1, 0)
         button_grid_layout.addWidget(pause_btn, 1, 1)
         
-        message_edit = QtGui.QTextEdit()
+        message_edit = QtGui.QLabel("ABC")# QtGui.QTextEdit()
         message_edit.resize(500, 600)
         
         
@@ -133,7 +132,7 @@ def main():
     app = QtGui.QApplication(sys.argv)
 
     ex = MajorWidget()
-    sys.exit(app.exec_())
+    app.exec_()
 
 
 if __name__ == '__main__':

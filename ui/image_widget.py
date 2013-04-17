@@ -21,128 +21,120 @@ from threading import Thread
 from PySide import QtGui, QtCore
 
 from masbot.ui.image.pixelmap_label import PixelMapLabel
-from masbot.ui.image.image_tools_dock import ImageToolsDock
+from masbot.ui.image.image_utils_tab import ImageUtilsTab
 from masbot.ui.image.image_thumbnail import ImageThumbnail
+from masbot.ui.image.image_toolbar import ImageToolbar
+from masbot.config.utils import Path
+from masbot.config.utils import UISignals, SigName
+from masbot.ui import preaction
+from masbot.config.db_table_def import DBTableDefine
 
 
 class ImageWidget(QtGui.QWidget):
 
-    imgs_dir = ""   # the dir placed the images for UI    
-    
     def __init__(self):
         super(ImageWidget, self).__init__()
-        
         self.init_ui()
+        self.cur_preview_id = None
+        UISignals.GetSignal(SigName.IMG_THUMBNAIL).connect(self.img_thumbnail_income)
         
-    def open_file_dialog(self):
-        file_name = QtGui.QFileDialog.getOpenFileName(self, 'Open File', '/home','Images (*.png *.xpm *.jpg)')
-        #self.file_path_edit.setText(file_name.)
+    def init_ui(self):
+        imgs_dir = Path.imgs_dir()
+
+        # preview image
+        self.preview_label = PixelMapLabel(0) 
+        self.preview_label.update_pixmap("{0}//zero.jpg".format(imgs_dir))
+        self.preview_label.setMinimumHeight(400)
         
-    def start_change_img(self):
-        threading.Thread(target = self.threadFunc).start()
         
-    def stop_change_img(self):
-        self.stop_thread = True
+        # tool bar        
+        toolbar = ImageToolbar()
+        toolbar.file_selected.connect(self.file_selected)
+        toolbar.button_clicked.connect(self.toolbar_btn_clicked)
+        
+        # Image thumbnail
+        self.img_thumbnail = ImageThumbnail([])
+        self.img_thumbnail.thumbnail_clicked.connect(self.thumbnail_clicked)
+        
+        #IPI result table (方法1)
+        image_utils_tab = ImageUtilsTab()
+     
+        v_layout = QtGui.QVBoxLayout(self)
+        v_layout.addWidget(self.img_thumbnail)
+        v_layout.addWidget(self.preview_label)
+        #v_layout.addWidget(toolbar)
+        
+        v_layout.addWidget(image_utils_tab)
+
+        self.setLayout(v_layout)
+             
+        self.setWindowTitle('Image Widget')
+        self.show()
+        
+    def thumbnail_clicked(self, thumbnail_id):
+        print("thumbnail {0} is clicked".format(thumbnail_id))
+        self.cur_preview_id = thumbnail_id
+
+    def file_selected(self, file_path):        
+        UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit(file_path, self.cur_preview_id)        
+            
+    def toolbar_btn_clicked(self, button_id):
+        if button_id == 'zoom_in_id':
+            threading.Thread(target = self.threadFunc).start()
+        elif button_id == 'zoom_out_id':
+            self.stop_thread = True
+        elif button_id == 'previous_id':
+            self.img_thumbnail.change_image("r:\\temp\\9.bmp", '1')
+            
+        
         
     def threadFunc(self):
         self.stop_thread = False
         index = 0
+        imgs_dir = Path.imgs_dir()
+        
+        #qimage = []
+        #for i in range(15):
+            #qimage.append(QtGui.QImage("{0}\\{1}.tif".format(imgs_dir, i+1)))
         
         while self.stop_thread == False:
-            index = (index + 1) % 15        
-            image_path = "{0}\\{1}.tif".format( self.imgs_dir, index + 1)
+            index = (index + 1) % 15
+            
+            #self.preview_label.change_qimage(qimage[index])
+
+            image_path = "{0}\\{1}.tif".format( imgs_dir, index + 1)
             
             self.preview_label.change_image(image_path)
-            self.img_thumbnail.change_image(image_path, 0)
-            self.img_thumbnail.change_image(image_path, 1)
-            self.img_thumbnail.change_image(image_path, 2)
-            self.img_thumbnail.change_image(image_path, 3)
-            self.img_thumbnail.change_image(image_path, 4)
-            self.img_thumbnail.change_image(image_path, 5)
             
-            
-            time.sleep(0.1)
-        
-    def init_ui(self):
+            index = self.change_thumbnail_image(index, '1', imgs_dir)
+            index = self.change_thumbnail_image(index, '2', imgs_dir)
+            index = self.change_thumbnail_image(index, '3', imgs_dir)
+            index = self.change_thumbnail_image(index, '4', imgs_dir)
+            #index = self.change_thumbnail_image(index, '5', imgs_dir)
+            #index = self.change_thumbnail_image(index, '6', imgs_dir)
+            #index = self.change_thumbnail_image(index, '7', imgs_dir)
+            #index = self.change_thumbnail_image(index, '8', imgs_dir)
+            #index = self.change_thumbnail_image(index, '9', imgs_dir)
+            #index = self.change_thumbnail_image(index, '10', imgs_dir)
 
-        v_layout = QtGui.QVBoxLayout(self)
-        
-        self.imgs_dir = os.path.abspath(__file__ + "//..//")+"//Imgs"
+            time.sleep(0.15)
+    
+    def change_thumbnail_image(self, index, id_, imgs_dir):   # 測試用     
+        index = (index + 1) % 15
+        image_path = "{0}\\{1}.tif".format( imgs_dir, index + 1)
+        self.img_thumbnail.change_image(image_path, id_)
+        return index 
 
-        #preview image
-        self.preview_label = PixelMapLabel(0) #QtGui.QLabel()
-        self.preview_label.update_pixmap("{0}//Water_lilies.jpg".format(self.imgs_dir))
+    def img_thumbnail_income(self, file_path, id_):
+        self.img_thumbnail.change_image(file_path, id_)
+        if self.cur_preview_id == id_:
+            self.preview_label.change_image(file_path)
         
-        #pixel_map = QtGui.QPixmap('Imgs\\Sunset.jpg').scaledToHeight(400)
-        #preview_label.setPixmap(pixel_map)
-        
-        #tool bar
-        tools_bar_layout = QtGui.QHBoxLayout()
-        tools_bar_layout.addStretch()
-        
-        #camera button
-        camera_btn = QtGui.QPushButton('Camera')
-        
-        #previous button 
-        previous_btn = QtGui.QPushButton('Previous')
-        
-        #next button
-        next_btn = QtGui.QPushButton('Next')
-        
-        #zoom-in button        
-        zoom_in_btn = QtGui.QPushButton(QtGui.QIcon("{0}//zoom-in.png".format(self.imgs_dir)), "")
-        zoom_in_btn.setFlat(True)
-        zoom_in_btn.clicked.connect(self.start_change_img)
-        
-        #zoom-out button
-        zoom_out_btn = QtGui.QPushButton(QtGui.QIcon("{0}//zoom-out.png".format(self.imgs_dir)), "")
-        zoom_out_btn.setFlat(True)
-        zoom_out_btn.clicked.connect(self.stop_change_img)
-        
-        #show open file dialog button
-        open_file_btn = QtGui.QPushButton('Open File')
-        open_file_btn.clicked.connect(self.open_file_dialog)
-        
-        #selected file path
-        self.file_path_edit = QtGui.QLineEdit('d:\\Image\\IPI\\123.tif')
-
-        
-        tools_bar_layout.addWidget(camera_btn, 0, QtCore.Qt.AlignLeft)
-        tools_bar_layout.addWidget(previous_btn, 0, QtCore.Qt.AlignLeft)
-        tools_bar_layout.addWidget(next_btn, 0, QtCore.Qt.AlignLeft)
-        tools_bar_layout.addWidget(zoom_in_btn, 0, QtCore.Qt.AlignLeft)
-        tools_bar_layout.addWidget(zoom_out_btn, 0, QtCore.Qt.AlignLeft)
-        tools_bar_layout.addWidget(open_file_btn, 0, QtCore.Qt.AlignLeft)
-        tools_bar_layout.addWidget(self.file_path_edit, 1, QtCore.Qt.AlignLeft)
-
-        #Image List
-        self.img_thumbnail = ImageThumbnail()
-        self.img_thumbnail.thumbnail_clicked.connect(self.thumbnail_clicked)
-        
-        #IPI result table (方法1)
-        image_tools = ImageToolsDock()
-     
-        v_layout.addWidget(self.preview_label)
-        v_layout.addLayout(tools_bar_layout)
-        v_layout.addWidget(self.img_thumbnail)
-        v_layout.addWidget(image_tools)
-
-        self.setLayout(v_layout)
-        
-        #self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('Image Vertical Layout')
-        self.show()
-        
-    def thumbnail_clicked(self, thumbnail_index):
-        print("thumbnail {0} is clicked".format(thumbnail_index))
-
-            
-            
 def main():
     
     app = QtGui.QApplication(sys.argv)
     ex = ImageWidget()
-    sys.exit(app.exec_())
+    app.exec_()
 
 
 if __name__ == '__main__':

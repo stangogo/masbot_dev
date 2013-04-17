@@ -11,48 +11,59 @@ import codecs
 
 
 from PySide import QtCore, QtGui
-from masbot.ui.utils import UISignals, SigName
+from masbot.config.utils import UISignals, SigName
 
 class SigAgent(QtCore.QObject):
     """所有UI對外連接的串口的名稱和參數設定. 
     """
     
     
-    di_in = QtCore.Signal(list, bool)
+    di_in = QtCore.Signal(list, int)
     """
     external DI signals - the index of list is the port number of DI, 
                           and the value means on or off. If the number
                           of list only one. The value presents the port
                           number of DI and bool is the status.
     @ list: DI port status
-    @ on_off: on or off (True or False)
+    @ int : on or off (1 or 0)
     
     #"""
     
-    do_in = QtCore.Signal(list, bool)
-    """
-    external DO signal 
+    do_in = QtCore.Signal(list, int)
+    """ external DO signal 
     @ list: DO port staus
-    @ on_off: on or off (True or False)
+    @ int : on or off (1 or 0)
     
     #"""
     
-    do_out = QtCore.Signal(int, bool)
+    do_out = QtCore.Signal(int, int)
+    """ 提供 DIOButton, NozzleDoButton clicked時, 輸出DO port 和 on-off的接口
+    @ int: do port number
+    @ int: on or off (1 or 0)
     """
-    提供 DIOButton, NozzleDoButton clicked時, 輸出DO port 和 on-off的接口
-    """
-    
     
     into_single_axis = QtCore.Signal(str, str, float)
+    """ 提供單軸表格內容填入的接口
+    @ str: row 定義在 db_table_def.py 裡的 AxisOP 
+    @ str: 定義在database 的 SingleAxis 資料表裡的 axis_key 欄
+    @ float: 填入的值
     """
-    row     - string.    定義在 db_table_def.py 裡的 AxisOP 
-    column  - string     定義在database 的 SingleAxis 資料表裡的 axis_key 欄
-    value   - 填入的值
+    out_single_axis = QtCore.Signal(str, float)
+    """ 提供單軸發出控制訊號
+    @ str: axis name
+    @ float: 單軸位置的 value
     """
-    out_single_axis = QtCore.Signal(str, float, int)
-    """axis name, value, action (1: add, -1: minus) """
-    
 
+    img_preview = QtCore.Signal(str, str)
+    """影像預覽資料傳入
+    @ str: 影像檔案路徑
+    @ str: 辨別 ID
+    """
+    
+    img_aided_tool = QtCore.Signal(dict)
+    """ 影像 - 輔助工具 設定值傳出口
+    @ dict: 資料字典集
+    """
 
 """初始化所有的接口, 並註冊到UISignals Dictionary
 """
@@ -62,23 +73,24 @@ UISignals.RegisterSignal(sig_agent.do_in, SigName.DO_IN)
 UISignals.RegisterSignal(sig_agent.do_out, SigName.DO_OUT)
 UISignals.RegisterSignal(sig_agent.into_single_axis, SigName.ENTER_AXIS_TABLE)
 UISignals.RegisterSignal(sig_agent.out_single_axis, SigName.FROM_AXIS_TABLE)
+UISignals.RegisterSignal(sig_agent.img_preview, SigName.IMG_THUMBNAIL)
+UISignals.RegisterSignal(sig_agent.img_aided_tool, SigName.AIDED_TOOL)
 
 
 """測試用
 """
-def do_out_msg(io_num, on_off):
-    pass
+#def do_out_msg(io_num, on_off):
+    #pass
     #print('{0} : {1} : {2}'.format(SigName.DO_OUT, io_num, on_off))
     #do_status = [io_num]
     #UISignals.GetSignal(SigName.DO_IN).emit(do_status, on_off)
 
-def out_single_axis(axis_name, value, n_action): 
-    if n_action == 1:
-        print('{0} 多 {1}'.format(axis_name, value))
-    else:
-        print('{0} 少 {1}'.format(axis_name, value))
+def out_single_axis(axis_name, value): 
+    print('{0} 移動 {1}'.format(axis_name, value))
+    
+    
 
-#UISignals.GetSignal(SigName.FROM_AXIS_TABLE).connect(out_single_axis)                                                     
+UISignals.GetSignal(SigName.FROM_AXIS_TABLE).connect(out_single_axis)                                                     
 #UISignals.GetSignal(SigName.DO_OUT).connect(do_out_msg)
 
 

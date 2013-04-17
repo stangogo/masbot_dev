@@ -8,8 +8,9 @@ import sys
 from datetime import datetime
 from PySide import QtGui, QtCore, QtSql
 
-from masbot.ui.sqldb import SqlDB
-from masbot.ui.utils import Path
+#from masbot.config.sqldb import SqlDB
+from masbot.config.sqldb import sqldb
+from masbot.config.utils import Path
 from masbot.ui.control.dio_button import *
 from masbot.ui import preaction
 from masbot.ui.robot.io.IO_table_template import  IOTableTemplate
@@ -54,25 +55,22 @@ class Point(QtGui.QSplitter):
         
         self.point_table = PointTable('point', 'point_ui', False)        
         
-        #btn_add = QtGui.QPushButton('新增點位')
-        #btn_add.clicked.connect(self.new_point)
-        #btn_delete = QtGui.QPushButton('刪除點位')
-        #btn_delete.clicked.connect(self.delete_point)
-        #btn_save = QtGui.QPushButton('儲存點位')
-        #btn_save.clicked.connect(self.save)        
         
-        #btn_layout = QtGui.QHBoxLayout()
-        #btn_layout.addWidget(btn_add, 0, QtCore.Qt.AlignLeft)
-        #btn_layout.addWidget(btn_delete, 0, QtCore.Qt.AlignLeft)
-        #btn_layout.addWidget(btn_save, 1, QtCore.Qt.AlignLeft)
+        single_axis_point_table = sqldb.get_table_model('single_axis_points')
         
-        table = QtGui.QTableWidget()        
-        table.setRowCount(3)
-        table.setColumnCount(4)
+        table = QtGui.QTableView()
+        table.setModel(single_axis_point_table)
         
-        table2 = QtGui.QTableWidget()        
-        table2.setRowCount(3)
-        table2.setColumnCount(4)        
+        #table.setRowCount(3)
+        #table.setColumnCount(4)
+        
+        
+        double_axis_point_table = sqldb.get_table_model('double_axis_points')
+        table2 = QtGui.QTableView()
+        #table2 = QtGui.QTableWidget()        
+        table2.setModel(double_axis_point_table)
+        #table2.setRowCount(3)
+        #table2.setColumnCount(4)        
         
         #v_layout = QtGui.QVBoxLayout()
         #v_layout.addWidget(single_point_box)
@@ -113,7 +111,7 @@ def main():
     app = QtGui.QApplication(sys.argv)
 
     ex = Point()
-    sys.exit(app.exec_())
+    app.exec_()
 
 
 if __name__ == '__main__':

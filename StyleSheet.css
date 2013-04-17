@@ -1,0 +1,83 @@
+QTabBar{
+    text-align: left;
+    font-size:12px;
+    icon-size:0px;
+}
+
+QTabBar::tab {
+    padding: 2px;
+    font-size:12px;
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+    border: 1px solid #C4C4C3;
+    margin:1px;
+    spacing:0px;
+    text-align: left;
+    min-height:30px;
+    min-width:60px;
+}
+
+QTabBar::tab:top{
+    padding-left:3px;
+    padding-right:3px;
+}
+
+QTabBar::tab:selected {
+     background: %(tabcolor)s;
+     padding:1px;
+}
+
+QStatusBar QLabel{
+    font-size:%(fontsize)s;
+}
+
+QSplitter::handle:horizontal {
+    width: 5px;
+}
+
+QSplitter::handle:vertical {
+    height: 5px;
+}
+
+QToolTip{
+    color:green;
+}
+
+QScrollBar:vertical {
+     width: 10px;
+     padding:0px;
+     border:0px;
+     background-color:gray;
+ }
+
+QScrollBar::handle:vertical {
+     background: %(tabcolor)s;
+     min-height:35px;
+}
+
+QScrollBar:horizontal {
+     height: 10px;
+     padding:0px;
+     border:0px;
+     background-color:gray;
+}
+
+QScrollBar::handle:horizontal {
+     background: %(tabcolor)s;
+     min-width:35px;
+}
+
+QHeaderView::section { background-color:%(tablecolor)s; }
+/*set the header color of table */
+
+RobotBanner .QLabel  {
+background-color : lightblue; 
+font-size:28pt ;
+}    
+/* RobotBanner 裡 所有QLabel都套用 */
+
+
+#DO_underscope{background-color: rgb(31, 232, 3);}
+#DI_underscope{background-color: rgb(232, 113, 6);}
+/* 對特定物件, 在物件初始化後, 呼叫 setObjectName 設定名稱即可 */
+

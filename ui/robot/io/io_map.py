@@ -9,15 +9,9 @@ last edited: Mar. 2013
 import sys
 from PySide import QtGui, QtCore
 
-from masbot.ui.utils import Path, SigName, UISignals
+from masbot.config.utils import Path, SigName, UISignals
 from masbot.ui.control.dio_button import *
 from masbot.ui import preaction
-
-#class Signals(QtCore.QObject):
-    #to_do = QtCore.Signal(list, bool)
-    #to_di = QtCore.Signal(list, bool)
-    #from_do = QtCore.Signal(int, bool)
-
 
 class IOMap(QtGui.QWidget):
     
@@ -25,10 +19,6 @@ class IOMap(QtGui.QWidget):
         super(IOMap, self).__init__()
         
         self.init_ui(card_num)
-        #self.signals = Signals()
-        #UISignals.RegisterSignal(self.signals.to_di, SigName.ENTER_IO_MAP_DI)
-        #UISignals.RegisterSignal(self.signals.to_do, SigName.ENTER_IO_MAP_DO)
-        #UISignals.RegisterSignal(self.signals.from_do, SigName.FROM_IO_MAP)
         
         UISignals.GetSignal(SigName.DI_IN).connect(self.di_changed)
         UISignals.GetSignal(SigName.DO_IN).connect(self.do_changed)
@@ -76,7 +66,8 @@ class IOMap(QtGui.QWidget):
         do_title.setFixedHeight(30)
        
         do_underscore = QtGui.QLabel()
-        do_underscore.setStyleSheet('QFrame { background-color: rgb(31, 232, 3);}')
+        do_underscore.setObjectName("DO_underscope");
+                
         do_underscore.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         do_underscore.setFixedWidth(550)
         do_underscore.setFixedHeight(1)
@@ -90,7 +81,7 @@ class IOMap(QtGui.QWidget):
         di_title.setFixedHeight(30)
         
         di_underscore = QtGui.QLabel()
-        di_underscore.setStyleSheet('QFrame { background-color: rgb(232, 113, 6);}') 
+        di_underscore.setObjectName("DI_underscope");        
         di_underscore.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         di_underscore.setFixedWidth(550)
         di_underscore.setFixedHeight(1)
@@ -115,9 +106,9 @@ class IOMap(QtGui.QWidget):
         self.show()
     def do_clicked(self):
         sender = self.sender()
-        UISignals.GetSignal(SigName.DO_OUT).emit(sender.io_num, sender.bOn)
+        UISignals.GetSignal(SigName.DO_OUT).emit(sender.io_num, sender.nOn)
             
-    def do_di_changed(self, new_status, old_list, bOn):
+    def do_di_changed(self, new_status, old_list, On):
         if new_status == None:
             return
         
@@ -128,23 +119,23 @@ class IOMap(QtGui.QWidget):
             if new_status[0] >= len(old_list):
                 print("out of range: max - {0}".format(len(old_list)))
             else :
-                old_list[new_status[0]].on_off(bOn)
+                old_list[new_status[0]].on_off(On)
             
-    def do_changed(self, do_new, bOn):
+    def do_changed(self, do_new, On):
         """
         do_new: list for setting DO status. if the length = 1, it means the index of DO, and "on" is status 
         if the lenght > 1, each element means the status and index of list is the nubmer of DO
         """
-        self.do_di_changed(do_new, self.do_list, bOn)
+        self.do_di_changed(do_new, self.do_list, On)
     
-    def di_changed(self, di_new, bOn):
-        self.do_di_changed(di_new, self.di_list, bOn)
+    def di_changed(self, di_new, On):
+        self.do_di_changed(di_new, self.di_list, On)
             
 def main():
     
     app = QtGui.QApplication(sys.argv)
     ex = IOMap(8)
-    sys.exit(app.exec_())
+    app.exec_()
 
 
 if __name__ == '__main__':

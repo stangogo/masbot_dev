@@ -3,7 +3,7 @@ import logging
 
 from PySide import QtGui, QtCore
 
-from masbot.ui.utils import Path
+from masbot.config.utils import Path
 
 from masbot.ui.robot.io.motor import Motor
 from masbot.ui.robot.io.nozzle_table import Nozzle
@@ -66,4 +66,4 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)  
     window = IOTab()
     window.show()  
-    sys.exit(app.exec_())  
+    app.exec_()

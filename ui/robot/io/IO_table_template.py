@@ -8,8 +8,9 @@ import sys
 from datetime import datetime
 from PySide import QtGui, QtCore, QtSql
 
-from masbot.ui.sqldb import SqlDB
-from masbot.ui.utils import Path
+#from masbot.config.sqldb import SqlDB
+from masbot.config.sqldb import sqldb
+from masbot.config.utils import Path
 from masbot.ui.control.dio_button import *
 from masbot.ui import preaction
 
@@ -20,8 +21,8 @@ class IOTableTemplate(QtGui.QTableWidget):
         self.do_dict = {}
         self.di_dict = {}        
         
-        self.data_table = SqlDB().get_table_model(data_table_name)        
-        self.ui_table = SqlDB().get_table_model(ui_table_name)
+        self.data_table = sqldb.get_table_model(data_table_name)
+        self.ui_table = sqldb.get_table_model(ui_table_name)
         
         self.ui_table_name = ui_table_name
         self.data_table_name = data_table_name
@@ -40,9 +41,7 @@ class IOTableTemplate(QtGui.QTableWidget):
         
         for i in range(0, self.columnCount()):
             self.setColumnWidth(i, 50)
-            
-        self.setStyleSheet("QHeaderView::section { background-color:rgb(204, 100, 204) }");    #設定表格title的color
-
+        
         self.resizeRowsToContents()
         self.logger = logging.getLogger('ui.log')
         
@@ -87,11 +86,11 @@ class IOTableTemplate(QtGui.QTableWidget):
             return widget_item
 
     def get_value_set(self, value_set):
-        option_table = SqlDB().get_table_model('option_value')
+        option_table = sqldb.get_table_model('options')
         option_table.select()
         
         query= option_table.query()
-        query.exec_("select value from option_value where option = '{0}'".format(value_set))        
+        query.exec_("select value from options where id = '{0}'".format(value_set))        
 
         options = []        
         while query.next():
@@ -101,7 +100,7 @@ class IOTableTemplate(QtGui.QTableWidget):
     def get_property_value(self, table_name, property_name):
         self.data_table.select()
         query = self.data_table.query()
-        query.exec_("select {0} from {1} order by id".format(property_name, table_name) )
+        query.exec_("select {0} from {1}".format(property_name, table_name) )
         
         data = []        
         while query.next():
@@ -173,7 +172,7 @@ class IOTableTemplate(QtGui.QTableWidget):
             data_count += 1
 
     def init_horizontal_header(self, field, table, table_name, orderby):
-        table.select()
+        #table.select()
         self.setColumnCount(table.rowCount())
         query = table.query()
         
@@ -300,7 +299,7 @@ def main():
     
     app = QtGui.QApplication(sys.argv)
     ex = IOTableTemplate('point', 'point_ui', False)
-    sys.exit(app.exec_())
+    app.exec_()
 
 if __name__ == '__main__':
     main()        

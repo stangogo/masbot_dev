@@ -10,6 +10,8 @@ last edited: Mar. 2013
 import sys
 import os
 import logging
+
+import tkinter
 from datetime import datetime
 
 from PySide import QtGui
@@ -18,7 +20,7 @@ from masbot.ui.image_widget import ImageWidget
 from masbot.ui.robot_widget import RobotWidget
 from masbot.ui.robot.io.io_map import IOMap
 
-from masbot.ui.utils import Path, Constants, UISignals, SigName
+from masbot.config.utils import Path, Constants, UISignals, SigName
 from masbot.controller.major_widget_ctrl import MajorWidgetCtrl
 
 class MainUI(QtGui.QMainWindow):
@@ -31,27 +33,33 @@ class MainUI(QtGui.QMainWindow):
    
     def init_ui(self):
         
-        width = 1420
-        height = 880
+        root = tkinter.Tk()
         
-        right_widget = QtGui.QWidget()        
+        width = root.winfo_screenwidth() - 20
+        height = root.winfo_screenheight() - 20
+        
+        #width = 1420
+        #height = 880
+        
+        self.right_widget = QtGui.QWidget()        
         self.right_layout = QtGui.QStackedLayout()
         self.right_layout.addWidget(ImageWidget())
         self.right_layout.addWidget(IOMap(8))
-        right_widget.setLayout(self.right_layout)
+        self.right_widget.setLayout(self.right_layout)
         
         main_widget = RobotWidget()
         
         btn = UISignals.GetSignal(SigName.DI_DO_SHOW)
         btn.connect(self.right_stack_changed)
-                        
+        
         main_splitter = QtGui.QSplitter(QtCore.Qt.Horizontal)
         main_splitter.addWidget(main_widget)
-        main_splitter.addWidget(right_widget) 
+        main_splitter.addWidget(self.right_widget) 
         
-        #main_splitter.setSizes([width*4/7, width*3/7])
-        main_splitter.setSizes([width/2, width/2])
-        
+        main_splitter.setSizes([width*4/7, width*3/7])
+        #main_splitter.setSizes([width/2, width/2])
+
+        UISignals.GetSignal(SigName.REMOVE_IMG_SIDE).connect(self.remove_img_side)
         
         self.setCentralWidget(main_splitter)
         self.setGeometry(30, 30, width, height)
@@ -63,10 +71,15 @@ class MainUI(QtGui.QMainWindow):
     def _init_controller(self):
         self._major_widget_instance = MajorWidgetCtrl()
         
+    def remove_img_side(self):
+        if self.right_widget.isHidden():
+            self.right_widget.show()
+        else:
+            self.right_widget.hide()
+        
     def right_stack_changed(self):
         self.right_layout.setCurrentIndex( (self.right_layout.currentIndex() + 1) %2)
-        #start update 
-        
+        #start update         
         
     def init_caption(self):
         now_time = datetime.now()
@@ -79,129 +92,18 @@ class MainUI(QtGui.QMainWindow):
 def main():
     
     app = QtGui.QApplication(sys.argv)
-    #with open("stylesheet.css", 'r') as cssFile:
-        #styleSheet =cssFile.read()
+    with open("stylesheet.css", 'r') as cssFile:
+        styleSheet =cssFile.read()
 
-    #app.setStyleSheet(styleSheet)
-        
-    Settings = { "tabcolor":"#17B6FF", "fontsize":"10px" }
-    
-    stylesheet = """
-    QToolBar{
-        icon-size:16px;
-        max-height:20px;
-        min-height:20px;
-        padding:1px;
-    }
-    
-    QToolBar QToolButton{
-        max-width:24px;
-    }
-    
-    QToolBar::handle{
-        width:0px;
-    }
-    
-    QToolBar QComboBox{
-        font-size:%(fontsize)s;
-        height:12px;
-    }
-    
-    QTabBar{
-        text-align: left;
-        font-size:12px;
-        icon-size:0px;
-    }
-    
-    QTabBar::tab {
-        padding: 2px;
-        font-size:12px;
-        border-top-left-radius: 1px;
-        border-top-right-radius: 1px;
-        border: 1px solid #C4C4C3;
-        margin:1px;
-        spacing:0px;
-        text-align: left;
-        max-height:150px;
-    }
-    
-    QTabBar::tab:top{
-        padding-left:3px;
-        padding-right:3px;
-    }
-    
-    QTabBar::tab:selected {
-         background: %(tabcolor)s;
-         padding:1px;
-    }
-    
-    QMenuBar{
-        font-size:%(fontsize)s;
-    }
-    
-    QStatusBar QLabel{
-        font-size:%(fontsize)s;
-    }
-    
-    QSplitter::handle {
-        width:2px;
-    }
-    
-    QTreeView{
-        font-size:%(fontsize)s;
-    }
-    
-    QToolTip{
-        color:black;
-    }
-    
-    QScrollBar:vertical {
-         width: 6px;
-         padding:0px;
-         border:0px;
-         background-color:gray;
-     }
-    
-    QScrollBar::handle:vertical {
-         background: %(tabcolor)s;
-         min-height:30px;
-    }
-    
-    QScrollBar:horizontal {
-         height: 6px;
-         padding:0px;
-         border:0px;
-         background-color:gray;
-    }
-    
-    QScrollBar::handle:horizontal {
-         background: %(tabcolor)s;
-         min-width:30px;
-    }
-    
-    .bbb { 
-    background-color : red; 
-    color: rgba(0, 255, 0, 90); 
-    font-size:30pt ;
-    }
-    
-    .title_lable { 
-    background-color : lightblue; 
-    color: rgb(0, 0, 0); 
-    font-size:30pt ;
-    font-family: ms pmincho;
-    }    
-    
-    """ % Settings    
-    
-    
-    app.setStyle(QtGui.QStyleFactory.create("plastique"))
-    
-    #app.setStyleSheet(stylesheet)
+    Settings = { "tabcolor":"#17B6FF", "fontsize":"10px" , "tablecolor":"#17B6BB"}
+    styleSheet = styleSheet % Settings 
+    app.setStyleSheet(styleSheet)
+ 
+    #app.setStyle(QtGui.QStyleFactory.create("plastique"))
 
     ex = MainUI()
-    sys.exit(app.exec_())
-
+    app.exec_()
+    
 if __name__ == '__main__':
     main()
 

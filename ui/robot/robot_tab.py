@@ -2,7 +2,7 @@
 from PySide import QtGui, QtCore
 from masbot.ui.robot.major.major_widget import MajorWidget
 from masbot.ui.robot.io.io_widget import IOWidget
-from masbot.ui.utils import Path
+from masbot.config.utils import Path
     
 class RobotPageDock(QtGui.QTabWidget):
     
@@ -12,36 +12,43 @@ class RobotPageDock(QtGui.QTabWidget):
         self.init_tabs()
         
     def init_tabs(self):
-        push_ico = QtGui.QIcon("{0}/zoom-in.png".format(Path.imgs_dir()))
+
+        self.addTab(MajorWidget(), self.get_rotate_icon('main.png', 90), '')
+        self.addTab(IOWidget(), self.get_rotate_icon('IO.png', 90), '')
+        self.addTab(QtGui.QWidget(), self.get_rotate_icon('system_settings.png', 90), '')
+        self.addTab(QtGui.QWidget(), self.get_rotate_icon('message.png', 90), '')
+        self.addTab(QtGui.QWidget(), self.get_rotate_icon('test.png', 90), '')
         
-        self.addTab(MajorWidget(),  push_ico, '主頁')
-        self.addTab(QtGui.QWidget(), '測試模式')
-        self.addTab(IOWidget(), 'I/O設定')
-        self.addTab(QtGui.QWidget(), '系統設定')
-        self.addTab(QtGui.QWidget(), '訊息')
-        
-     
         self.sizeHint()
         
-        self.setStyleSheet('QTabBar::tab { min-width:30px ; min-height:30px ; font:12px ;}')   # 橫向 (West or East) 要設 width
+        #self.setStyleSheet('QTabBar::tab { min-width:60px ; min-height:30px ; font:12px ;}')   # 橫向 (West or East) 要設 width
         self.setTabPosition(QtGui.QTabWidget.West)
         
         #self.setStyleSheet('QTabBar::tab { height: 50px}') # 縱向 (North or South) 要設 height
         #self.setTabPosition(QtGui.QTabWidget.North)
         
         self.tab_tool_tip()
+        self.setIconSize(QtCore.QSize(50, 50))
      
     def tab_tool_tip(self):
         self.setTabToolTip(0, '主頁')
-        self.setTabToolTip(1, '測試模式')
-        self.setTabToolTip(2, 'I/O設定')
-        self.setTabToolTip(3, '系統設定')
-        self.setTabToolTip(4, '訊息')
-            
+        self.setTabToolTip(1, 'I/O設定')
+        self.setTabToolTip(2, '系統設定')
+        self.setTabToolTip(3, '訊息')
+        self.setTabToolTip(4, '測試模式')
+
+    def get_rotate_icon(self, file_name, r_angle):
+        file_path = "{0}/{1}".format(Path.imgs_dir(), file_name)
+        qimage = QtGui.QImage(file_path)        
+        rotate = QtGui.QTransform()
+        rotate.rotate(r_angle)
+        r_qimage = qimage.transformed(rotate)
+        
+        return QtGui.QIcon(QtGui.QPixmap.fromImage(r_qimage))
      
 if __name__ == '__main__':  
     import sys  
     app = QtGui.QApplication(sys.argv)  
     window = RobotPageDock()  
     window.show()  
-    sys.exit(app.exec_())  
+    app.exec_()

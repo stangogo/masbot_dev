@@ -57,6 +57,15 @@ handlers:
         backupCount: 20
         encoding: utf8
         
+    sqldb_file_handler:
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        formatter: message_log
+        filename: log/sqldb.log
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
+        
     flow_message_handler:        # Cigar
         class: logging.handlers.RotatingFileHandler
         level: DEBUG
@@ -120,6 +129,11 @@ loggers:
     masbot.device.bulletin:
         level: DEBUG
         handlers: [console, bulletin_file_handler]
+        propagate: false
+        
+    masbot.config.sqldb:
+        level: DEBUG
+        handlers: [console, sqldb_file_handler]
         propagate: false
         
     ui.flow_message:        # Cigar
