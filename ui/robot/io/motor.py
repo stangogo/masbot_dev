@@ -44,7 +44,7 @@ class Motor(QtGui.QWidget):
         self.motor_table.setColumnWidth(1, 200)
         self.motor_table.setColumnWidth(2, 80)
         self.motor_table.setColumnWidth(3, 80)
-        self.motor_table.setStyleSheet("QHeaderView::section { background-color:rgb(204, 204, 204) }");    #設定表格title的color
+        
         
         self.motor_table.verticalHeader().hide()
         headers = ['Category', 'Name', 'Type', 'Value']

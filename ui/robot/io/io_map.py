@@ -66,7 +66,8 @@ class IOMap(QtGui.QWidget):
         do_title.setFixedHeight(30)
        
         do_underscore = QtGui.QLabel()
-        do_underscore.setStyleSheet('QFrame { background-color: rgb(31, 232, 3);}')
+        do_underscore.setObjectName("DO_underscope");
+                
         do_underscore.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         do_underscore.setFixedWidth(550)
         do_underscore.setFixedHeight(1)
@@ -80,7 +81,7 @@ class IOMap(QtGui.QWidget):
         di_title.setFixedHeight(30)
         
         di_underscore = QtGui.QLabel()
-        di_underscore.setStyleSheet('QFrame { background-color: rgb(232, 113, 6);}') 
+        di_underscore.setObjectName("DI_underscope");        
         di_underscore.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         di_underscore.setFixedWidth(550)
         di_underscore.setFixedHeight(1)

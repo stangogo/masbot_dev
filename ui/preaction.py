@@ -59,6 +59,11 @@ class SigAgent(QtCore.QObject):
     @ str: 影像檔案路徑
     @ str: 辨別 ID
     """
+    
+    img_aided_tool = QtCore.Signal(dict)
+    """ 影像 - 輔助工具 設定值傳出口
+    @ dict: 資料字典集
+    """
 
 """初始化所有的接口, 並註冊到UISignals Dictionary
 """
@@ -69,6 +74,7 @@ UISignals.RegisterSignal(sig_agent.do_out, SigName.DO_OUT)
 UISignals.RegisterSignal(sig_agent.into_single_axis, SigName.ENTER_AXIS_TABLE)
 UISignals.RegisterSignal(sig_agent.out_single_axis, SigName.FROM_AXIS_TABLE)
 UISignals.RegisterSignal(sig_agent.img_preview, SigName.IMG_THUMBNAIL)
+UISignals.RegisterSignal(sig_agent.img_aided_tool, SigName.AIDED_TOOL)
 
 
 """測試用

@@ -68,6 +68,7 @@ class SigName:
         # Receive the preview data of image, applied at image thumbnail and preview label
         # @file path(str), @id (str)
     
+    AIDED_TOOL = 'AIDED_TOOL'
     
 class UISignals():
     signal_dict = {}

@@ -50,13 +50,6 @@ class RobotBanner(QWidget):
             
 def main():    
     app = QApplication(sys.argv)
-    Settings = { "tabcolor":"#17B6FF", "fontsize":"10px" , "tablecolor":"#17B6BB"}
-    with open("{0}/stylesheet.css".format(Path.mosbot_dir()), 'r') as cssFile:
-        styleSheet =cssFile.read()
-          
-    styleSheet = styleSheet % Settings 
-          
-    app.setStyleSheet(styleSheet)
     
     ex = RobotBanner()    
     app.exec_()

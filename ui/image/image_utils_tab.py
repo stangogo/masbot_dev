@@ -1,6 +1,8 @@
 ﻿import os
 from PySide import QtGui, QtCore
-  
+from masbot.ui.image.tab_utils.aided_tool import AidedTool
+from masbot.config.utils import UISignals, SigName
+
 class ImageUtilsTab(QtGui.QTabWidget):    
     imgs_dir = ""
     
@@ -15,12 +17,12 @@ class ImageUtilsTab(QtGui.QTabWidget):
     def createDockWindows(self):
         self.dockbars['message'] = QtGui.QWidget()
         
-        self.addTab(self.dockbars['message'], '影像訊息')
+        self.addTab(self.dockbars['message'], '辨識訊息')
         self.addTab(QtGui.QWidget(), 'Camera設定')
         self.addTab(QtGui.QWidget(), '辨識設定')
         self.addTab(QtGui.QWidget(), '校正參數')
-        self.addTab(QtGui.QWidget(), '調機工具')
-        self.addTab(QtGui.QWidget(), '其他工具')
+        
+        self.addTab(AidedTool(), '輔助工具')
         
         IPI_result_table = QtGui.QTableWidget(self.dockbars['message'])
         IPI_result_table.setColumnCount(4)
@@ -36,6 +38,8 @@ class ImageUtilsTab(QtGui.QTabWidget):
         IPI_result_table.setItem(3,0, QtGui.QTableWidgetItem(QtGui.QIcon("{0}//Stop.bmp".format(self.imgs_dir)), "data"));
         IPI_result_table.resize(320, 200)
         
+        UISignals.GetSignal(SigName.AIDED_TOOL).connect(self.aided_data)                
+        
         #IPI result table (方法2)
         # IPI_result_table = QtGui.QTableView()
         # model = QtGui.QStandardItemModel(3, 4)
@@ -44,9 +48,13 @@ class ImageUtilsTab(QtGui.QTabWidget):
         # IPI_result_table.setModel(model)
         # model.setItem(0,0,QtGui.QStandardItem('88'))
         
+    def aided_data(self, data_dict):
+        for key, value in data_dict.items():
+            print(key, value)    
+
 if __name__ == '__main__':  
     import sys  
     app = QtGui.QApplication(sys.argv)  
-    window = ImageToolsDockWidget()  
+    window = ImageUtilsTab()  
     window.show()  
     app.exec_()
