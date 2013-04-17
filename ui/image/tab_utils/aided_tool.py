@@ -41,7 +41,7 @@ class Slider(QFrame):
         self.cur_label.setContentsMargins(0,0,0,0)
         
         text_len = max(len(min_label.text()), len(max_label.text()))
-        self.cur_label.setMinimumWidth(int(text_len * 5.8))     # 設定current value label的寬度, 以免數值變化時, layout 會變動
+        self.cur_label.setMinimumWidth(int(text_len * 6))     # 設定current value label的寬度, 以免數值變化時, layout 會變動
         
         hbox = QHBoxLayout()
         
@@ -57,7 +57,7 @@ class Slider(QFrame):
         vbox.setAlignment(max_label, Qt.AlignCenter)
         vbox.setAlignment(min_label, Qt.AlignCenter)
         
-        vbox.setContentsMargins(0,0,0,0)
+        vbox.setContentsMargins(0,2,0,0)
         
         self.setLayout(vbox)
         self.setContentsMargins(0,0,0,0)
@@ -101,9 +101,10 @@ class AdjusterSlider(QWidget):
             (min_, max_, min_angle, max_angle, text_, colorful) = args
 
         self.btn = self.create_button(text_, colorful)
+
         if len(args) == 4:
             self.btn.setMaximumWidth(50)
-            self.setFixedWidth(70)
+            self.setFixedWidth(60)
         elif len(args) == 6:
             self.setFixedWidth(120)
             
@@ -117,6 +118,7 @@ class AdjusterSlider(QWidget):
         slider = Slider(min_, max_)
         slider.value_changed.connect(self.value_changed)
         slider_box.addWidget(slider)    # 第一組 slider
+        
         self.sliders.append(slider)
         
         if len(args) == 6:
@@ -150,6 +152,7 @@ class AdjusterSlider(QWidget):
             self.menu.removeAction(self.turnoff_action)
         else:      
             btn.setFlat(True)
+            
             #btn.setCheckable(True)
             btn.clicked.connect(self.value_changed)
         
@@ -249,7 +252,7 @@ class AidedTool(QListWidget):
         for slider in self.sliders:
             data = []
             if slider.btn.isCheckable():
-                data.append(slider.btn.isChecked())
+                data.append(slider.btn.btn.isFlat())
             else:
                 data.append(slider.button_status())
             for value in slider.value():

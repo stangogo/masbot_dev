@@ -1,1 +1,1 @@
-__all__ = ['aided_tool']
+__all__ = ['aided_tool', 'camera_settings']

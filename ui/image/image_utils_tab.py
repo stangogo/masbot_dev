@@ -1,6 +1,8 @@
 ﻿import os
 from PySide import QtGui, QtCore
 from masbot.ui.image.tab_utils.aided_tool import AidedTool
+from masbot.ui.image.tab_utils.camera_settings import CameraSettings
+
 from masbot.config.utils import UISignals, SigName
 
 class ImageUtilsTab(QtGui.QTabWidget):    
@@ -18,7 +20,7 @@ class ImageUtilsTab(QtGui.QTabWidget):
         self.dockbars['message'] = QtGui.QWidget()
         
         self.addTab(self.dockbars['message'], '辨識訊息')
-        self.addTab(QtGui.QWidget(), 'Camera設定')
+        self.addTab(CameraSettings(), 'Camera設定')
         self.addTab(QtGui.QWidget(), '辨識設定')
         self.addTab(QtGui.QWidget(), '校正參數')
         
@@ -38,7 +40,10 @@ class ImageUtilsTab(QtGui.QTabWidget):
         IPI_result_table.setItem(3,0, QtGui.QTableWidgetItem(QtGui.QIcon("{0}//Stop.bmp".format(self.imgs_dir)), "data"));
         IPI_result_table.resize(320, 200)
         
-        UISignals.GetSignal(SigName.AIDED_TOOL).connect(self.aided_data)                
+        try:
+            UISignals.GetSignal(SigName.AIDED_TOOL).connect(self.aided_data)                
+        except:
+            pass
         
         #IPI result table (方法2)
         # IPI_result_table = QtGui.QTableView()
