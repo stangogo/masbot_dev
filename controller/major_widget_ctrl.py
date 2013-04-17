@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
   
 from masbot.config.utils import SigName, UISignals
+#from masbot.config.gather_data import *
 from masbot.config.common_lib import *
 import threading
 from time import sleep
-from random import *
+#from random import *
 from masbot.device.device_manager import DeviceManager
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
@@ -46,72 +47,70 @@ class MajorWidgetCtrl:
     def __device_proxy(self):
         DM = DeviceManager()
         self.__adlink = DM._get_device_proxy('ADLink')
-        
-        self.__motor_proxy = {}
-        for rec in motor_info:
-        #    points_info = {}
-        #    if not rec['individual']:
-        #        points_info = single_axis_points[rec['key']]
-            self.__motor_proxy[rec['key']] = Motor(rec['key'], self.__adlink, [rec])
+        self.__lplink = DM._get_device_proxy('LPLink')
         
     def __do_clicked(self, do_port, on_off):
         print("ctrl:  do : {0}, {1}".format(do_port, on_off))
         
     def __servo_on_off(self):
         if self.__servo_status == 0:
-            # double axis servo on
-            axis_list = []
-            for actor_key, axis in double_axis_info.items():
-                axis_list.append(actor_key)
+            servo_on_ok_list = []
+            for axis in motor_info:
+                actor_key = axis['key']
                 ret = actor[actor_key].send('servo_on')
                 if ret:
-                    for key in axis_list:
-                        actor[key].send('servo_off')
+                    for actor_key in servo_on_ok_list:
+                        actor[actor_key].send('servo_off')
                     return ret
-            # single axis servo on
-            for axis in motor_info:
-                if axis['individual']:
-                    key = axis['key']
-                    ret = actor[actor_key].send('servo_on')
-                    if ret:
-                        for key in axis_list:
-                            actor[key].send('servo_off')
-                        return ret
+                servo_on_ok_list.append(actor_key)
             self.__servo_status = 1
             return 0
         else:
-            # double axis servo on
-            for actor_key, axis in double_axis_info.items():
+            self.__servo_status = 0
+            for axis in motor_info:
+                actor_key = axis['key']
                 ret = actor[actor_key].send('servo_off')
                 if ret:
                     return ret
-            # single axis servo off
-            for axis in motor_info:
-                if axis['individual']:
-                    actor_key = axis['key']
-                    ret = actor[actor_key].send('servo_off')
-                    if ret:
-                        return ret
-            self.__servo_status = 0
             return 0
 
     def __update_ui(self):
-        slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE)
-
         while True:
-            if self.__proxy_switch:        
-                for axis in motor_info:
-                    key = axis['key']
-                    position = self.__motor_proxy[key].get_position()
-                    status = self.__motor_proxy[key].get_motion_status()
-                    slot.emit('position', key, position)
-                    slot.emit('state', key, status)
+            if self.__proxy_switch:
+                self.__refresh_axis_widget()
             sleep(0.3)
+        
+    def __refresh_axis_widget(self):
+        slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE)
+        for motor in motor_info:
+            actor_name = motor['key']
+            axis_info = motor['axis_info']
+            axis_count = len(axis_info)
+            position_list = actor[actor_name].send('get_position')
+            status_list = actor[actor_name].send('get_status')
+            if axis_count == 1:
+                position_list = list(position_list)
+                status_list = list(status_list)
+            for i in range(axis_count):
+                axis_name = axis_info[i]['key']
+                slot.emit('position', axis_name, position_list[i])
+                slot.emit('state', axis_name, status_list[i])
         
     def __tuning_position(self, axis_name, offset):
         if self.__proxy_switch:
-            offset = (offset, )
-            return self.__motor_proxy[axis_name].rel_move(offset)
+            for motor in motor_info:
+                #if axis_name in axis_map:
+                if motor['key'] == axis_name:
+                    return actor[axis_name].send('rel_move', position=(offset,))
+                elif 'sub_axis' in motor and axis_name in motor['sub_axis']:
+                    sub_axis = motor['sub_axis']
+                    axis_count = len(sub_axis)
+                    index = sub_axis.index(axis_name)
+                    actor_name = motor['key']
+                    rel_position_list = [0] * axis_count
+                    rel_position_list[index] = offset
+                    ret = actor[actor_name].send('rel_move', position=rel_position_list)
+                    return ret
 
     def __login_out(self):
         import masbot.controller.test_flow

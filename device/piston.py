@@ -21,8 +21,8 @@ class Piston(Bulletin):
         self.__restrain_IO()
     
     def __restrain_IO(self):
-        output_pattern = compile('.*_output$')
-        input_pattern = compile('.*_input$')
+        output_pattern = compile('^output[0-9]$')
+        input_pattern = compile('^input[0-9]$')
         self.__do_list = []
         self.__di_list = []
         for key, val in self.__module_info.items():

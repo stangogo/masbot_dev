@@ -17,7 +17,7 @@ if os_format[0] == '64bit':
     suffix = 'x64'
 else:
     suffix = ''
-
+    
 # loaded shared libraries
 pci_8154 = WinDLL(__file__ + '/../8154{}.dll'.format(suffix))
 pci_8158 = WinDLL(__file__ + '/../8158{}.dll'.format(suffix))

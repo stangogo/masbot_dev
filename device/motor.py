@@ -12,19 +12,14 @@ import logging
 from masbot.device.bulletin import Bulletin
 
 class Motor(Bulletin):
-    def __init__(self, owner, motion, axis_list, board={}):
-        self.__axis_count = len(axis_list)
-        if self.__axis_count == 1:
-            super(Motor, self).__init__(owner, board)
-            self.__speed = axis_list[0]['speed']
-            #self.__acc_time = axis_list[0]['accelerative_time']
-            self.__acc_time = 0.2
-        else:
-            super(Motor, self).__init__(owner, board)
-            self.__speed = 50
-            self.__acc_time = 0.2
+    def __init__(self, motor_info, motion, board={}):
+        owner = motor_info['key']
+        super(Motor, self).__init__(owner, board)
+        self.__speed = motor_info['speed']
+        self.__acc_time = motor_info['speed']
         self.__logger = logging.getLogger(__name__)
-        self.__axis_list = axis_list
+        self.__axis_list = motor_info['axis_info']
+        self.__axis_count = len(motor_info['axis_info'])
         self.__motion = motion
         
     def get_speed(self):
@@ -168,7 +163,6 @@ class Motor(Bulletin):
             pulse = self.__motion.get_pulse(axis_info['axis_id'])
             position = pulse / axis_info['proportion']
             position_list.append(position)
-            #self.__logger.debug('%s position = %f', axis_info['key'], position)
         if self.__axis_count == 1:
             return position
         else:
@@ -179,7 +173,6 @@ class Motor(Bulletin):
         for axis_info in self.__axis_list:
             stat = self.__motion.get_motion_status(axis_info['axis_id'])
             status_list.append(stat)
-            #self.__logger.debug('%s motion_status = %d', axis_info['key'], stat)
         if self.__axis_count == 1:
             return stat
         else:
@@ -190,7 +183,6 @@ class Motor(Bulletin):
         for axis_info in self.__axis_list:
             stat = self.__motion.get_io_status(axis_info['axis_id'])
             status_list.append(stat)
-            #self.__logger.debug('%s io_status = %d', axis_info['key'], stat)
         if self.__axis_count == 1:
             return stat
         else:
