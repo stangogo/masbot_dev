@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
   
 from masbot.config.utils import SigName, UISignals
-#from masbot.config.gather_data import *
 from masbot.config.common_lib import *
 import threading
 from time import sleep
-#from random import *
 from masbot.device.device_manager import DeviceManager
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
