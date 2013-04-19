@@ -10,15 +10,17 @@
 
 import logging
 from time import sleep
+
+from masbot.device.channel import Channel
 from masbot.device.motion.motion_card import Motion
 from masbot.device.motion.adlink_dll import *
 from masbot.device.motion.adlink_table import *
 
-class ADLink(Motion):
+class ADLink(Motion, Channel):
     def __init__(self, cards_config=[]):
+        super(ADLink, self).__init__()
         self.__logger = logging.getLogger(__name__)
         self.__mode = 'pci8154'
-        #self.__mode = 'default'
         self.__cards_config = cards_config
         self.__do_cards_index = []
         self.__di_cards_index = []
@@ -47,16 +49,16 @@ class ADLink(Motion):
         """
         self.__logger.debug('ADLink card initial')
         cardid_inbit = pointer(c_ushort(0))
-        ret_8154 = pci_8154._8154_initial(cardid_inbit, manual_id)
-        ret_8158 = pci_8158._8158_initial(cardid_inbit, manual_id)
+        ret_8154 = self.run(pci_8154._8154_initial, cardid_inbit, manual_id)
+        ret_8158 = self.run(pci_8158._8158_initial, cardid_inbit, manual_id)
         
         if ret_8154 and ret_8158:
             self.__logger.error('not found adlink 815x card')
             return -1
         
-        ret = pci_8154._8154_config_from_file()
+        ret = self.run(pci_8154._8154_config_from_file)
         self.__logger.debug('8154 read config...ret = %d', ret)
-        ret = pci_8158._8158_config_from_file()
+        ret = self.run(pci_8158._8158_config_from_file)
         self.__logger.debug('8158 read config...ret = %d', ret)
         if ret_8154 == 0:
             self.__mode == 'pci8154'
@@ -76,8 +78,8 @@ class ADLink(Motion):
         """ close the pci card
         """
         if self.__mode == 'pci8154' or self.__mode == 'pci8158':
-            pci_8154._8154_close()
-            pci_8158._8158_close()
+            self.run(pci_8154._8154_close)
+            self.run(pci_8158._8158_close)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -88,22 +90,22 @@ class ADLink(Motion):
         live = pointer(c_short(0))
         
         if self.__mode == 'pci8154':
-            pci_8154._8154_db51_HSL_initial(0)
-            pci_8154._8154_db51_HSL_auto_start(0)
-            pci_8154._8154_db51_HSL_set_scan_condition(0, 0, 0)
+            self.run(pci_8154._8154_db51_HSL_initial, 0)
+            self.run(pci_8154._8154_db51_HSL_auto_start, 0)
+            self.run(pci_8154._8154_db51_HSL_set_scan_condition, 0, 0, 0)
             for num, type in self.__cards_config:
-                pci_8154._8154_db51_HSL_slave_live(0, num, live)
+                self.run(pci_8154._8154_db51_HSL_slave_live, 0, num, live)
                 self.__logger.debug('adlink %s %d initial', type, num)
                 if type == 'DO_CARD':
                     self.__do_cards_index.append(num)
                 elif type == 'DI_CARD':
                     self.__di_cards_index.append(num)
         elif self.__mode == 'pci8158':
-            pci_8158._8158_db51_HSL_initial(0)
-            pci_8158._8158_db51_HSL_auto_start(0)
-            pci_8158._8158_db51_HSL_set_scan_condition(0, 0, 0)
+            self.run(pci_8158._8158_db51_HSL_initial, 0)
+            self.run(pci_8158._8158_db51_HSL_auto_start, 0)
+            self.run(pci_8158._8158_db51_HSL_set_scan_condition, 0, 0, 0)
             for num, type in self.__cards_config:
-                pci_8158._8158_db51_HSL_slave_live(0, num, live)
+                self.run(pci_8158._8158_db51_HSL_slave_live, 0, num, live)
                 self.__logger.debug('adlink %s %d initial', type, num)
                 if type == 'DO_CARD':
                     self.__do_cards_index.append(num)
@@ -123,11 +125,11 @@ class ADLink(Motion):
         """ close all the I/O cards
         """
         if self.__mode == 'pci8154':
-            pci_8154._8154_db51_HSL_stop(0)
-            pci_8154._8154_db51_HSL_close(0)
+            self.run(pci_8154._8154_db51_HSL_stop, 0)
+            self.run(pci_8154._8154_db51_HSL_close, 0)
         elif self.__mode == 'pci8158':
-            pci_8158._8154_db51_HSL_stop(0)
-            pci_8158._8158_db51_HSL_close(0)
+            self.run(pci_8158._8154_db51_HSL_stop, 0)
+            self.run(pci_8158._8158_db51_HSL_close, 0)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -148,9 +150,9 @@ class ADLink(Motion):
             self.__logger.error(msg)
             return msg
         if self.__mode == 'pci8154':
-            ret = pci_8154._8154_db51_HSL_D_write_channel_output(0, card_num, port, state)
+            ret = self.run(pci_8154._8154_db51_HSL_D_write_channel_output, 0, card_num, port, state)
         elif self.__mode == 'pci8158':
-            ret = pci_8158._8158_db51_HSL_D_write_channel_output(0, card_num, port, state)
+            ret = self.run(pci_8158._8158_db51_HSL_D_write_channel_output, 0, card_num, port, state)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -171,9 +173,9 @@ class ADLink(Motion):
             return msg
         state = pointer(c_ulong(0))
         if self.__mode == 'pci8154':
-            pci_8154._8154_db51_HSL_D_read_output(0, card_num, state)
+            self.run(pci_8154._8154_db51_HSL_D_read_output, 0, card_num, state)
         elif self.__mode == 'pci8158':
-            pci_8158._8158_db51_HSL_D_read_output(0, card_num, state)
+            self.run(pci_8158._8158_db51_HSL_D_read_output, 0, card_num, state)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -197,9 +199,9 @@ class ADLink(Motion):
             return msg
         state = pointer(c_ushort(0))
         if self.__mode == 'pci8154':
-            pci_8154._8154_db51_HSL_D_read_channel_input(0, card_num, port, state)
+            self.run(pci_8154._8154_db51_HSL_D_read_channel_input, 0, card_num, port, state)
         elif self.__mode == 'pci8158':
-            pci_8158._8158_db51_HSL_D_read_channel_input(0, card_num, port, state)
+            self.run(pci_8158._8158_db51_HSL_D_read_channel_input, 0, card_num, port, state)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -210,9 +212,9 @@ class ADLink(Motion):
         """ motor servo on/off
         """
         if self.__mode == 'pci8154':
-            ret = pci_8154._8154_set_servo(axis_id, on_off)
+            ret = self.run(pci_8154._8154_set_servo, axis_id, on_off)
         elif self.__mode == 'pci8158':
-            ret = pci_8158._8158_set_servo(axis_id, on_off)
+            ret = self.run(pci_8158._8158_set_servo, axis_id, on_off)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -224,9 +226,9 @@ class ADLink(Motion):
         """
         status = pointer(c_ushort(0))
         if self.__mode == 'pci8154':
-            ret = pci_8154._8154_get_io_status(axis_id, status)
+            ret = self.run(pci_8154._8154_get_io_status, axis_id, status)
         elif self.__mode == 'pci8158':
-            ret = pci_8158._8158_get_io_status(axis_id, status)
+            ret = self.run(pci_8158._8158_get_io_status, axis_id, status)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -271,9 +273,9 @@ class ADLink(Motion):
             
         """
         if self.__mode == 'pci8154':
-            ret = pci_8154._8154_motion_done(axis)
+            ret = self.run(pci_8154._8154_motion_done, axis)
         elif self.__mode == 'pci8158':
-            ret = pci_8158._8158_motion_done(axis)
+            ret = self.run(pci_8158._8158_motion_done, axis)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -285,9 +287,9 @@ class ADLink(Motion):
         """
         position = pointer(c_double(0))
         if self.__mode == 'pci8154':
-            ret = pci_8154._8154_get_position(axis, position)
+            ret = self.run(pci_8154._8154_get_position, axis, position)
         elif self.__mode == 'pci8158':
-            ret = pci_8158._8158_get_position(axis, position)
+            ret = self.run(pci_8158._8158_get_position, axis, position)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -298,9 +300,9 @@ class ADLink(Motion):
         """ Set the feedback position counter
         """
         if self.__mode == 'pci8154':
-            ret = pci_8154._8154_set_position(axis, position)
+            ret = self.run(pci_8154._8154_set_position, axis, position)
         elif self.__mode == 'pci8158':
-            ret = pci_8158._8158_set_position(axis, position)
+            ret = self.run(pci_8158._8158_set_position, axis, position)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -312,9 +314,9 @@ class ADLink(Motion):
         """
         command = pointer(c_long(0))
         if self.__mode == 'pci8154':
-            ret = pci_8154._8154_get_command(axis, command)
+            ret = self.run(pci_8154._8154_get_command, axis, command)
         elif self.__mode == 'pci8158':
-            ret = pci_8158._8158_get_command(axis, command)
+            ret = self.run(pci_8158._8158_get_command, axis, command)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -325,9 +327,9 @@ class ADLink(Motion):
         """ Set the command position counter
         """
         if self.__mode == 'pci8154':
-            ret = pci_8154._8154_set_command(axis, command)
+            ret = self.run(pci_8154._8154_set_command, axis, command)
         elif self.__mode == 'pci8158':
-            ret = pci_8158._8158_set_command(axis, command)
+            ret = self.run(pci_8158._8158_set_command, axis, command)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -338,9 +340,9 @@ class ADLink(Motion):
         """ emergency stop
         """
         if self.__mode == 'pci8154':
-            ret = pci_8154._8154_emg_stop(axis, status)
+            ret = self.run(pci_8154._8154_emg_stop, axis, status)
         elif self.__mode == 'pci8158':
-            ret = pci_8158._8158_emg_stop(axis, status)
+            ret = self.run(pci_8158._8158_emg_stop, axis, status)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -371,22 +373,22 @@ class ADLink(Motion):
         
         # 8154 mode
         if (self.__mode == 'pci8154' and axis_count == 1):
-            ret = pci_8154._8154_start_sr_move(*argv_list)
+            ret = self.run(pci_8154._8154_start_sr_move, *argv_list)
         elif (self.__mode == 'pci8154' and axis_count == 2):
-            ret = pci_8154._8154_start_sr_line2(*argv_list)
+            ret = self.run(pci_8154._8154_start_sr_line2, *argv_list)
         elif (self.__mode == 'pci8154' and axis_count == 3):
-            ret = pci_8154._8154_start_sr_line3(*argv_list)
+            ret = self.run(pci_8154._8154_start_sr_line3, *argv_list)
         elif (self.__mode == 'pci8154' and axis_count == 4):
-            ret = pci_8154._8154_start_sr_line4(*argv_list)
+            ret = self.run(pci_8154._8154_start_sr_line4, *argv_list)
         # 8158 mode
         elif (self.__mode == 'pci8158' and axis_count == 1):
-            ret = pci_8158._8158_start_sr_move(*argv_list)
+            ret = self.run(pci_8158._8158_start_sr_move, *argv_list)
         elif (self.__mode == 'pci8158' and axis_count == 2):
-            ret = pci_8158._8158_start_sr_line2(*argv_list)
+            ret = self.run(pci_8158._8158_start_sr_line2, *argv_list)
         elif (self.__mode == 'pci8158' and axis_count == 3):
-            ret = pci_8158._8158_start_sr_line3(*argv_list)
+            ret = self.run(pci_8158._8158_start_sr_line3, *argv_list)
         elif (self.__mode == 'pci8158' and axis_count == 4):
-            ret = pci_8158._8158_start_sr_line4(*argv_list)
+            ret = self.run(pci_8158._8158_start_sr_line4, *argv_list)
         else:
             msg = '[relative_move() Error] mode = {} axis_count = {}'.format(
                 self.__mode, axis_count)
@@ -430,22 +432,22 @@ class ADLink(Motion):
         
         # 8154 mode
         if (self.__mode == 'pci8154' and axis_count == 1):
-            ret = pci_8154._8154_start_sa_move(*argv_list)
+            ret = self.run(pci_8154._8154_start_sa_move, *argv_list)
         elif (self.__mode == 'pci8154' and axis_count == 2):
-            ret = pci_8154._8154_start_sa_line2(*argv_list)
+            ret = self.run(pci_8154._8154_start_sa_line2, *argv_list)
         elif (self.__mode == 'pci8154' and axis_count == 3):
-            ret = pci_8154._8154_start_sa_line3(*argv_list)
+            ret = self.run(pci_8154._8154_start_sa_line3, *argv_list)
         elif (self.__mode == 'pci8154' and axis_count == 4):
-            ret = pci_8154._8154_start_sa_line4(*argv_list)
+            ret = self.run(pci_8154._8154_start_sa_line4, *argv_list)
         # 8158 mode
         elif (self.__mode == 'pci8158' and axis_count == 1):
-            ret = pci_8158._8158_start_sa_move(*argv_list)
+            ret = self.run(pci_8158._8158_start_sa_move, *argv_list)
         elif (self.__mode == 'pci8158' and axis_count == 2):
-            ret = pci_8158._8158_start_sa_line2(*argv_list)
+            ret = self.run(pci_8158._8158_start_sa_line2, *argv_list)
         elif (self.__mode == 'pci8158' and axis_count == 3):
-            ret = pci_8158._8158_start_sa_line3(*argv_list)
+            ret = self.run(pci_8158._8158_start_sa_line3, *argv_list)
         elif (self.__mode == 'pci8158' and axis_count == 4):
-            ret = pci_8158._8158_start_sa_line4(*argv_list)
+            ret = self.run(pci_8158._8158_start_sa_line4, *argv_list)
         else:
             msg = '[absolute_move() Error] mode = {} axis_count = {}'.format(
                 self.__mode, axis_count)
@@ -499,9 +501,9 @@ class ADLink(Motion):
         """ Set the configuration for home return move motion
         """
         if self.__mode == 'pci8154':
-            ret = pci_8154._8154_set_home_config(axis, home_mode, org_logic, ez_logic, ez_count, erc_out)
+            ret = self.run(pci_8154._8154_set_home_config, axis, home_mode, org_logic, ez_logic, ez_count, erc_out)
         elif self.__mode == 'pci8158':
-            ret = pci_8158._8158_set_home_config(axis, home_mode, org_logic, ez_logic, ez_count, erc_out)
+            ret = self.run(pci_8158._8158_set_home_config, axis, home_mode, org_logic, ez_logic, ez_count, erc_out)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -528,9 +530,9 @@ class ADLink(Motion):
         """
         start_vel = speed / 10
         if self.__mode == 'pci8154':
-            ret = pci_8154._8154_home_search(axis, start_vel, speed, acc_time, ORG_offset)
+            ret = self.run(pci_8154._8154_home_search, axis, start_vel, speed, acc_time, ORG_offset)
         elif self.__mode == 'pci8158':
-            ret = pci_8158._8158_home_search(axis, start_vel, speed, acc_time, ORG_offset)
+            ret = self.run(pci_8158._8158_home_search, axis, start_vel, speed, acc_time, ORG_offset)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
@@ -609,9 +611,9 @@ class ADLink(Motion):
 
     def set_inp(self, axis, inp_enable, inp_logic=0):
         if self.__mode == 'pci8154':
-            pci_8154._8154_set_inp(axis, inp_enable, inp_logic)
+            self.run(pci_8154._8154_set_inp, axis, inp_enable, inp_logic)
         elif self.__mode == 'pci8158':
-            pci_8158._8158_set_inp(axis, inp_enable, inp_logic)
+            self.run(pci_8158._8158_set_inp, axis, inp_enable, inp_logic)
         else:
             self.__logger.error('undefine adlink card type')
             return -1
