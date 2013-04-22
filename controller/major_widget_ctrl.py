@@ -92,8 +92,8 @@ class MajorWidgetCtrl:
             position_list = actor[actor_name].send('get_position')
             status_list = actor[actor_name].send('get_status')
             if axis_count == 1:
-                position_list = list(position_list)
-                status_list = list(status_list)
+                position_list = [position_list, ]
+                status_list = [status_list, ]
             for i in range(axis_count):
                 axis_name = axis_info[i]['key']
                 slot.emit('position', axis_name, position_list[i])
