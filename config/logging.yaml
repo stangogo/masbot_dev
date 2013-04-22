@@ -93,11 +93,11 @@ handlers:
         backupCount: 20
         encoding: utf8
         
-    image_module_handler:       # Henry
+    camera_info_handler:       # Henry
         class: logging.handlers.RotatingFileHandler
         level: DEBUG
         formatter: simple
-        filename: log/image_module.log
+        filename: log/camera_module.log
         maxBytes: 10485760 # 10MB
         backupCount: 20
         encoding: utf8
@@ -151,12 +151,12 @@ loggers:
         handlers: [console, ui_handler]
         propagate: false
     
-    masbot.device.image_module:     #Henry
+    masbot.device.camera:     #Henry
         level: DEBUG
-        handlers: [console, image_module_handler]
+        handlers: [console, camera_info_handler]
         propagate: false
         
-    masbot.device.image_dll.image_dll_handler:     #Henry
+    masbot.device.image_dll_handler:     #Henry
         level: DEBUG
         handlers: [console, image_dll_handler]
         propagate: false    

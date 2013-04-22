@@ -3,7 +3,7 @@
 # Title          : FrameGrabber_dll.py
 # Description    : define functions format in the dll of image inspection
 # Author         : Henry Chang
-# Date           : 20130410
+# Date           : 20130418
 # Dependency     : all of FrameGrabber_dll 
 # usage          : import FrameGrabber_dll
 # notes          : 
@@ -12,27 +12,51 @@ from ctypes import *
 
 
 # loaded shared libraries
+Framegrabber_dll = CDLL('D:\\test\\Framegrabber.dll')
 
-FrameGrabber_dll = CDLL(__file__ + '/../FrameGrabber.dll')
+# define the argument and return type for the functions  
 
-# define the argument and return type for the functions
-FrameGrabber_dll.initial_grabber.restype = c_int
-FrameGrabber_dll.initial_grabber.argtypes = []
+Framegrabber_dll.initial_dll.restype = None
+Framegrabber_dll.initial_dll.argtypes = []
 
-FrameGrabber_dll.grab_image.restype = c_int
-FrameGrabber_dll.grab_image.argtypes = [POINTER(c_ubyte)]
+Framegrabber_dll.initial_grabber.restype = c_int
+Framegrabber_dll.initial_grabber.argtypes = [c_int]
 
-FrameGrabber_dll.get_image_width.restype = c_int
-FrameGrabber_dll.get_image_width.argtypes = []
+Framegrabber_dll.grab_image.restype = c_int
+Framegrabber_dll.grab_image.argtypes = [c_int, POINTER(c_ubyte)]
 
-FrameGrabber_dll.get_image_height.restype = c_int
-FrameGrabber_dll.get_image_height.argtypes = []
+Framegrabber_dll.set_camera_parameter.restype = c_int
+Framegrabber_dll.set_camera_parameter.argtypes = [c_int, c_int, c_int]
 
-FrameGrabber_dll.close_grabber.restype = c_int
-FrameGrabber_dll.close_grabber.argtypes = []
+Framegrabber_dll.get_camera_parameter.restype = c_int
+Framegrabber_dll.get_camera_parameter.argtypes = [c_int, c_int, POINTER(c_int)]
 
-FrameGrabber_dll.get_version.restype = c_char_p 
-FrameGrabber_dll.get_version.argtypes = []
+Framegrabber_dll.set_camera_color_type.restype = c_int
+Framegrabber_dll.set_camera_color_type.argtypes = [c_int, POINTER(c_char)]
 
-FrameGrabber_dll.get_err_msg.restype = c_char_p 
-FrameGrabber_dll.get_err_msg.argtypes = [c_int]
+Framegrabber_dll.get_camera_color_type.restype = c_int
+Framegrabber_dll.get_camera_color_type.argtypes = [c_int, POINTER(c_char)]
+
+Framegrabber_dll.set_camera_mode.restype = c_int
+Framegrabber_dll.set_camera_mode.argtypes = [c_int, POINTER(c_char)]
+
+Framegrabber_dll.get_camera_mode.restype = c_int
+Framegrabber_dll.get_camera_mode.argtypes = [c_int, POINTER(c_char)]
+
+Framegrabber_dll.set_camera_type.restype = c_int
+Framegrabber_dll.set_camera_type.argtypes = [c_int, POINTER(c_char)]
+
+Framegrabber_dll.get_camera_type.restype = c_int
+Framegrabber_dll.get_camera_type.argtypes = [c_int, POINTER(c_char)]
+
+Framegrabber_dll.get_camera_count.restype = c_int
+Framegrabber_dll.get_camera_count.argtypes = []
+
+Framegrabber_dll.close_grabber.restype = c_int
+Framegrabber_dll.close_grabber.argtypes = [c_int]
+
+Framegrabber_dll.get_version.restype = POINTER(c_char) 
+Framegrabber_dll.get_version.argtypes = []
+
+Framegrabber_dll.get_err_msg.restype = POINTER(c_char) 
+Framegrabber_dll.get_err_msg.argtypes = [c_int]

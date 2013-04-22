@@ -162,3 +162,80 @@ while result.next():
             else:
                 dic['points_info'] = {}
     motor_info.append(dic)
+#==========================================================================
+# camera_info combined with camera, camera_job and light
+#==========================================================================
+
+# extract light information dict from db
+pattern = compile('^light[0-9]$')
+result = sqldb.execute("select * from light")
+col_info = result.record()
+col_names = []
+for col in range(col_info.count()):
+    col_names.append(col_info.fieldName(col))
+
+light_info = {}
+while result.next():
+    list_value = []
+    light_name = ''
+    for i, col in enumerate(col_names):
+        cell_value = result.value(i)
+        if col == 'light_name':
+            light_name = cell_value
+        else:
+            list_value.append(cell_value)
+    light_info.update({light_name:list_value})
+    
+# extract camera job dict from db
+result = sqldb.execute("select * from camera_job")
+col_info = result.record()
+col_names = []
+for col in range(col_info.count()):
+    col_names.append(col_info.fieldName(col))
+
+job_info = []
+while result.next():
+    lights = []
+    dic = {}
+    for i, col in enumerate(col_names):
+        cell_value = result.value(i)
+        if pattern.match(col):
+            if cell_value != '' and cell_value in light_info:
+                lights.append(cell_value)
+        else:
+            dic.update({col:cell_value})
+    dic.update({'light':lights})
+    job_info.append(dic)
+
+# extract camera information dict from db and combined above
+result = sqldb.execute("select * from camera")
+col_info = result.record()
+col_names = []
+for col in range(col_info.count()):
+    col_names.append(col_info.fieldName(col))
+
+camera_info = {}
+while result.next():
+    dic = {}
+    light_dic = {}
+    job_dic = {}
+    actor_name = ''
+    for i, col in enumerate(col_names):
+        cell_value = result.value(i)
+        if col == 'camera_name':
+            actor_name = cell_value
+        elif pattern.match(col):
+            if cell_value != '' and cell_value in light_info:
+                light_dic.update({cell_value:light_info.get(cell_value)})
+        else:
+            dic.update({col:cell_value})
+    for i in range(len(job_info)):
+        info = job_info[i]
+        if info.get('camera') == actor_name:            
+            info.pop('camera')
+            job_name = info.pop('job_name')
+            job_dic.update({job_name:info})
+            #del job_info[i]
+    dic.update({'light':light_dic})
+    dic.update({'camera_job':job_dic})
+    camera_info.update({actor_name:dic})
