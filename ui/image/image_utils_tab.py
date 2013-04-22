@@ -2,6 +2,8 @@
 from PySide import QtGui, QtCore
 from masbot.ui.image.tab_utils.aided_tool import AidedTool
 from masbot.ui.image.tab_utils.camera_settings import CameraSettings
+from masbot.ui.image.tab_utils.identification_settings import IdentificationSettings
+from masbot.ui.image.tab_utils.img_message_table import ImageMessage
 
 from masbot.config.utils import UISignals, SigName
 
@@ -13,35 +15,17 @@ class ImageUtilsTab(QtGui.QTabWidget):
         QtGui.QTabWidget.__init__(self)                
         self.imgs_dir = os.path.abspath(__file__ + "//..//..//")+"//Imgs"
         
-        self.dockbars = {}
         self.createDockWindows()
         
+        
     def createDockWindows(self):
-        self.dockbars['message'] = QtGui.QWidget()
-        
-        self.addTab(self.dockbars['message'], '辨識訊息')
+        self.addTab(ImageMessage(), '辨識訊息')
         self.addTab(CameraSettings(), 'Camera設定')
-        self.addTab(QtGui.QWidget(), '辨識設定')
-        self.addTab(QtGui.QWidget(), '校正參數')
-        
+        self.addTab(IdentificationSettings(), '工作設定')
         self.addTab(AidedTool(), '輔助工具')
         
-        IPI_result_table = QtGui.QTableWidget(self.dockbars['message'])
-        IPI_result_table.setColumnCount(4)
-        IPI_result_table.setRowCount(3)
-        headers = ['時間', '辨識工作', '結果', '辨識時間(s)']
-        IPI_result_table.setHorizontalHeaderLabels(headers)
-        IPI_result_table.setItem(0,0, QtGui.QTableWidgetItem('A'))
-        IPI_result_table.setItem(1, 0, QtGui.QTableWidgetItem('Time'))
-
-        #icon_path = "{0}//Start.bmp".format(self.imgs_dir)
-        IPI_result_table.setItem(2,0, QtGui.QTableWidgetItem(QtGui.QIcon("{0}//Start.bmp".format(self.imgs_dir)), "data"));
-        IPI_result_table.setRowCount(4)
-        IPI_result_table.setItem(3,0, QtGui.QTableWidgetItem(QtGui.QIcon("{0}//Stop.bmp".format(self.imgs_dir)), "data"));
-        IPI_result_table.resize(320, 200)
-        
         try:
-            UISignals.GetSignal(SigName.AIDED_TOOL).connect(self.aided_data)                
+            UISignals.GetSignal(SigName.IMG_AIDED_TOOL).connect(self.aided_data)                
         except:
             pass
         

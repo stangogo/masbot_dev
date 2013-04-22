@@ -54,16 +54,20 @@ class SigAgent(QtCore.QObject):
     @ float: 單軸位置的 value
     """
 
-    img_preview = QtCore.Signal(str, str)
+    img_preview = QtCore.Signal(list)
     """影像預覽資料傳入
-    @ str: 影像檔案路徑
-    @ str: 辨別 ID
+    @ list: image data - image path(str), id(str), name(str)
     """
     
     img_aided_tool = QtCore.Signal(dict)
     """ 影像 - 輔助工具 設定值傳出口
     @ dict: 資料字典集
     """
+    
+    img_message = QtCore.Signal(list)
+    """影像預覽資料傳入
+    @ list: image data - image path(str), id(str), name(str)
+    """    
 
 """初始化所有的接口, 並註冊到UISignals Dictionary
 """
@@ -74,7 +78,8 @@ UISignals.RegisterSignal(sig_agent.do_out, SigName.DO_OUT)
 UISignals.RegisterSignal(sig_agent.into_single_axis, SigName.ENTER_AXIS_TABLE)
 UISignals.RegisterSignal(sig_agent.out_single_axis, SigName.FROM_AXIS_TABLE)
 UISignals.RegisterSignal(sig_agent.img_preview, SigName.IMG_THUMBNAIL)
-UISignals.RegisterSignal(sig_agent.img_aided_tool, SigName.AIDED_TOOL)
+UISignals.RegisterSignal(sig_agent.img_aided_tool, SigName.IMG_AIDED_TOOL)
+UISignals.RegisterSignal(sig_agent.img_message, SigName.IMG_MESSAGE)
 
 
 """測試用

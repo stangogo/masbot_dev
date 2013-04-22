@@ -66,9 +66,13 @@ class SigName:
                 
     IMG_THUMBNAIL = 'IMG_THUMBNAIL'
         # Receive the preview data of image, applied at image thumbnail and preview label
-        # @file path(str), @id (str)
+        # @list: file path(str), id (str), and name(str)
     
-    AIDED_TOOL = 'AIDED_TOOL'
+    IMG_MESSAGE = 'IMG_MESSAGE'
+            # Communication port for image message, send by image actor,
+            # @list: time (str), job_name(str), result(str), spend_time(float), path(str)
+    
+    IMG_AIDED_TOOL = 'IMG_AIDED_TOOL'
     
 class UISignals():
     signal_dict = {}

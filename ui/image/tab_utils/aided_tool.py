@@ -226,10 +226,6 @@ class AidedTool(QListWidget):
             slider.setting_changed.connect(self.btn_clicked)
             self.add_slider(slider)            
             
-            #hbox.addWidget(slider)
-        
-        #self.setLayout(hbox)
-        
         self.setMaximumWidth(700)
         self.setFlow(QListWidget.LeftToRight)
         self.setWindowTitle('AidedTool - 輔助工具')
@@ -260,20 +256,12 @@ class AidedTool(QListWidget):
             
             slider_dict[slider.btn.text()] = data
         try:    
-            UISignals.GetSignal(SigName.AIDED_TOOL).emit(slider_dict)
+            UISignals.GetSignal(SigName.IMG_AIDED_TOOL).emit(slider_dict)
         except:
             pass
         
 def main():    
     app = QApplication(sys.argv)
-    
-    #with open("{0}/stylesheet.css".format(Path.mosbot_dir()), 'r') as cssFile:
-        #styleSheet =cssFile.read()
- 
-    #Settings = { "tabcolor":"#17B6FF", "fontsize":"10px" , "tablecolor":"#17B6BB"}
-    #styleSheet = styleSheet % Settings 
-    #app.setStyleSheet(styleSheet)    
-    
     ex = AidedTool()
     ex.show()
     app.exec_()

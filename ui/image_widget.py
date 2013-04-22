@@ -36,6 +36,8 @@ class ImageWidget(QtGui.QWidget):
         super(ImageWidget, self).__init__()
         self.init_ui()
         self.cur_preview_id = None
+        self.previous_preview_id = None
+        
         UISignals.GetSignal(SigName.IMG_THUMBNAIL).connect(self.img_thumbnail_income)
         
     def init_ui(self):
@@ -48,13 +50,14 @@ class ImageWidget(QtGui.QWidget):
         
         
         # tool bar        
-        toolbar = ImageToolbar()
-        toolbar.file_selected.connect(self.file_selected)
-        toolbar.button_clicked.connect(self.toolbar_btn_clicked)
+        #toolbar = ImageToolbar()
+        #toolbar.file_selected.connect(self.file_selected)
+        #toolbar.button_clicked.connect(self.toolbar_btn_clicked)
         
         # Image thumbnail
         self.img_thumbnail = ImageThumbnail([])
         self.img_thumbnail.thumbnail_clicked.connect(self.thumbnail_clicked)
+        self.img_thumbnail.setMinimumHeight(105)
         
         #IPI result table (方法1)
         image_utils_tab = ImageUtilsTab()
@@ -66,6 +69,8 @@ class ImageWidget(QtGui.QWidget):
         
         v_layout.addWidget(image_utils_tab)
 
+        v_layout.setAlignment(self.preview_label, QtCore.Qt.AlignCenter)
+        
         self.setLayout(v_layout)
              
         self.setWindowTitle('Image Widget')
@@ -75,60 +80,35 @@ class ImageWidget(QtGui.QWidget):
         print("thumbnail {0} is clicked".format(thumbnail_id))
         self.cur_preview_id = thumbnail_id
 
-    def file_selected(self, file_path):        
-        UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit(file_path, self.cur_preview_id)        
+    #def file_selected(self, file_path):        
+        #UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit( [file_path, self.cur_preview_id, 'file selected'])
             
-    def toolbar_btn_clicked(self, button_id):
-        if button_id == 'zoom_in_id':
-            threading.Thread(target = self.threadFunc).start()
-        elif button_id == 'zoom_out_id':
-            self.stop_thread = True
-        elif button_id == 'previous_id':
-            self.img_thumbnail.change_image("r:\\temp\\9.bmp", '1')
-            
+    #def toolbar_btn_clicked(self, button_id):
+        #if button_id == 'zoom_in_id':
+            #pass    # threading.Thread(target = self.threadFunc).start()
+        #elif button_id == 'zoom_out_id':
+            #self.stop_thread = True
+        #elif button_id == 'previous_id':
+            #self.img_thumbnail.change_image( ["r:\\temp\\9.bmp", '1', 'select by previous'])
         
-        
-    def threadFunc(self):
-        self.stop_thread = False
-        index = 0
-        imgs_dir = Path.imgs_dir()
-        
-        #qimage = []
-        #for i in range(15):
-            #qimage.append(QtGui.QImage("{0}\\{1}.tif".format(imgs_dir, i+1)))
-        
-        while self.stop_thread == False:
-            index = (index + 1) % 15
-            
-            #self.preview_label.change_qimage(qimage[index])
+ 
 
-            image_path = "{0}\\{1}.tif".format( imgs_dir, index + 1)
-            
-            self.preview_label.change_image(image_path)
-            
-            index = self.change_thumbnail_image(index, '1', imgs_dir)
-            index = self.change_thumbnail_image(index, '2', imgs_dir)
-            index = self.change_thumbnail_image(index, '3', imgs_dir)
-            index = self.change_thumbnail_image(index, '4', imgs_dir)
-            #index = self.change_thumbnail_image(index, '5', imgs_dir)
-            #index = self.change_thumbnail_image(index, '6', imgs_dir)
-            #index = self.change_thumbnail_image(index, '7', imgs_dir)
-            #index = self.change_thumbnail_image(index, '8', imgs_dir)
-            #index = self.change_thumbnail_image(index, '9', imgs_dir)
-            #index = self.change_thumbnail_image(index, '10', imgs_dir)
-
-            time.sleep(0.15)
-    
-    def change_thumbnail_image(self, index, id_, imgs_dir):   # 測試用     
-        index = (index + 1) % 15
-        image_path = "{0}\\{1}.tif".format( imgs_dir, index + 1)
-        self.img_thumbnail.change_image(image_path, id_)
-        return index 
-
-    def img_thumbnail_income(self, file_path, id_):
-        self.img_thumbnail.change_image(file_path, id_)
-        if self.cur_preview_id == id_:
-            self.preview_label.change_image(file_path)
+    def img_thumbnail_income(self, image_data):
+        (path, id_, name) = image_data
+        
+        if not id_:                             # id_ 為空或Nonoe - 顯示手動選擇的影像檔案
+            self.preview_label.change_image(path)
+            if self.cur_preview_id:
+                self.previous_preview_id = self.cur_preview_id
+                
+            self.cur_preview_id = ''
+        elif id_ == 'rollback':
+            if self.previous_preview_id and not self.cur_preview_id:
+                self.cur_preview_id = self.previous_preview_id
+        else:
+            if self.cur_preview_id == id_:
+                self.preview_label.change_image(path)
+            self.img_thumbnail.change_image(image_data)        
         
 def main():
     

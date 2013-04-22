@@ -3,6 +3,7 @@
 
 """
 author: Cigar Huang
+
 website: 
 last edited: Mar. 2013
 """
@@ -56,8 +57,8 @@ class MainUI(QtGui.QMainWindow):
         main_splitter.addWidget(main_widget)
         main_splitter.addWidget(self.right_widget) 
         
-        main_splitter.setSizes([width*4/7, width*3/7])
-        #main_splitter.setSizes([width/2, width/2])
+        #main_splitter.setSizes([width*4/7, width*3/7])
+        main_splitter.setSizes([width/2, width/2])
 
         UISignals.GetSignal(SigName.REMOVE_IMG_SIDE).connect(self.remove_img_side)
         
@@ -95,7 +96,7 @@ def main():
     with open("stylesheet.css", 'r') as cssFile:
         styleSheet =cssFile.read()
 
-    Settings = { "tabcolor":"#17B6FF", "fontsize":"10px" , "tablecolor":"#17B6BB"}
+    Settings = { "tabcolor":"#17B6FF", "fontsize":"10px" , "tablecolor":"lightblue"}
     styleSheet = styleSheet % Settings 
     app.setStyleSheet(styleSheet)
  

@@ -15,6 +15,7 @@ from datetime import datetime
 from masbot.ui.message_log import MessageAndLog
 from masbot.ui.robot.major.tray_info_table import TrayInfoTable 
 from masbot.config.utils import UISignals, SigName
+from masbot.ui.control.ui_utils import *
 
 class Signals(QtCore.QObject):
     """
@@ -49,21 +50,26 @@ class MajorWidget(QtGui.QWidget):
         btn_panel = QtGui.QHBoxLayout()
         button_grid_layout = QtGui.QGridLayout()
         
-        login_btn = QtGui.QPushButton('Log in')        
-        login_btn .setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)        
-        UISignals.RegisterSignal(login_btn.clicked, SigName.LOG_IN)
-        #login_btn.clicked.connect(self.login_clicked)
+        login_btn = create_button('user.png', '', '登入(Log In)')    # QtGui.QPushButton('Log in')        
+        login_btn .setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        login_btn.setIconSize(QtCore.QSize(32,32));
+        UISignals.RegisterSignal(login_btn.clicked, SigName.LOG_IN)            
         
-        start_btn = QtGui.QPushButton('Start')
+        
+        
+        start_btn = create_button('on-off.png', '', '啟動 (Start)') # QtGui.QPushButton('Start')
         start_btn .setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        start_btn.setIconSize(QtCore.QSize(32,32));
         UISignals.RegisterSignal(start_btn.clicked, SigName.START_MAIN)
         
-        servo_on_btn = QtGui.QPushButton('Servo On')        
+        servo_on_btn = create_button('servo_on.png','','Servo On')
         servo_on_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        servo_on_btn.setIconSize(QtCore.QSize(32,32));
         UISignals.RegisterSignal(servo_on_btn.clicked, SigName.SERVO_ON)
         
-        pause_btn = QtGui.QPushButton('Pause')        
+        pause_btn = create_button('pause.png', '','暫停(Pause)')
         pause_btn.setCheckable(True)
+        pause_btn.setIconSize(QtCore.QSize(32,32));
         pause_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         UISignals.RegisterSignal(pause_btn.clicked, SigName.PAUSE_MAIN)
         
@@ -72,8 +78,8 @@ class MajorWidget(QtGui.QWidget):
         button_grid_layout.addWidget(servo_on_btn, 1, 0)
         button_grid_layout.addWidget(pause_btn, 1, 1)
         
-        message_edit = QtGui.QLabel("ABC")# QtGui.QTextEdit()
-        message_edit.resize(500, 600)
+        message_edit = QtGui.QTextEdit()
+        message_edit.resize(200, 200)
         
         
         btn_panel.addLayout(button_grid_layout)

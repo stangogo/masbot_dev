@@ -36,7 +36,7 @@ class IOMap(QtGui.QWidget):
         col_len = 20    
         #card_num = 10        
         #io_num = col_len*card_num
-        io_num = 32*card_num
+        io_num = 32 * card_num
 
         self.do_list = []
         self.di_list = []

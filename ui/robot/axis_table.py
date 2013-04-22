@@ -31,7 +31,32 @@ class AxisButton(QtGui.QPushButton):
         #else:
             #self.text = text
             #return QtGui.QPushButton.__new__(self, icon, text)
-            
+
+class ScaleComboBox(QtGui.QComboBox):
+    def __init__(self):
+        super(ScaleComboBox, self).__init__()
+
+        self.row = -1
+        self.column = -1
+        self.axis= ''
+        self.init()
+        #self.currentIndexChanged.connect(self.combobox_index_changed)
+
+    def init(self):
+        self.addItem('0.01')
+        self.addItem('0.05')
+        self.addItem('0.1')
+        self.addItem('0.5')
+        self.addItem('1')
+        self.addItem('5')
+        self.addItem('10')
+        
+    def get_value(self):
+        return float(self.currentText())
+        
+    #def combobox_index_changed(self, index):
+        #text = self.itemText(index)
+        #self.indexChange.emit(self.row, self.column, index, text)        
             
 class AxisTable(QtGui.QTableWidget):
     
@@ -69,7 +94,7 @@ class AxisTable(QtGui.QTableWidget):
         #horizontal title bar
         H_headers = []
         query = axis_table_model.query()
-        query.exec_("select display_text from SingleAxis")
+        query.exec_("select display_text from single_axis")
         
         while query.next():
             H_headers.append(query.value(0))
@@ -98,12 +123,9 @@ class AxisTable(QtGui.QTableWidget):
         query.exec_("select key from single_axis")
         index = 0
         for i in range(0, self.columnCount()):
-            btn_add = AxisButton(QtGui.QIcon("{0}/increase.ico".format(Path.imgs_dir())), "")
-            btn_minus = AxisButton(QtGui.QIcon("{0}/decrease.png".format(Path.imgs_dir())), "")
-            #btn_add = AxisButton(QtGui.QIcon("C:\Python33\Lib\site-packages\masbot\ui/imgs/Start.bmp"),"+")
-            #btn_add = AxisButton("+")
-            #btn_minus = AxisButton('-')
-            btn_scale = AxisButton('1')
+            btn_add = AxisButton(QtGui.QIcon("{0}/up.png".format(Path.imgs_dir())), "")
+            btn_minus = AxisButton(QtGui.QIcon("{0}/down.png".format(Path.imgs_dir())), "")
+            btn_scale = ScaleComboBox()
             
             btn_add.column = btn_minus.column= btn_scale.column = i
             if query.next():
@@ -113,7 +135,7 @@ class AxisTable(QtGui.QTableWidget):
             
             btn_add.clicked.connect(self.add_clicked)
             btn_minus.clicked.connect(self.minus_clicked)
-            btn_scale.clicked.connect(self.scale_clicked)
+            #btn_scale.clicked.connect(self.scale_clicked)
             
             self.setCellWidget(2, i, btn_add)
             self.setCellWidget(3, i, btn_minus)
@@ -132,22 +154,22 @@ class AxisTable(QtGui.QTableWidget):
 
     def minus_clicked(self):
         sender = self.sender()
-        scale_value = self.scale_list[sender.column].scale    
+        scale_value = self.scale_list[sender.column].get_value()
         UISignals.GetSignal(SigName.FROM_AXIS_TABLE).emit(sender.axis, -scale_value  )
         
     def add_clicked(self):
         sender = self.sender()
-        scale_value = self.scale_list[sender.column].scale
+        scale_value = self.scale_list[sender.column].get_value()
         UISignals.GetSignal(SigName.FROM_AXIS_TABLE).emit(sender.axis, scale_value)
         
-    def scale_clicked(self):
-        sender = self.sender()
-        sender.scale = sender.scale *10
-        if sender.scale > 10:
-            sender.scale = 0.01
-        sender.setText("{0}".format(sender.scale))
+    #def scale_clicked(self):
+        #sender = self.sender()
+        #sender.scale = sender.scale *10
+        #if sender.scale > 10:
+            #sender.scale = 0.01
+        #sender.setText("{0}".format(sender.scale))
         
-        print("scale_clicked - axis: {0}".format(sender.axis))
+        #print("scale_clicked - axis: {0}".format(sender.axis))
     
     def keyPressEvent(self, event):    
         _key = event.key()
@@ -165,7 +187,7 @@ class AxisTable(QtGui.QTableWidget):
                 print("{0}".format(event.key()))
                 if not self.currentRow == 0:
                     axis_name = self.get_axis_name(self.currentColumn())
-                    scale_value = self.scale_list[self.currentColumn()].scale
+                    scale_value = self.scale_list[self.currentColumn()].get_value()
                     dest = UISignals.GetSignal(SigName.FROM_AXIS_TABLE)
                     
                     if _key == QtCore.Qt.Key.Key_Up:
