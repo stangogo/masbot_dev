@@ -1,15 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
+import threading
+from time import sleep
+from imp import reload
   
 from masbot.config.utils import SigName, UISignals
 from masbot.config.common_lib import *
-import threading
-from time import sleep
 from masbot.device.device_manager import DeviceManager
-from masbot.device.piston import Piston
-from masbot.device.motor import Motor
 from masbot.flow.main_flow import MainFlow
-from imp import reload
+#from masbot.device.piston import Piston
+#from masbot.device.motor import Motor
 
 class MajorWidgetCtrl:
 

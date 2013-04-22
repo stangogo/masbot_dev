@@ -16,7 +16,6 @@ class Channel(object):
         self.__channel_is_run = True
         self.__command_queue = Queue()
         thread = Thread(target=self.__handle_command)
-        thread.name = thread.name.replace('Thread', self.__class__.__name__)
         thread.daemon = True
         thread.start()
     
