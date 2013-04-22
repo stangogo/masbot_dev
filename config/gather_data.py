@@ -29,9 +29,7 @@ while result.next():
         if col == 'card_module' and cell_value not in io_card_info:
             card_module = cell_value
             io_card_info[cell_value] = []
-        if col == 'card_num':
-            card_list.append(cell_value)
-        elif col == 'card_type':
+        if col == 'card_num' or col == 'card_type':
             card_list.append(cell_value)
     io_card_info[card_module].append(card_list)
 
@@ -47,10 +45,10 @@ for col in range(col_info.count()):
 
 piston_info = []
 while result.next():
-    dic = {}
+    dict = {}
     for i, col in enumerate(col_names):
-        dic[col] = result.value(i)
-    piston_info.append(dic)
+        dict[col] = result.value(i)
+    piston_info.append(dict)
 #==========================================================================
 # axis_info and construct an axis map
 #==========================================================================
@@ -64,12 +62,12 @@ for col in range(col_info.count()):
 axis_map = {}
 axis_info = []
 while result.next():
-    dic = {}
+    dict = {}
     for i, col in enumerate(col_names):
-        dic[col] = result.value(i)
-    axis_info.append(dic)
-    key = dic['key']
-    axis_map[key] = dic
+        dict[col] = result.value(i)
+    axis_info.append(dict)
+    key = dict['key']
+    axis_map[key] = dict
 
 #==========================================================================
 # construct a points map
@@ -123,17 +121,17 @@ motor_info = []
 necessary_attribute = ['key', 'speed', 'safe_speed', 'module_type']
 for axis in axis_info:
     if axis['individual']:
-        dic = {'axis_info':[]}
+        dict = {'axis_info':[]}
         for k, v in axis.items():
             if k in necessary_attribute:
-                dic[k] = v
-        dic['axis_info'].append(axis)
+                dict[k] = v
+        dict['axis_info'].append(axis)
         actor_name = axis['key']
         if actor_name in points_map:
-            dic['points_info'] = points_map[actor_name]
+            dict['points_info'] = points_map[actor_name]
         else:
-            dic['points_info'] = {}
-        motor_info.append(dic)
+            dict['points_info'] = {}
+        motor_info.append(dict)
 
 #==========================================================================
 # double axis_info
@@ -146,96 +144,19 @@ for col in range(col_info.count()):
     col_names.append(col_info.fieldName(col))
 
 while result.next():
-    dic = {'axis_info': [], 'sub_axis': []}
+    dict = {'axis_info': [], 'sub_axis': []}
     for i, col in enumerate(col_names):
         cell_value = result.value(i)
         if pattern.match(col):
             key = cell_value
-            dic['axis_info'].append(axis_map[key])
-            dic['sub_axis'].append(key)
+            dict['axis_info'].append(axis_map[key])
+            dict['sub_axis'].append(key)
         else:
-            dic[col] = cell_value
+            dict[col] = cell_value
         if col == 'key':
             actor_name = cell_value
             if actor_name in points_map:
-                dic['points_info'] = points_map[actor_name]
-            else:
-                dic['points_info'] = {}
-    motor_info.append(dic)
-#==========================================================================
-# camera_info combined with camera, camera_job and light
-#==========================================================================
-
-# extract light information dict from db
-pattern = compile('^light[0-9]$')
-result = sqldb.execute("select * from light")
-col_info = result.record()
-col_names = []
-for col in range(col_info.count()):
-    col_names.append(col_info.fieldName(col))
-
-light_info = {}
-while result.next():
-    list_value = []
-    light_name = ''
-    for i, col in enumerate(col_names):
-        cell_value = result.value(i)
-        if col == 'light_name':
-            light_name = cell_value
+                dict['points_info'] = points_map[actor_name]
         else:
-            list_value.append(cell_value)
-    light_info.update({light_name:list_value})
-    
-# extract camera job dict from db
-result = sqldb.execute("select * from camera_job")
-col_info = result.record()
-col_names = []
-for col in range(col_info.count()):
-    col_names.append(col_info.fieldName(col))
-
-job_info = []
-while result.next():
-    lights = []
-    dic = {}
-    for i, col in enumerate(col_names):
-        cell_value = result.value(i)
-        if pattern.match(col):
-            if cell_value != '' and cell_value in light_info:
-                lights.append(cell_value)
-        else:
-            dic.update({col:cell_value})
-    dic.update({'light':lights})
-    job_info.append(dic)
-
-# extract camera information dict from db and combined above
-result = sqldb.execute("select * from camera")
-col_info = result.record()
-col_names = []
-for col in range(col_info.count()):
-    col_names.append(col_info.fieldName(col))
-
-camera_info = {}
-while result.next():
-    dic = {}
-    light_dic = {}
-    job_dic = {}
-    actor_name = ''
-    for i, col in enumerate(col_names):
-        cell_value = result.value(i)
-        if col == 'camera_name':
-            actor_name = cell_value
-        elif pattern.match(col):
-            if cell_value != '' and cell_value in light_info:
-                light_dic.update({cell_value:light_info.get(cell_value)})
-        else:
-            dic.update({col:cell_value})
-    for i in range(len(job_info)):
-        info = job_info[i]
-        if info.get('camera') == actor_name:            
-            info.pop('camera')
-            job_name = info.pop('job_name')
-            job_dic.update({job_name:info})
-            #del job_info[i]
-    dic.update({'light':light_dic})
-    dic.update({'camera_job':job_dic})
-    camera_info.update({actor_name:dic})
+                dict['points_info'] = {}
+    motor_info.append(dict)
