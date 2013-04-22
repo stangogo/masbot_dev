@@ -239,4 +239,62 @@ CREATE TABLE IF NOT EXISTS io_card(
     PRIMARY KEY(card_module, card_num)
 );
 """
+,
+"""
+CREATE TABLE IF NOT EXISTS light(
+    light_name TEXT not null,
+    module_type TEXT not null DEFAULT 'ADLink',
+    port INTEGER not null,
+    display_text TEXT,
+    PRIMARY KEY(light_name)
+);
+"""
+,
+"""
+CREATE TABLE IF NOT EXISTS camera(
+    camera_name TEXT not null,
+    port INTEGER not null,
+    camera_type TEXT not null,
+    color_type TEXT not null,
+    camera_mode TEXT not null,    
+    pixel_size REAL DEFAULT 0,
+    reverse_type INTEGER DEFAULT 0,
+    gain_value INTEGER DEFAULT 100,
+    shutter_value INTEGER DEFAULT 800,
+    display_text TEXT,
+    light1 TEXT,
+    light2 TEXT,
+    light3 TEXT,
+    light4 TEXT,
+    light5 TEXT,
+    light6 TEXT,
+    light7 TEXT,
+    light8 TEXT,
+    PRIMARY KEY(camera_name)
+);
+"""
+,
+"""
+CREATE TABLE IF NOT EXISTS camera_job(
+    job_name TEXT not null,
+    camera TEXT not null,
+    display_text TEXT,
+    dll_name TEXT,
+    light1 TEXT,
+    light2 TEXT,
+    light3 TEXT,
+    PRIMARY KEY(job_name),
+    FOREIGN KEY(camera) REFERENCES camera(camera_name) ON UPDATE CASCADE ON DELETE CASCADE
+);
+"""
+,
+"""
+CREATE TABLE IF NOT EXISTS job_dll_parameter(
+    job_name TEXT not null,
+    dll_name TEXT not null,
+    parameter_name TEXT  not null,
+    parameter_value REAL,
+    PRIMARY KEY(job_name, dll_name)    
+);
+"""
 ]
