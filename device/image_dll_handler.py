@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 # Title          : image_dll_handler.py
-# Description    : all the image dll reg has to reg in handler
+# Description    : The image dll handler is the controller of all the camera job register
 # Author         : Henry Chang
 # Date           : 20130411
-# Dependency     : image_dll.py image_module.py
+# Dependency     : image_dll.py
 # usage          : 
 # notes          : 
 
