@@ -34,10 +34,11 @@ class MainUI(QtGui.QMainWindow):
    
     def init_ui(self):
         
-        root = tkinter.Tk()
+        tk = tkinter.Tk()
         
-        width = root.winfo_screenwidth() - 20
-        height = root.winfo_screenheight() - 20
+        width = tk.winfo_screenwidth() - 20
+        height = tk.winfo_screenheight() - 30
+        tk.quit()
         
         #width = 1420
         #height = 880

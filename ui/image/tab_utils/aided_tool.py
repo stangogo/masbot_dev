@@ -173,7 +173,7 @@ class AdjusterSlider(QWidget):
     def menu_add_action(self, color_key):
         # 產生action上所需icon
         if color_key == 'turn_off':
-            pixmap = QPixmap('{0}/turn_off.ico'.format(Path.imgs_dir()))
+            pixmap = QPixmap('{0}/off.png'.format(Path.imgs_dir()))
         else:
             pixmap = QPixmap(50, 50)
             pixmap.fill(self.color_dict[color_key][0])

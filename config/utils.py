@@ -36,14 +36,16 @@ class SigName:
             # 'ProdNum': '11op98733', 
             # 'Total': 200 }
         
-    LOG_IN = 'LOG_IN'           
-        # Servo On button
-    SERVO_ON = 'SERVO_ON'       
-        # Servo On button
-    START_MAIN = 'START_MAIN'   
-        # Start button
-    PAUSE_MAIN = 'PAUSE_MAIN'   
-        # Pause button
+    MAIN_LOG_IN = 'LOG_IN'
+        # Log in button         
+    MAIN_START = 'START_MAIN'   
+        # Start button: UI 送出 Start/Shutdown (true/false) 訊號給Model
+        #               Model也可傳入 ture/false 到UI, UI會依傳入的值變動UI顯示 
+        # @on/off (bool)
+    MAIN_PLAY = 'PLAY_MAIN'   
+        # Play button: UI 送出 Play/Pause (true/false) 訊號出去
+        #              Model 可傳入 ture/false 使UI變化
+        # @play/pause (bool - true/false)
     
     """Axis table"""
     ENTER_AXIS_TABLE = 'ENTER_AXIS_TABLE'   

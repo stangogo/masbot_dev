@@ -19,6 +19,7 @@ from masbot.ui.robot.axis_table import AxisTable
 from masbot.config.utils import Path, UISignals, SigName
 
 
+
 class AxisBanner(QtGui.QWidget):
 
     def __init__(self):
@@ -27,11 +28,33 @@ class AxisBanner(QtGui.QWidget):
         self.init_ui()        
         
     def init_ui(self):
-        
-        style = "QLabel { color:green; font-family: sans-serif; font-size: 18px;}"
         title_label = QtGui.QLabel('單\n軸\n移\n動')
-        title_label.setStyleSheet(style)
+        title_label.setStyleSheet("QLabel { color:green; font-family: sans-serif; font-size: 18px;}")
+        
+        self.mode_button = QtGui.QPushButton()
+        
+        self.mode_button.setToolTip('只顯示有勾選的欄位')
+        self.mode_button.setCheckable(True)
+        self.mode_button.clicked.connect(self.mode_changed)
+        self.mode_button.setIcon( self.get_rotate_qicon('top_right_expand.png', 270) )
+        
+        title_vbox = QtGui.QVBoxLayout()
+        title_vbox.addWidget(title_label)
+        title_vbox.addWidget(self.mode_button)
+        title_vbox.setAlignment(title_label, QtCore.Qt.AlignCenter)
+        
+        self.table = AxisTable()        
+        
+        hbox = QtGui.QHBoxLayout(self)
+        hbox.addLayout(title_vbox, 1)
+        hbox.addWidget(self.table,40)
+        hbox.addLayout(self.init_buttons())
+
+        self.setLayout(hbox)
+        self.setWindowTitle('Axis Banner')
+        self.show()
     
+    def init_buttons(self):
         push_ico = QtGui.QIcon("{0}/push.ico".format(Path.imgs_dir()))
         self.di_do_btn = QtGui.QPushButton(push_ico, "DIO\n顯示")
         self.di_do_btn.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -59,23 +82,28 @@ class AxisBanner(QtGui.QWidget):
         btn_v_layout.addWidget(self.remove_image_btn, 1)
         btn_v_layout.addWidget(to_robot_banner_btn, 0)
         btn_v_layout.addWidget(self.di_do_btn, 0)        
-        
-        self.axis_banner = QtGui.QHBoxLayout(self)    
-        self.axis_banner.addWidget(title_label, 1, QtCore.Qt.AlignLeft)
-        self.axis_banner.addWidget(AxisTable(),40)#, QtCore.Qt.AlignLeft)
-        self.axis_banner.addLayout(btn_v_layout)
-        #self.axis_banner.addWidget(self.di_do_btn, 1, QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)  
-        #self.axis_banner.addWidget(push_label, 1, QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
-        
-
-        
-        self.setLayout(self.axis_banner )
-                
-        self.setWindowTitle('Axis Banner')
-        self.show()
+    
+        return btn_v_layout
     
     def remove_image_btn_clicked(self):
         self.di_do_btn.setEnabled(self.remove_image_btn.isChecked()) 
+        
+    def mode_changed(self):
+        self.table.change_diaplay_mode(self.sender().isChecked())
+        if self.sender().isChecked():
+            self.mode_button.setIcon( self.get_rotate_qicon('top_right_expand.png', 90) )
+        else:
+            self.mode_button.setIcon( self.get_rotate_qicon('top_right_expand.png', 270) )
+   
+    def get_rotate_qicon(self, file_name, r_angle):
+        file_path = "{0}/{1}".format(Path.imgs_dir(), file_name)
+        qimage = QtGui.QImage(file_path)        
+        rotate = QtGui.QTransform()
+        rotate.rotate(r_angle)
+        r_qimage = qimage.transformed(rotate)
+    
+        return QtGui.QIcon(QtGui.QPixmap.fromImage(r_qimage))    
+    
 def main():    
     app = QtGui.QApplication(sys.argv)
     ex = AxisBanner()

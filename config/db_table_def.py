@@ -31,7 +31,7 @@ class DBTableDefine():
                                         ('ProdNum',     ['varchar(20)', '成品盤號']),
                                         ('Total',       ['int',         '成品總數'])] )
                                     ,
-             'AxisOP': [['position', '位置'], ['state','狀態'], [' + ','加'], [' - ','減'], ['scale','單位']]
+             'AxisOP': [['position', '位置'], ['state','狀態'], [' + ','加'], [' - ','減'], ['scale','單位'], ['display','']]
              #                       ,
              #'ImageThumbnailID': ['1stCorrect', 'GlueIdentify', '2stCorrect', '66Six']
              

@@ -138,8 +138,10 @@ class NozzleDoButton(QtGui.QPushButton):
         self.nOn = on
         if on:
             self.setText(self.__on_str)
+            self.setStyleSheet('QPushButton{background-color:lightgreen}')
         else: 
             self.setText(self.__off_str)
+            self.setStyleSheet('QPushButton{background-color:white}')
         
         self.signals.clicked.emit(self.io_num, on, self.row, self.column, self.table)
 

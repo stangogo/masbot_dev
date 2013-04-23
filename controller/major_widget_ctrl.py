@@ -18,11 +18,11 @@ class MajorWidgetCtrl:
     def __init__(self):
         self.__proxy_switch = 1
         self.__servo_status = 0
-        UISignals.GetSignal(SigName.SERVO_ON).connect(self.__servo_on_off)
+        UISignals.GetSignal(SigName.MAIN_START).connect(self.__servo_on_off)
         UISignals.GetSignal(SigName.FROM_AXIS_TABLE).connect(self.__tuning_position)
-        UISignals.GetSignal(SigName.START_MAIN).connect(self.__start_flow)
-        UISignals.GetSignal(SigName.PAUSE_MAIN).connect(self.__pause_flow)
-        UISignals.GetSignal(SigName.LOG_IN).connect(self.__login_out)
+        #UISignals.GetSignal(SigName.START_MAIN).connect(self.__start_flow)
+        UISignals.GetSignal(SigName.MAIN_PLAY).connect(self.__play_flow)
+        UISignals.GetSignal(SigName.MAIN_LOG_IN).connect(self.__login_out)
         UISignals.GetSignal(SigName.DO_OUT).connect(self.__do_clicked)
         
         self.__device_proxy()
@@ -36,13 +36,22 @@ class MajorWidgetCtrl:
     def set_proxy_switch(self, on_off=0):
         self.__proxy_switch = on_off
         
-    def __start_flow(self):
-        #self.set_proxy_switch(0)
-        self.__main_flow.send('start', wait=False)
         
-    def __pause_flow(self):
-        self.__main_flow.send('pause', wait=False)
+    def __play_flow(self, play):
+        #self.set_proxy_switch(0)
+        if play:
+            self.__main_flow.send('start', wait=False)
+        else:
+            self.__main_flow.send('pause', wait=False)
         #self.set_proxy_switch(1)
+        
+    #def __start_flow(self):
+        ##self.set_proxy_switch(0)
+        #self.__main_flow.send('start', wait=False)
+        
+    #def __pause_flow(self):
+        #self.__main_flow.send('pause', wait=False)
+        ##self.set_proxy_switch(1)
 
     def __device_proxy(self):
         DM = DeviceManager()
@@ -52,7 +61,7 @@ class MajorWidgetCtrl:
     def __do_clicked(self, do_port, on_off):
         print("ctrl:  do : {0}, {1}".format(do_port, on_off))
         
-    def __servo_on_off(self):
+    def __servo_on_off(self, on):
         if self.__servo_status == 0:
             servo_on_ok_list = []
             for axis in motor_info:
