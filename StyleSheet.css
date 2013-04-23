@@ -67,6 +67,11 @@ QScrollBar::handle:horizontal {
      min-width:35px;
 }
 
+
+QPushButton::indicator::checked {
+     background: %(tabcolor)s;
+}
+
 QHeaderView::section { background-color:%(tablecolor)s; }
 /*set the header color of table */
 

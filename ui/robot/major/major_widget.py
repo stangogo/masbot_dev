@@ -15,6 +15,7 @@ from datetime import datetime
 from masbot.ui.message_log import MessageAndLog
 from masbot.ui.robot.major.tray_info_table import TrayInfoTable 
 from masbot.config.utils import UISignals, SigName
+from masbot.ui.control.ui_utils import *
 
 class Signals(QtCore.QObject):
     """
@@ -46,38 +47,50 @@ class MajorWidget(QtGui.QWidget):
         UISignals.RegisterSignal(self.msg_in.alarm_speak, SigName.ALARM_MSG)
         UISignals.RegisterSignal(self.msg_in.product_info_speak, SigName.PRODUCT_INFO)
         
+        try:
+            UISignals.GetSignal(SigName.MAIN_START).connect(self.start_button_on)
+            UISignals.GetSignal(SigName.MAIN_PLAY).connect(self.play_button_on)
+        except:
+            pass
+        
         btn_panel = QtGui.QHBoxLayout()
         button_grid_layout = QtGui.QGridLayout()
         
-        login_btn = QtGui.QPushButton('Log in')        
-        login_btn .setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)        
-        UISignals.RegisterSignal(login_btn.clicked, SigName.LOG_IN)
-        #login_btn.clicked.connect(self.login_clicked)
+        login_btn = create_button('login.png', '', '登入(Log In)')    # QtGui.QPushButton('Log in')        
+        login_btn .setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        login_btn.setIconSize(QtCore.QSize(32,32));
+        UISignals.RegisterSignal(login_btn.clicked, SigName.MAIN_LOG_IN)
         
-        start_btn = QtGui.QPushButton('Start')
-        start_btn .setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        UISignals.RegisterSignal(start_btn.clicked, SigName.START_MAIN)
+        #start_btn = create_button('on-off.png', '', '啟動 (Start)') # QtGui.QPushButton('Start')
+        #start_btn .setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        #start_btn.setIconSize(QtCore.QSize(32,32));
+        #UISignals.RegisterSignal(start_btn.clicked, SigName.START_MAIN)
         
-        servo_on_btn = QtGui.QPushButton('Servo On')        
-        servo_on_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        UISignals.RegisterSignal(servo_on_btn.clicked, SigName.SERVO_ON)
+        start_btn = create_button('off.png','','啟動(Switch On)')
+        start_btn.setCheckable(True)
+        start_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        start_btn.setIconSize(QtCore.QSize(32,32))                
+        start_btn.clicked.connect(self.start_clicked)
+        self.start_btn = start_btn
         
-        pause_btn = QtGui.QPushButton('Pause')        
-        pause_btn.setCheckable(True)
-        pause_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        UISignals.RegisterSignal(pause_btn.clicked, SigName.PAUSE_MAIN)
+        play_btn = create_button('play.png', '','執行(Play)')
+        play_btn.setCheckable(True)
+        play_btn.setIconSize(QtCore.QSize(32,32));
+        play_btn.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        play_btn.clicked.connect(self.play_clicked)
+        self.play_btn = play_btn
         
-        button_grid_layout.addWidget(login_btn, 0, 0)
+        button_grid_layout.addWidget(login_btn, 0, 0, 0,1)
+        #button_grid_layout.addWidget(start_btn, 0, 1)
         button_grid_layout.addWidget(start_btn, 0, 1)
-        button_grid_layout.addWidget(servo_on_btn, 1, 0)
-        button_grid_layout.addWidget(pause_btn, 1, 1)
+        button_grid_layout.addWidget(play_btn, 1, 1)
         
-        message_edit = QtGui.QLabel("ABC")# QtGui.QTextEdit()
-        message_edit.resize(500, 600)
+        message_edit = QtGui.QTextEdit()
+        message_edit.resize(200, 200)
         
         
-        btn_panel.addLayout(button_grid_layout)
-        btn_panel.addWidget(message_edit)
+        btn_panel.addLayout(button_grid_layout,1)
+        btn_panel.addWidget(message_edit, 2)
                 
 
         flow_box = QtGui.QGroupBox('流程訊息(Flow Message)')                
@@ -112,6 +125,35 @@ class MajorWidget(QtGui.QWidget):
         self.setWindowTitle(title)
         self.show()
 
+
+    def play_button_on(self, on):
+        if on:
+            self.play_btn.setIcon(QtGui.QPixmap('{0}/pause.png'.format(Path.imgs_dir())))
+        else:
+            self.play_btn.setIcon(QtGui.QPixmap('{0}/play.png'.format(Path.imgs_dir())))        
+            
+    def start_button_on(self, on):
+        if on:
+            self.start_btn.setIcon(QtGui.QPixmap('{0}/on.png'.format(Path.imgs_dir())))
+        else:
+            self.start_btn.setIcon(QtGui.QPixmap('{0}/off.png'.format(Path.imgs_dir())))        
+
+    def play_clicked(self):
+        play_button = self.sender()        
+        try:
+            UISignals.GetSignal(SigName.MAIN_PLAY).emit(play_button.isChecked())
+        except:
+            self.play_button_on(play_button.isChecked())
+
+    def start_clicked(self):
+        start_button = self.sender()
+        try:
+            UISignals.GetSignal(SigName.MAIN_START).emit(start_button.isChecked())
+        except:
+            self.start_button_on(start_button.isChecked())
+            
+
+            
     def login_clicked(self):
         self.msg_in.flow_speak.emit('login')
         

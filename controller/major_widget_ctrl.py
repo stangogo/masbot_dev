@@ -1,26 +1,27 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
+import threading
+from time import sleep
+from imp import reload
   
 from masbot.config.utils import SigName, UISignals
 from masbot.config.common_lib import *
-import threading
-from time import sleep
 from masbot.device.device_manager import DeviceManager
-from masbot.device.piston import Piston
-from masbot.device.motor import Motor
 from masbot.flow.main_flow import MainFlow
-from imp import reload
+#from masbot.device.piston import Piston
+#from masbot.device.motor import Motor
 
 class MajorWidgetCtrl:
 
     def __init__(self):
         self.__proxy_switch = 1
         self.__servo_status = 0
-        UISignals.GetSignal(SigName.SERVO_ON).connect(self.__servo_on_off)
+        UISignals.GetSignal(SigName.MAIN_START).connect(self.__servo_on_off)
         UISignals.GetSignal(SigName.FROM_AXIS_TABLE).connect(self.__tuning_position)
-        UISignals.GetSignal(SigName.START_MAIN).connect(self.__start_flow)
-        UISignals.GetSignal(SigName.PAUSE_MAIN).connect(self.__pause_flow)
-        UISignals.GetSignal(SigName.LOG_IN).connect(self.__login_out)
+        #UISignals.GetSignal(SigName.START_MAIN).connect(self.__start_flow)
+        UISignals.GetSignal(SigName.MAIN_PLAY).connect(self.__play_flow)
+        UISignals.GetSignal(SigName.MAIN_LOG_IN).connect(self.__login_out)
         UISignals.GetSignal(SigName.DO_OUT).connect(self.__do_clicked)
         
         self.__device_proxy()
@@ -34,23 +35,35 @@ class MajorWidgetCtrl:
     def set_proxy_switch(self, on_off=0):
         self.__proxy_switch = on_off
         
-    def __start_flow(self):
-        #self.set_proxy_switch(0)
-        self.__main_flow.send('start', wait=False)
         
-    def __pause_flow(self):
-        self.__main_flow.send('pause', wait=False)
+    def __play_flow(self, play):
+        #self.set_proxy_switch(0)
+        if play:
+            self.__main_flow.send('start', wait=False)
+        else:
+            self.__main_flow.send('pause', wait=False)
         #self.set_proxy_switch(1)
+        
+    #def __start_flow(self):
+        ##self.set_proxy_switch(0)
+        #self.__main_flow.send('start', wait=False)
+        
+    #def __pause_flow(self):
+        #self.__main_flow.send('pause', wait=False)
+        ##self.set_proxy_switch(1)
 
     def __device_proxy(self):
         DM = DeviceManager()
         self.__adlink = DM._get_device_proxy('ADLink')
         self.__lplink = DM._get_device_proxy('LPLink')
+        # total_resource format (list)
+        # ex. [128, 128, 4] means that there are 128 DO, 128 DI, 4 axis
+        self.__total_resource = DM._get_total_resource()
         
     def __do_clicked(self, do_port, on_off):
-        print("ctrl:  do : {0}, {1}".format(do_port, on_off))
+        self.__adlink.DO(do_port, on_off)
         
-    def __servo_on_off(self):
+    def __servo_on_off(self, on):
         if self.__servo_status == 0:
             servo_on_ok_list = []
             for axis in motor_info:
@@ -76,7 +89,8 @@ class MajorWidgetCtrl:
         while True:
             if self.__proxy_switch:
                 self.__refresh_axis_widget()
-            sleep(0.3)
+                self.__refresh_dio_widget()
+            sleep(0.2)
         
     def __refresh_axis_widget(self):
         slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE)
@@ -87,12 +101,29 @@ class MajorWidgetCtrl:
             position_list = actor[actor_name].send('get_position')
             status_list = actor[actor_name].send('get_status')
             if axis_count == 1:
-                position_list = list(position_list)
-                status_list = list(status_list)
+                position_list = [position_list, ]
+                status_list = [status_list, ]
             for i in range(axis_count):
                 axis_name = axis_info[i]['key']
                 slot.emit('position', axis_name, position_list[i])
                 slot.emit('state', axis_name, status_list[i])
+
+    def __refresh_dio_widget(self):
+        do_slot = UISignals.GetSignal(SigName.DO_IN)
+        di_slot = UISignals.GetSignal(SigName.DI_IN)
+        
+        do_status = []
+        for i in range(self.__total_resource['ADLink'][0]):
+            status = self.__adlink.DO_read(i)
+            do_status.append(status)
+            
+        di_status = []
+        for i in range(self.__total_resource['ADLink'][1]):
+            status = self.__adlink.DI(i)
+            di_status.append(status)
+            
+        do_slot.emit(do_status, 1)
+        di_slot.emit(di_status, 1)
         
     def __tuning_position(self, axis_name, offset):
         if self.__proxy_switch:

@@ -39,7 +39,7 @@ class RobotPageDock(QtGui.QMainWindow):
 
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.pages['main_page'])  
         
-        UISignals.GetSignal(SigName.START_MAIN).connect(self.btn_click)
+        # UISignals.GetSignal(SigName.START_MAIN).connect(self.btn_click)
         
     def btn_click(self):
         UISignals.GetSignal(SigName.ALARM_MSG).emit("test alarm msg")
@@ -75,10 +75,10 @@ class CalculatorTest(unittest.TestCase):
     def login_btn(self):
         print('login_btn button is clicked')
         
-    def test_star_btn(self):
-        btn = UISignals.GetSignal(SigName.START_MAIN)
-        btn.connect(self.start_btn)    
-        btn.emit()
+    #def test_star_btn(self):
+        # btn = UISignals.GetSignal(SigName.START_MAIN)
+        #btn.connect(self.start_btn)    
+        #btn.emit()
         
     def test_pause_btn(self):
         btn = UISignals.GetSignal(SigName.PAUSE_MAIN)

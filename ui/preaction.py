@@ -16,7 +16,15 @@ from masbot.config.utils import UISignals, SigName
 class SigAgent(QtCore.QObject):
     """所有UI對外連接的串口的名稱和參數設定. 
     """
+    main_start = QtCore.Signal(bool)
+    """ signal for start button on major widget
+    @ bool : button is clicked to trigger start / shutdown (true/false) system
+    """
     
+    main_play = QtCore.Signal(bool)
+    """ signal for play button on major widget
+    @ bool : button is clicked to trigger play / pause (true/false) system
+    """    
     
     di_in = QtCore.Signal(list, int)
     """
@@ -54,27 +62,34 @@ class SigAgent(QtCore.QObject):
     @ float: 單軸位置的 value
     """
 
-    img_preview = QtCore.Signal(str, str)
+    img_preview = QtCore.Signal(list)
     """影像預覽資料傳入
-    @ str: 影像檔案路徑
-    @ str: 辨別 ID
+    @ list: image data - image path(str), id(str), name(str)
     """
     
     img_aided_tool = QtCore.Signal(dict)
     """ 影像 - 輔助工具 設定值傳出口
     @ dict: 資料字典集
     """
+    
+    img_message = QtCore.Signal(list)
+    """影像預覽資料傳入
+    @ list: image data - image path(str), id(str), name(str)
+    """    
 
 """初始化所有的接口, 並註冊到UISignals Dictionary
 """
 sig_agent = SigAgent()
+UISignals.RegisterSignal(sig_agent.main_start, SigName.MAIN_START)
+UISignals.RegisterSignal(sig_agent.main_play, SigName.MAIN_PLAY)
 UISignals.RegisterSignal(sig_agent.di_in, SigName.DI_IN)
 UISignals.RegisterSignal(sig_agent.do_in, SigName.DO_IN)
 UISignals.RegisterSignal(sig_agent.do_out, SigName.DO_OUT)
 UISignals.RegisterSignal(sig_agent.into_single_axis, SigName.ENTER_AXIS_TABLE)
 UISignals.RegisterSignal(sig_agent.out_single_axis, SigName.FROM_AXIS_TABLE)
 UISignals.RegisterSignal(sig_agent.img_preview, SigName.IMG_THUMBNAIL)
-UISignals.RegisterSignal(sig_agent.img_aided_tool, SigName.AIDED_TOOL)
+UISignals.RegisterSignal(sig_agent.img_aided_tool, SigName.IMG_AIDED_TOOL)
+UISignals.RegisterSignal(sig_agent.img_message, SigName.IMG_MESSAGE)
 
 
 """測試用

@@ -51,9 +51,13 @@ class MotorActor(pykka.ThreadingActor):
             ret = self.__motor_obj.get_position()
         elif message.get('msg') == 'get_status':
             ret = self.__motor_obj.get_motion_status()
+        elif message.get('msg') == 'get_speed':
+            ret = self.__motor_obj.get_speed()
         elif message.get('msg') == 'set_speed':
             new_speed = message.get('speed')
             ret = self.__motor_obj.set_speed(new_speed)
+        elif message.get('msg') == 'get_acc_time':
+            ret = self.__motor_obj.get_acc_time()
         elif message.get('msg') == 'set_acc_time':
             new_acc_time = message.get('acc_time')
             ret = self.__motor_obj.set_acc_time(new_acc_time)

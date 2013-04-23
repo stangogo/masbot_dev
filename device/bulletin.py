@@ -29,7 +29,7 @@ class Bulletin(object):
         self.__logger = logging.getLogger(__name__)
         self.__author = author
         self.__board = board
-
+        
     def declare(self, actor_name, restrict):
         """ declare the restriction to some actor on the board
         
@@ -75,7 +75,7 @@ class Bulletin(object):
         self.__logger.debug("%s wipes restriction of %s", self.__author, actor_name)
 
     def wipe_all(self):
-        """ wipe all the restrictions to some actor on the board
+        """ wipe own all the restrictions on the board
         
         Example:
             nozzle.wipe_all()
@@ -108,4 +108,48 @@ class Bulletin(object):
             
         """
         return self.__board
-    
+
+    def check_emg(self):
+        """ check emergency status
+        
+        Example:
+            supervisor.check_emg()
+
+        Args:
+        
+        Returns:
+            boolean
+        
+        Raises:
+            
+        """     
+        if 'supervisor' not in self.__board:
+            return False
+        if self.__board['supervisor']['emg'] == 1:
+            return True
+        else:
+            return False
+            
+    def check_workable(self, action):
+        """ check if the actor is workable
+        
+        Example:
+            axis_z.check_workable('move')
+            
+        Args:
+            None
+        
+        Returns:
+            boolean
+        
+        Raises:
+            
+        """
+        if self.check_emg():
+            return False
+        for author, rec in self.__board.items():
+            for actor, restrict in rec.items():
+                if actor == self.__author and restrict == action:
+                    return False
+        return True
+        

@@ -57,6 +57,19 @@ class DeviceManager(object):
         self.__lplink_axis_in_service = [0] * self.__lplink_axis_count
         #self.serial_in_service = [0] * serial_count
 
+    def _get_total_resource(self):
+        resource = {}
+        resource['ADLink'] = [self.__adlink_do_count,
+                            self.__adlink_di_count,
+                            self.__adlink_axis_count]
+        resource['LPLink'] = [self.__lplink_do_count,
+                            self.__lplink_di_count,
+                            self.__lplink_axis_count]
+        #resource['LPMax'] = [self.__lpmax_do_count,
+        #                    self.__lpmax_di_count,
+        #                    self.__lpmax_axis_count]
+        return resource
+            
     def _get_device_proxy(self, module):
         if module == 'ADLink':
             return self.__adlink

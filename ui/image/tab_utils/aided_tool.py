@@ -41,7 +41,7 @@ class Slider(QFrame):
         self.cur_label.setContentsMargins(0,0,0,0)
         
         text_len = max(len(min_label.text()), len(max_label.text()))
-        self.cur_label.setMinimumWidth(int(text_len * 5.8))     # 設定current value label的寬度, 以免數值變化時, layout 會變動
+        self.cur_label.setMinimumWidth(int(text_len * 6))     # 設定current value label的寬度, 以免數值變化時, layout 會變動
         
         hbox = QHBoxLayout()
         
@@ -57,7 +57,7 @@ class Slider(QFrame):
         vbox.setAlignment(max_label, Qt.AlignCenter)
         vbox.setAlignment(min_label, Qt.AlignCenter)
         
-        vbox.setContentsMargins(0,0,0,0)
+        vbox.setContentsMargins(0,2,0,0)
         
         self.setLayout(vbox)
         self.setContentsMargins(0,0,0,0)
@@ -101,9 +101,10 @@ class AdjusterSlider(QWidget):
             (min_, max_, min_angle, max_angle, text_, colorful) = args
 
         self.btn = self.create_button(text_, colorful)
+
         if len(args) == 4:
             self.btn.setMaximumWidth(50)
-            self.setFixedWidth(70)
+            self.setFixedWidth(60)
         elif len(args) == 6:
             self.setFixedWidth(120)
             
@@ -117,6 +118,7 @@ class AdjusterSlider(QWidget):
         slider = Slider(min_, max_)
         slider.value_changed.connect(self.value_changed)
         slider_box.addWidget(slider)    # 第一組 slider
+        
         self.sliders.append(slider)
         
         if len(args) == 6:
@@ -150,6 +152,7 @@ class AdjusterSlider(QWidget):
             self.menu.removeAction(self.turnoff_action)
         else:      
             btn.setFlat(True)
+            
             #btn.setCheckable(True)
             btn.clicked.connect(self.value_changed)
         
@@ -170,7 +173,7 @@ class AdjusterSlider(QWidget):
     def menu_add_action(self, color_key):
         # 產生action上所需icon
         if color_key == 'turn_off':
-            pixmap = QPixmap('{0}/turn_off.ico'.format(Path.imgs_dir()))
+            pixmap = QPixmap('{0}/off.png'.format(Path.imgs_dir()))
         else:
             pixmap = QPixmap(50, 50)
             pixmap.fill(self.color_dict[color_key][0])
@@ -223,10 +226,6 @@ class AidedTool(QListWidget):
             slider.setting_changed.connect(self.btn_clicked)
             self.add_slider(slider)            
             
-            #hbox.addWidget(slider)
-        
-        #self.setLayout(hbox)
-        
         self.setMaximumWidth(700)
         self.setFlow(QListWidget.LeftToRight)
         self.setWindowTitle('AidedTool - 輔助工具')
@@ -249,7 +248,7 @@ class AidedTool(QListWidget):
         for slider in self.sliders:
             data = []
             if slider.btn.isCheckable():
-                data.append(slider.btn.isChecked())
+                data.append(slider.btn.btn.isFlat())
             else:
                 data.append(slider.button_status())
             for value in slider.value():
@@ -257,20 +256,12 @@ class AidedTool(QListWidget):
             
             slider_dict[slider.btn.text()] = data
         try:    
-            UISignals.GetSignal(SigName.AIDED_TOOL).emit(slider_dict)
+            UISignals.GetSignal(SigName.IMG_AIDED_TOOL).emit(slider_dict)
         except:
             pass
         
 def main():    
     app = QApplication(sys.argv)
-    
-    #with open("{0}/stylesheet.css".format(Path.mosbot_dir()), 'r') as cssFile:
-        #styleSheet =cssFile.read()
- 
-    #Settings = { "tabcolor":"#17B6FF", "fontsize":"10px" , "tablecolor":"#17B6BB"}
-    #styleSheet = styleSheet % Settings 
-    #app.setStyleSheet(styleSheet)    
-    
     ex = AidedTool()
     ex.show()
     app.exec_()
