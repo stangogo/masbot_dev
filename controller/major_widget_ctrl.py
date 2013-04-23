@@ -81,7 +81,7 @@ class MajorWidgetCtrl:
             if self.__proxy_switch:
                 self.__refresh_axis_widget()
                 self.__refresh_dio_widget()
-            sleep(0.3)
+            sleep(0.2)
         
     def __refresh_axis_widget(self):
         slot = UISignals.GetSignal(SigName.ENTER_AXIS_TABLE)

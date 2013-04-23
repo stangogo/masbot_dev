@@ -59,8 +59,8 @@ class Channel(object):
     def __handle_command(self):
         while self.__channel_is_run:
             job = self.__command_queue.get()
-            func_name = job[0]
-            result_queue = job[1]
+            result_queue = job[0]
+            func_name = job[1]
             argv = job[2]
             ret = func_name(*argv)
             result_queue.put(ret)
@@ -82,7 +82,7 @@ class Channel(object):
         
         """
         exe_result_queue = Queue()
-        job = [func_name, exe_result_queue, argv]
+        job = [exe_result_queue, func_name, argv]
         self.__command_queue.put(job)
         return exe_result_queue.get()
 
