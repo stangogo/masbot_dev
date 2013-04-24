@@ -6,11 +6,9 @@ from time import sleep
 from imp import reload
   
 from masbot.config.utils import SigName, UISignals
-from masbot.config.common_lib import *
+from masbot.controller.wake_actor import *
 from masbot.device.device_manager import DeviceManager
 from masbot.flow.main_flow import MainFlow
-#from masbot.device.piston import Piston
-#from masbot.device.motor import Motor
 
 class MajorWidgetCtrl:
 

@@ -11,9 +11,6 @@
 import os
 import logging.config
 import yaml
-from masbot.config.gather_data import *
-from masbot.actor.piston_actor import PistonActor
-from masbot.actor.motor_actor import MotorActor
 
 # enum is like in c++ (eg. num = enum('a','b','c')) 
 def enum(*sequential, **named):
@@ -29,12 +26,3 @@ if os.path.exists(path):
 else:
     logging.basicConfig(level=logging.INFO)
 
-# initial all actors
-actor = {}
-for rec in piston_info:
-    actor_name = rec['key']
-    actor[actor_name] = PistonActor.start(rec)
-
-for rec in motor_info:
-    actor_name = rec['key']
-    actor[actor_name] = MotorActor.start(rec)
