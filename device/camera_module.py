@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Title          : camera.py
+# Title          : camera_module.py
 # Description    : camera grabber
 # Author         : Henry Chang
 # Date           : 20130423
@@ -11,24 +11,25 @@
 import logging
 from re import compile
 from PIL import Image
-from masbot.config import common_lib
 from masbot.device.bulletin import Bulletin
 from masbot.device.channel import Channel
 from masbot.device.camera.Framegrabber_dll import *
 
 
-class Camera(Bulletin, Channel):    
+class CameraModule(Bulletin, Channel):    
     def __init__(self, camera_info, board={}):
         owner = camera_info['camera_name']
-        super(Camera, self).__init__(owner, board)
+        super(CameraModule, self).__init__(owner, board)
         #Due to multiple inheritance, it should active channel by hand.        
         self.init_channel()
         self.__logger = logging.getLogger(__name__)       
         # The string length is connected with the char length of framegrabber.dll, so can't change this variable.   
         self.__str_length = 1024           
         self.__para_set = {}
-        self.__para_enum = common_lib.enum('width','height','channel','frame_rate','reverse_type','gain_value',
-                                 'gain_min','gain_max','shutter_value','shutter_min','shutter_max')
+        #self.__para_enum = common_lib.enum('width','height','channel','frame_rate','reverse_type','gain_value',
+                                 #'gain_min','gain_max','shutter_value','shutter_min','shutter_max')
+        self.__para_enum = {'width':0,'height':1,'channel':2,'frame_rate':3,'reverse_type':4,'gain_value':5,
+                                         'gain_min':6,'gain_max':7,'shutter_value':8,'shutter_min':9,'shutter_max':10}        
         self.__initial(camera_info)  
         
     def __del__(self):
@@ -176,7 +177,7 @@ class Camera(Bulletin, Channel):
 #from time import clock
 #from time import sleep
 #from threading import Thread
-#cam = Camera(camera_inf)
+#cam = CameraModule(camera_inf)
 #print(cam.get_parameter('gain_value'))
 #print(cam.get_parameter('shutter_value'))
 #print(cam.get_parameter('channel'))

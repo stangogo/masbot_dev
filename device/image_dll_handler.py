@@ -12,8 +12,13 @@ import logging
 from os import listdir
 from masbot.device.image_dll.image_dll import *
 
-class ImgDLLHandler:    
-    def __init__(self):        
+class ImgDLLHandler:
+    def __new__(cls):
+        if not ImgDLLHandler._instance:
+            ImgDLLHandler._instance = object.__new__(cls)
+            cls.__initial(cls)
+        return ImgDLLHandler._instance    
+    def __initial(self):        
         self.__logger = logging.getLogger(__name__)
         self.__dll_handler = {} # store dll's name and handler
         self.find_dlls()        

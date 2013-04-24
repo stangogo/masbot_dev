@@ -23,7 +23,7 @@ else:
     from masbot.device.motion.lplink_fake import LPLink
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
-from masbot.device import camera
+from masbot.device.camera_module import CameraModule
 
 
 class DeviceManager(object):
