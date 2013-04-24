@@ -12,7 +12,7 @@ from masbot.config.sqldb import sqldb
 from re import compile
 
 #==========================================================================
-# io_card_info
+# gather io card
 #==========================================================================
 result = sqldb.execute("select * from io_card")
 col_info = result.record()
@@ -33,8 +33,14 @@ while result.next():
             card_list.append(cell_value)
     io_card_info[card_module].append(card_list)
 
+# define all the motion card module
+card_module = ['ADLink', 'LPLink', 'LPMax']
+for module in card_module:
+    if module not in io_card_info:
+        io_card_info[module] = []
+
 #==========================================================================
-# piston_info
+# piston info
 #==========================================================================
 result = sqldb.execute("select * from piston")
 col_info = result.record()
@@ -115,7 +121,7 @@ while result.next():
             position_list.append(cell_value)
     points_map[actor_name][pt_index] = position_list
 #==========================================================================
-# single_axis_info
+# gather single axis info
 #==========================================================================
 motor_info = []
 necessary_attribute = ['key', 'speed', 'safe_speed', 'module_type']
@@ -134,7 +140,7 @@ for axis in axis_info:
         motor_info.append(dic)
 
 #==========================================================================
-# double axis_info
+# gather double axis info
 #==========================================================================
 pattern = compile('^axis[0-9]$')
 result = sqldb.execute("select * from double_axis")

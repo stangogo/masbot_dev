@@ -51,11 +51,11 @@ class ADLink(Motion):
                 self.__di_card_status.append(empty_card)
                 self.__di_cards_index.append(num)
 
-    def do_card_count(self):
-        return len(self.__do_cards_index)
+    def do_count(self):
+        return len(self.__do_cards_index) * 32
 
-    def di_card_count(self):
-        return len(self.__di_cards_index)
+    def di_count(self):
+        return len(self.__di_cards_index) * 32
 
     def close_io_cards(self):
         self.__logger.debug('adlink_fake db51 close')

@@ -51,3 +51,11 @@ class Motion(metaclass=ABCMeta):
     @abstractmethod
     def emg_stop(self, axis):
         pass
+
+    @abstractmethod
+    def do_count(self):
+        pass
+
+    @abstractmethod
+    def di_count(self):
+        pass
