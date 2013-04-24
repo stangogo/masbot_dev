@@ -39,19 +39,8 @@ class DeviceManager(object):
         self.__logger = logging.getLogger(__name__)
         self.__bulletin = {}
         self.__adlink = ADLink(io_card_info['ADLink'])
-        # temp method to detect axis count
-        self.__adlink_axis_count = len(axis_map)
-        self.__adlink_di_in_service = [0] * self.__adlink.di_count()
-        self.__adlink_do_in_service = [0] * self.__adlink.do_count()
-        self.__adlink_axis_in_service = [0] * self.__adlink_axis_count
-
         self.__lplink = LPLink(io_card_info['LPLink'])
-        # temp method to detect axis count
-        self.__lplink_axis_count = len(axis_map)
-        self.__lplink_di_in_service = [0] * self.__lplink.di_count()
-        self.__lplink_do_in_service = [0] * self.__lplink.do_count()
-        self.__lplink_axis_in_service = [0] * self.__lplink_axis_count
-        #self.serial_in_service = [0] * serial_count
+        #self.__lpmax = LPMax(io_card_info['LPMax'])
 
         self.__resource_map = {
             'ADLink_DO': {'count': self.__adlink.do_count()},
@@ -78,16 +67,6 @@ class DeviceManager(object):
         #proxy['LPMax'] = self.__lpmax
         return proxy
 
-    def resource_status(self):
-        resource = {'ADLink': {}, 'LPLink': {}}
-        resource['ADLink']['DI'] = self.__adlink_di_in_service
-        resource['ADLink']['DO'] = self.__adlink_do_in_service
-        resource['ADLink']['AXIS'] = self.__adlink_axis_in_service
-        resource['LPLink']['DI'] = self.__lplink_di_in_service
-        resource['LPLink']['DO'] = self.__lplink_do_in_service
-        resource['LPLink']['AXIS'] = self.__lplink_axis_in_service
-        return resource
-
     def request(self, actor_info, actor_type):
         """ request DM for a modoule
         
@@ -96,7 +75,7 @@ class DeviceManager(object):
             
         Args:
             actor_info(dict): resource infomation
-            actor_type(string): motor or piston...
+            actor_type(string): motor, piston, camera, stock
         
         Returns:
             None
