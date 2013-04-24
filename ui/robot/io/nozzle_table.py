@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 import os
@@ -17,13 +17,13 @@ from masbot.ui import preaction
 from masbot.ui.robot.io.IO_table_template import IOTableTemplate
 
 class NozzleTable(IOTableTemplate):
-    def __init__(self, data_table_name, ui_table_name, horizontal):
-        super(NozzleTable, self).__init__(data_table_name, ui_table_name, horizontal)
+    def __init__(self, data_table_name, horizontal):
+        super(NozzleTable, self).__init__(data_table_name, horizontal)
         UISignals.GetSignal(SigName.DI_IN).connect(self.di_changed)
         UISignals.GetSignal(SigName.DO_IN).connect(self.do_changed)        
    
     def do_clicked(self, io_num, on_off, row, column, table):
-        if not table == self.data_table_name:
+        if not table == self.table_name:
             return        
                 
         sig = UISignals.GetSignal(SigName.DO_OUT)
@@ -68,7 +68,7 @@ class Nozzle(QtGui.QWidget):
     
     def init_ui(self, title):
         
-        self.nozzle_table = NozzleTable('nozzle', 'nozzle_ui', True)        
+        self.nozzle_table = NozzleTable('nozzle', QtCore.Qt.Orientation.Horizontal)
         
         v_layout = QtGui.QVBoxLayout()
         v_layout.addWidget(self.nozzle_table)

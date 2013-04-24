@@ -18,9 +18,12 @@ from masbot.ui.control.ui_utils import *
 
 class Slider(QGroupBox):
     value_changed = Signal()
-    def __init__(self, title):
-        super(Slider, self).__init__(title)
+    def __init__(self, *args):        
+        super(Slider, self).__init__(args[0])
         self.init_ui()
+        if len(args) == 3:
+            (title, min_, max_) = args
+            self.set_range(min_, max_)
         
     def init_ui(self):
         (min_, max_) = [0, 100] 
@@ -34,8 +37,9 @@ class Slider(QGroupBox):
         self.cur_label.setStyleSheet('QLabel{color : blue;}')# text-decoration: underline color blue}')
         self.cur_label.setContentsMargins(0,0,0,0)
         
-        circle_btn = create_button('round.png', '', '切換實心/空心模式')
+        circle_btn = create_button('hollow_circle.png', '', '切換實心/空心模式')
         circle_btn.setCheckable(True)
+        circle_btn.clicked.connect(self.circle_btn_clicked)
         default_btn = create_button('reload.png', '', '載入預設值')
         
         self.set_range(min_, max_)
@@ -73,6 +77,13 @@ class Slider(QGroupBox):
 
     def value(self):
         return self.slider.value()
+  
+    def circle_btn_clicked(self):
+        button = self.sender()
+        if button.isChecked():
+            button.setIcon(QPixmap('{0}/solid_circle.png'.format(Path.imgs_dir())))
+        else:
+            button.setIcon(QPixmap('{0}/hollow_circle.png'.format(Path.imgs_dir())))
   
 class IdentificationSettings(QWidget):
     def __init__(self):
@@ -114,18 +125,30 @@ class IdentificationSettings(QWidget):
         right_layout = QVBoxLayout()
         
         # 左邊
+        setter_sbox = QStackedLayout()
+        
         self.slider = Slider('1. 設定目標半徑')
         self.slider.set_range(50, 600)
-        left_layout.addWidget(self.slider)
+        
+        setter_sbox.addWidget(self.slider)
+        setter_sbox.addWidget(Slider('2. 設定目標半徑', 10, 300))
+        
+        
+        left_layout.addLayout(setter_sbox)
+        
+        self.setter_sbox = setter_sbox
         
         # 右邊
-        prev_btn =  create_button('up.png', '', '上一步')
-        next_btn = create_button('down.png', '', '下一步')
-
-        right_layout.addWidget(prev_btn)
-        right_layout.addWidget(next_btn)
-        right_layout.setSpacing(0)
+        self.prev_btn =  create_button('up.png', '', '上一步')
+        self.next_btn = create_button('down.png', '', '下一步')
+        self.prev_btn.setEnabled(False)
+        self.prev_btn.clicked.connect(self.prev_step)
+        self.next_btn.clicked.connect(self.next_step)
         
+
+        right_layout.addWidget(self.prev_btn)
+        right_layout.addWidget(self.next_btn)
+        right_layout.setSpacing(0)
         
         # 合起來
         
@@ -374,6 +397,21 @@ class IdentificationSettings(QWidget):
         self.parameter_box.setVisible(correction_mode)
         self.job_list.setEnabled(not correction_mode)
         
+    
+    def prev_step(self):        
+        self.setter_sbox.setCurrentIndex( self.setter_sbox.currentIndex() -1)
+        if self.setter_sbox.currentIndex() == 0:
+            self.prev_btn.setEnabled(False)
+        
+        self.next_btn.setEnabled(True)
+        
+    def next_step(self):
+        self.setter_sbox.setCurrentIndex( self.setter_sbox.currentIndex() +1)
+        
+        if self.setter_sbox.currentIndex() == self.setter_sbox.count()-1:
+            self.next_btn.setEnabled(False)
+            
+        self.prev_btn.setEnabled(True)
         
 def main():    
     app = QApplication(sys.argv)

@@ -17,18 +17,18 @@ from masbot.ui.robot.io.IO_table_template import  IOTableTemplate
 
 class PointTable(IOTableTemplate):
         
-    def __init__(self, data_table_name, ui_table_name, horizontal):
-        super(PointTable, self).__init__(data_table_name, ui_table_name, horizontal)
+    def __init__(self, data_table_name, horizontal):
+        super(PointTable, self).__init__(data_table_name, horizontal)
         
         
     def do_clicked(self, io_num, on_off, row, column, table):
-        if not table == self.data_table_name:
+        if not table == self.table_name:
             return    
         
         if row == -1 or column == -1:
             return
         
-        if self.list_horizontal:            
+        if self.orientation == QtCore.Qt.Orientation.Horizontal:
             x_item = self.item(1, column)
             y_item = self.item(2, column)
         else:
@@ -53,8 +53,7 @@ class Point(QtGui.QSplitter):
     
     def init_ui(self, title):
         
-        self.point_table = PointTable('point', 'point_ui', False)        
-        
+        self.point_table = PointTable('point', QtCore.Qt.Orientation.Vertical)        
         
         single_axis_point_table = sqldb.get_table_model('single_axis_points')
         

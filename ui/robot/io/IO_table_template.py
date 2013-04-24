@@ -15,29 +15,44 @@ from masbot.ui.control.dio_button import *
 from masbot.ui import preaction
 
 class IOTableTemplate(QtGui.QTableWidget):
-    def __init__(self, data_table_name, ui_table_name, horizontal):
+    
+    
+    
+    def __init__(self, table_name, orientation):
         super(IOTableTemplate, self).__init__()
+        
         self.one_data_set = []   #one data sample for adding/updating data column/row
         self.do_dict = {}
-        self.di_dict = {}        
-        
-        self.data_table = sqldb.get_table_model(data_table_name)
-        self.ui_table = sqldb.get_table_model(ui_table_name)
-        
-        self.ui_table_name = ui_table_name
-        self.data_table_name = data_table_name
-        
-        self.list_horizontal = horizontal
-        
-        header_key = 'display_text'
-        if self.list_horizontal:
-            self.init_vertical_header(header_key, self.ui_table, self.ui_table_name, 'col_order')
-            self.init_horizontal_header(header_key, self.data_table, self.data_table_name, 'id')
-        else:
-            self.init_vertical_header(header_key, self.data_table, self.data_table_name, 'id')
-            self.init_horizontal_header(header_key, self.ui_table, self.ui_table_name, 'col_order')
+        self.di_dict = {}
+        self.table_name = table_name
+        self.ui_table_name = ui_table_name = 'ui_layout' # ui layout 在資料庫的 table name 
+        self.orientation = orientation
 
-        self.fill_cells(ui_table_name, data_table_name, self.ui_table, self.data_table, self.list_horizontal, False)
+        header_key = 'display_text'
+        
+        self.data_table = data_table = sqldb.get_table_model(table_name)
+        self.ui_table = ui_table = sqldb.get_table_model(ui_table_name)
+        
+        
+        if orientation == QtCore.Qt.Orientation.Horizontal:
+            vertical_header = self.query_header_data(header_key, ui_table, ui_table_name, 'col_order', table_name)
+            horizontal_header = self.query_header_data(header_key, data_table, table_name, 'key')
+        else:
+            vertical_header = self.query_header_data(header_key, data_table, table_name, 'key')
+            horizontal_header = self.query_header_data(header_key, ui_table, ui_table_name, 'col_order', table_name)
+    
+        self.setColumnCount(len(horizontal_header))
+        self.setHorizontalHeaderLabels(horizontal_header)
+        
+        self.setRowCount(len(vertical_header))
+        self.setVerticalHeaderLabels(vertical_header)            
+            
+        if orientation == QtCore.Qt.Orientation.Horizontal:
+            self.horizontalHeader().hide()
+        else:
+            self.verticalHeader().hide()
+
+        self.fill_cells(ui_table_name, table_name, ui_table, data_table, orientation, False)
         
         for i in range(0, self.columnCount()):
             self.setColumnWidth(i, 50)
@@ -48,9 +63,9 @@ class IOTableTemplate(QtGui.QTableWidget):
         self.setWindowTitle('IO Table Template')
         self.show()
 
-    def make_cell(self, type_, on_str, off_str, key, action, value_set, cur_value):
+    def make_cell(self, type_, on_str, off_str, key, action, value_set, cur_value, table_name):
         if type_ == 'button':  #DO
-            do_cell = NozzleDoButton(cur_value, self.data_table_name)
+            do_cell = NozzleDoButton(cur_value, table_name)
             do_cell.set_properties(on_str, off_str, key, action)
             self.do_dict[do_cell.io_num] = do_cell
             
@@ -97,9 +112,10 @@ class IOTableTemplate(QtGui.QTableWidget):
             options.append("{0}".format(query.value(0)))
         return options
     
-    def get_property_value(self, table_name, property_name):
-        self.data_table.select()
-        query = self.data_table.query()
+    def get_property_value(self, table_name, data_table, property_name):
+        data_table.select()
+        
+        query = data_table.query()
         query.exec_("select {0} from {1}".format(property_name, table_name) )
         
         data = []        
@@ -118,13 +134,15 @@ class IOTableTemplate(QtGui.QTableWidget):
             self.setItem(row, column, cell)
         else:
             self.setCellWidget(row, column, cell)
-
-    def fill_cells(self, ui_table_name, data_table_name, ui_table, data_table, list_horizontal, reload):        
+        
+    def fill_cells(self, ui_table_name, table_name, ui_table, data_table, orientation, reload):
         self.one_data_set.clear()
-        self.keys = self.get_property_value(data_table_name, 'key')
+        
+        self.keys = self.get_property_value(table_name, data_table, 'key')
+        
         ui_table.select()
         query = ui_table.query()
-        query.exec_("select btn_on_str,btn_off_str,reference_val,display_type,value_set from {0} order by col_order".format(ui_table_name) )
+        query.exec_("select btn_on_str,btn_off_str,reference_val,display_type,value_set from {0} where ui_name = '{1}' order by col_order".format(ui_table_name, table_name) )
         data_count = 0
         while query.next():
             on_str = query.value(0)
@@ -133,11 +151,12 @@ class IOTableTemplate(QtGui.QTableWidget):
             display_type = query.value(3)
             value_set = query.value(4)
             
-            action_data = self.get_property_value(data_table_name, property_)
+            action_data = self.get_property_value(table_name, data_table, property_)
             self.one_data_set.append([on_str, off_str, property_, display_type, value_set, action_data[0]])
             
             for i in range(0, len(action_data)):
-                if list_horizontal:
+                
+                if orientation == QtCore.Qt.Orientation.Horizontal:
                     row = data_count
                     column = i
                 else:
@@ -157,7 +176,7 @@ class IOTableTemplate(QtGui.QTableWidget):
                         item.setText('{0}'.format(action_data[i]))
                 else:
                     key = self.keys[i]
-                    cell = self.make_cell(display_type, on_str, off_str, key, property_, value_set, action_data[i]) 
+                    cell = self.make_cell(display_type, on_str, off_str, key, property_, value_set, action_data[i], table_name) 
                   
                     self.add_cell(row, column, cell, display_type)
                         
@@ -171,43 +190,26 @@ class IOTableTemplate(QtGui.QTableWidget):
                     
             data_count += 1
 
-    def init_horizontal_header(self, field, table, table_name, orderby):
-        #table.select()
-        self.setColumnCount(table.rowCount())
-        query = table.query()
-        
-        if self.list_horizontal:
-            self.horizontalHeader().hide()
-            return
-        
-        headers = []
-            
-        query.exec_("select {0} from {1} order by {2}".format(field, table_name, orderby) )
-        while query.next():             
-            headers.append(query.value(0))      
-        self.setHorizontalHeaderLabels(headers)
-        
-    def init_vertical_header(self, field, table, table_name, orderby):
+    def query_header_data(self, field, table, table_name, orderby, ui_name = None):
         table.select()
-        self.setRowCount(table.rowCount())
         
-        if not self.list_horizontal:
-            self.verticalHeader().hide()
-            return        
-
         query = table.query()
-        query.exec_("select {0} from {1} order by {2}".format(field, table_name, orderby))
+        if ui_name:                 # 有ui_name 的,表示要從 'ui_layout'資料表 讀資訊, 且要比對ui_name
+            query.exec_("select {0} from {1} where ui_name = '{2}' order by {3} ".format(field, table_name, ui_name, orderby))
+        else:
+            query.exec_("select {0} from {1} order by {2}".format(field, table_name, orderby))
+            
         headers = []
         while query.next():
             headers.append(query.value(0))
             
-        self.setVerticalHeaderLabels(headers)
         query.finish()
+        return headers
         
         #覆寫 do_clicked 時, 若有button type的cell, " if not table == self.data_table_name: " 判斷一定要寫
         #因button click 掛上後, 不管那個button被按, 會發給所有的button. 用table name 比對做判斷
     def do_clicked(self, io_num, on_off, row, column, table):   
-        if not table == self.data_table_name:   
+        if not table == self.table_name:   
             return
         
         print('do {0} clicked {1}, row: {2}, column: {3}, table: {4}'.format(io_num, on_off, row, column, table))
@@ -215,15 +217,15 @@ class IOTableTemplate(QtGui.QTableWidget):
         #sig.emit(io_num, on_off)
     
     def reload(self):
-        self.fill_cells(self.ui_table_name, self.data_table_name, self.ui_table, self.data_table, self.list_horizontal, True)
+        self.fill_cells(self.ui_table_name, self.table_name, self.ui_table, self.data_table, self.orientation, True)
         
     def apply(self):        
-        self.logger.debug('{0} apply changed'.format(self.data_table_name))
+        self.logger.debug('{0} apply changed'.format(self.table_name))
         pass
     def save(self):        
         for record_index in range(self.data_table.rowCount()):  # 由原始資料表依序處理
             record = self.data_table.record(record_index)       # 單筆原始資料
-            if self.list_horizontal:            
+            if self.orientation == QtCore.Qt.Orientation.Horizontal: # self.list_horizontal:            
                 column = record_index 
             else:
                 row = record_index
@@ -298,7 +300,7 @@ class IOTableTemplate(QtGui.QTableWidget):
 def main():
     
     app = QtGui.QApplication(sys.argv)
-    ex = IOTableTemplate('point', 'point_ui', False)
+    ex = IOTableTemplate('nozzle', QtCore.Qt.Orientation.Vertical)
     app.exec_()
 
 if __name__ == '__main__':
