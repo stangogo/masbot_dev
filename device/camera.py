@@ -4,32 +4,36 @@
 # Description    : camera grabber
 # Author         : Henry Chang
 # Date           : 20130423
-# Dependency     : channel.py Framegrabber_dll.py
+# Dependency     : Bulletin.py channel.py Framegrabber_dll.py
 # usage          : 
 # notes          : 
 
 import logging
 from re import compile
 from PIL import Image
-#from masbot.device.bulletin import Bulletin
 from masbot.config import common_lib
-from masbot.device.camera.Framegrabber_dll import *
+from masbot.device.bulletin import Bulletin
 from masbot.device.channel import Channel
+from masbot.device.camera.Framegrabber_dll import *
 
 
-class Camera(Channel):
-    #def __del__(self):
-        #self.close_io_cards()
-        #self.close()    
-    def __init__(self, camera_info={}):
-        super().__init__()
+class Camera(Bulletin, Channel):    
+    def __init__(self, camera_info, board={}):
+        owner = camera_info['camera_name']
+        super(Camera, self).__init__(owner, board)
+        #Due to multiple inheritance, it should active channel by hand.        
+        self.init_channel()
         self.__logger = logging.getLogger(__name__)       
-        # The string length is connected with the char length of framegrabber.dll, so can't change this variable        
+        # The string length is connected with the char length of framegrabber.dll, so can't change this variable.   
         self.__str_length = 1024           
         self.__para_set = {}
         self.__para_enum = common_lib.enum('width','height','channel','frame_rate','reverse_type','gain_value',
                                  'gain_min','gain_max','shutter_value','shutter_min','shutter_max')
         self.__initial(camera_info)  
+        
+    def __del__(self):
+        self.close_camera()   
+        
     def __initial(self, camera_info):
         self.__logger.debug(' Camera device:{0} is beginnig to initial.'.format(camera_info.get('display_text', 'No camera')))        
         self.__port = camera_info.get('port', -1)
@@ -78,6 +82,7 @@ class Camera(Channel):
         self.set_parameter('reverse_type', cam_info['reverse_type'])
         self.set_parameter('gain_value', cam_info['gain_value'])
         self.set_parameter('shutter_value', cam_info['shutter_value'])
+        
     def get_parameter(self, para_name):
         if para_name in self.__para_enum.keys():
             return self.__para_set.get(para_name, None)
@@ -87,6 +92,7 @@ class Camera(Channel):
             return self.__camera_mode
         elif para_name == 'color_type':
             return self.__color_type
+        
     def set_parameter(self, para_name, value):
         if para_name in self.__para_enum.keys():
             if para_name in ['gain_value','shutter_value','reverse_type']:
@@ -98,6 +104,7 @@ class Camera(Channel):
                     self.__logger.debug('Camera:{0} device setting {1} successful.'.format(self.__display_text, para_name))
                 return ret                
         return None
+    
     def grab_image(self):
         pData = (c_ubyte*(self.get_parameter('width')*self.get_parameter('height')*self.get_parameter('channel')))()
         ret = self.run(Framegrabber_dll.grab_image, self.__port, pData) 
@@ -124,43 +131,48 @@ class Camera(Channel):
         pstr = cstr.value.decode()
         return pstr         
         
-
+    def close_camera(self):
+        ret = self.run(Framegrabber_dll.close_grabber, self.__port)
+        if ret != 0:
+            self.__logger.warning('Camera:{0} device close grabber occurred {1} error.'.format(self.__display_text, self.get_error_msg(ret)))   
+            
 #-------------------------------------------------------------------------------------------------
 #-----------------------------------------test----------------------------------------------------
 #-------------------------------------------------------------------------------------------------
 #camera_inf =  {
-    #'display_text': '上攝影機模組',
-    #'gain_value': 100,
-    #'color_type': 'gray',
-    #'camera_job': {
-        #'BARREL': {
-            #'display_text': '自裝鈑定位',
-            #'light': ['top_camera_ISL'],
-            #'dll_name': 'circle_detection'
-        #},
-        #'CAMERA_CHECK': {
-            #'display_text': 'CAMERA校正點確認',
-            #'light': ['top_camera_ISL'],
-            #'dll_name': 'camera_check'
+        #'pixel_size': 0.00725,
+        #'shutter_value': 800,
+        #'display_text': '上攝影機模組',
+        #'light': {...
         #},
         #'IPQC': {
-            #'display_text': '成品檢查',
             #'light': ['top_camera_ISL', 'top_camera_RL'],
-            #'dll_name': 'IPQC_9552A1'
-        #}
-    #},
-    #'port': 0,
-    #'shutter_value': 800,
-    #'light': {
+            #'dll_name': 'IPQC_9552A1',
+            #'display_text': '成品檢查'
+        #},
+        #'gain_value': 100,
+        #'camera_type': '1394IIDC',
+        #'color_type': 'gray',
+        #'port': 0,
         #'top_camera_RL': ['ADLink', 102, '環形光源'],
+        #'CAMERA_CHECK': {
+            #'light': ['top_camera_ISL'],
+            #'dll_name': 'camera_check',
+            #'display_text': 'CAMERA校正點確認'
+        #},
+        #'camera_job': {...
+        #},
         #'top_camera_CL': ['ADLink', 101, '同軸光源'],
-        #'top_camera_ISL': ['ADLink', 100, '積分球光源']
-    #},
-    #'camera_type': '1394IIDC',
-    #'camera_mode': '7:0:0',
-    #'pixel_size': 0.00725,
-    #'reverse_type': 3
-#}
+        #'camera_mode': '7:0:0',
+        #'BARREL': {
+            #'light': ['top_camera_ISL'],
+            #'dll_name': 'circle_detection',
+            #'display_text': '自裝鈑定位'
+        #},
+        #'top_camera_ISL': ['ADLink', 100, '積分球光源'],
+        #'reverse_type': 0,
+        #'camera_name': 'top_camera'
+    #}
 #from time import clock
 #from time import sleep
 #from threading import Thread
@@ -173,11 +185,12 @@ class Camera(Channel):
 #print(cam.get_parameter('shutter_value'))
 #print(cam.set_parameter('reverse_type',3))
 #def run ():
-    #while True:
+    #for i in range(10):
         #s1 = clock()
         #im = cam.grab_image()
         #s2 = clock()
         #print(s2-s1)
         #sleep(0.1)
+    #print(cam.close_camera())
 #grab = Thread(target = run)
 #grab.start()
