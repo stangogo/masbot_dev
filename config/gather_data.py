@@ -214,7 +214,9 @@ for col in range(col_info.count()):
 
 camera_info = []
 while result.next():
-    dic = light_dic = job_dic = {}
+    dic = {}
+    light_dic = {}
+    job_dic = {}
     for i, col in enumerate(col_names):
         cell_value = result.value(i)
         if pattern.match(col):
