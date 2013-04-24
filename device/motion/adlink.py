@@ -115,12 +115,20 @@ class ADLink(Motion, Channel):
             self.__logger.error('undefine adlink card type')
             return -1
 
-    def do_card_count(self):
-        return len(self.__do_cards_index)
+    def do_count(self):
+        return len(self.__do_cards_index) * 32
         
-    def di_card_count(self):
-        return len(self.__di_cards_index)
-        
+    def di_count(self):
+        return len(self.__di_cards_index) * 32
+
+    #def axis_count(self):
+    #    if self.__mode == 'pci8158':
+    #        return 8
+    #    elif self.__mode == 'pci8154':
+    #        return 4
+    #    else:
+    #        return 0
+
     def close_io_cards(self):
         """ close all the I/O cards
         """

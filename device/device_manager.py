@@ -10,6 +10,7 @@
 
 import logging
 from re import compile
+
 from masbot.config.global_settings import *
 from masbot.config.gather_data import *
 # hardware detecttion
@@ -37,48 +38,45 @@ class DeviceManager(object):
     def __initial(self):
         self.__logger = logging.getLogger(__name__)
         self.__bulletin = {}
-        # ADLink Resource
-        if 'ADLink' not in io_card_info:
-            io_card_info['ADLink'] = []
         self.__adlink = ADLink(io_card_info['ADLink'])
-        self.__adlink_di_count = self.__adlink.di_card_count() * 32
-        self.__adlink_do_count = self.__adlink.do_card_count() * 32
-        self.__adlink_axis_count = len(motor_info)
-        self.__adlink_di_in_service = [0] * self.__adlink_di_count
-        self.__adlink_do_in_service = [0] * self.__adlink_do_count
+        # temp method to detect axis count
+        self.__adlink_axis_count = len(axis_map)
+        self.__adlink_di_in_service = [0] * self.__adlink.di_count()
+        self.__adlink_do_in_service = [0] * self.__adlink.do_count()
         self.__adlink_axis_in_service = [0] * self.__adlink_axis_count
-        # LPLink Resource
-        if 'LPLink' not in io_card_info:
-            io_card_info['LPLink'] = []
+
         self.__lplink = LPLink(io_card_info['LPLink'])
-        self.__lplink_di_count = self.__lplink.di_card_count() * 8
-        self.__lplink_do_count = self.__lplink.do_card_count() * 8
-        self.__lplink_axis_count = len(motor_info)
-        self.__lplink_di_in_service = [0] * self.__lplink_di_count
-        self.__lplink_do_in_service = [0] * self.__lplink_do_count
+        # temp method to detect axis count
+        self.__lplink_axis_count = len(axis_map)
+        self.__lplink_di_in_service = [0] * self.__lplink.di_count()
+        self.__lplink_do_in_service = [0] * self.__lplink.do_count()
         self.__lplink_axis_in_service = [0] * self.__lplink_axis_count
         #self.serial_in_service = [0] * serial_count
 
-    def _get_total_resource(self):
-        resource = {}
-        resource['ADLink'] = [self.__adlink_do_count,
-                            self.__adlink_di_count,
-                            self.__adlink_axis_count]
-        resource['LPLink'] = [self.__lplink_do_count,
-                            self.__lplink_di_count,
-                            self.__lplink_axis_count]
-        #resource['LPMax'] = [self.__lpmax_do_count,
-        #                    self.__lpmax_di_count,
-        #                    self.__lpmax_axis_count]
-        return resource
+        self.__resource_map = {
+            'ADLink_DO': {'count': self.__adlink.do_count()},
+            'ADLink_DI': {'count': self.__adlink.di_count()},
+            'ADLink_AXIS': {'count': 16},
+            'LPLink_DO': {'count': self.__lplink.do_count()},
+            'LPLink_DI': {'count': self.__lplink.di_count()},
+            'LPLink_AXIS': {'count': 30},
+            'LPMax_DO': {'count': 0},
+            'LPMax_DI': {'count': 0},
+            'LPMax_AXIS': {'count': 0},
+            'RS232': {'count': 2},
+            'Camera_1394': {'count': 10},
+            'Camera_USB': {'count': 0},
+        }
+        
+    def get_resource_map(self):
+        return self.__resource_map
             
-    def _get_device_proxy(self, module):
-        if module == 'ADLink':
-            return self.__adlink
-        elif module == 'LPLink':
-            return self.__lplink
-        else:
-            return None
+    def _get_device_proxy(self):
+        proxy = {}
+        proxy['ADLink'] = self.__adlink
+        proxy['LPLink'] = self.__lplink
+        #proxy['LPMax'] = self.__lpmax
+        return proxy
 
     def resource_status(self):
         resource = {'ADLink': {}, 'LPLink': {}}
@@ -114,89 +112,91 @@ class DeviceManager(object):
     def __allocate_piston(self, actor_info, actor_type):
         output_pattern = compile('^output[0-9]$')
         input_pattern = compile('^input[0-9]$')
-        require = {'DO': [], 'DI': []}
+        mod_type = actor_info['module_type']
+        do_module = "{}_DO".format(mod_type)
+        di_module = "{}_DI".format(mod_type)
+        require = {do_module: [], di_module: []}
         for key, val in actor_info.items():
             if output_pattern.match(key) and isinstance(val, int):
-                require['DO'].append(val)
+                require[do_module].append(val)
             elif input_pattern.match(key) and isinstance(val, int):
-                require['DI'].append(val)
-        ret = self.__resource_check(require)
+                require[di_module].append(val)
+        ret = self.__resource_check(actor_info['key'], require)
         if ret:
-            self.__logger.error(ret)
             return ret
-        if actor_info['module_type'] == 'ADLink':
-                motion_hardware = self.__adlink
-        elif actor_info['module_type'] == 'LPLink':
-            motion_hardware = self.__lplink
+        if mod_type == 'ADLink':
+            io_card = self.__adlink
+        elif mod_type == 'LPLink':
+            io_card = self.__lplink
+        elif mod_type == 'LPMax':
+            io_card = None
+            #io_card = self.__lpmax
         else:
-            msg = self.__logger.error("unknown module type %s", 
-                actor_info['module_type'])
+            msg = "unknown module type: {}".format(mod_type)
+            self.__logger.critical(msg)
             return msg
-        return Piston(self.__adlink, actor_info, self.__bulletin)
+        return Piston(io_card, actor_info, self.__bulletin)
 
     def __allocate_axis(self, actor_info, actor_type):
-        for axis in actor_info['axis_info']:
-            require = {'DO': [], 'DI': [], 'AXIS': []}
-            if axis['motor_type'] == 'servo_type':             
-                require['DO'].append(axis['ABSM'])
-                require['DO'].append(axis['ABSR'])
-                require['DI'].append(axis['TLC'])
-                require['DI'].append(axis['DO1'])
-                require['DI'].append(axis['ZSP'])
-                require['AXIS'].append(axis['axis_id'])
-            ret = self.__resource_check(require)
+        mod_type = actor_info['module_type']
+        do_module = "{}_DO".format(mod_type)
+        di_module = "{}_DI".format(mod_type)
+        axis_module = "{}_AXIS".format(mod_type)
+        require = {do_module: [], di_module: [], axis_module: []}
+        if mod_type == 'ADLink':
+            for axis in actor_info['axis_info']:
+                if axis['motor_type'] == 'servo':             
+                    require[do_module].append(axis['ABSM'])
+                    require[do_module].append(axis['ABSR'])
+                    require[di_module].append(axis['DO1'])
+                    require[di_module].append(axis['ZSP'])
+                    require[di_module].append(axis['TLC'])
+                    require[axis_module].append(axis['axis_id'])
+            ret = self.__resource_check(actor_info['key'], require)
             if ret:
-                self.__logger.error(ret)
                 return ret
-            if actor_info['module_type'] == 'ADLink':
-                motion_hardware = self.__adlink
-            elif actor_info['module_type'] == 'LPLink':
-                motion_hardware = self.__lplink
             else:
-                msg = self.__logger.error("unknown module type %s", 
-                    actor_info['module_type'])
-                return msg
-        return Motor(actor_info, motion_hardware, self.__bulletin)
+                io_card = self.__adlink
+        elif mod_type == 'LPLink':
+            for axis in actor_info['axis_info']:
+                if axis['motor_type'] == 'servo':             
+                    require[axis_module].append(axis['axis_id'])
+            ret = self.__resource_check(actor_info['key'], require)
+            if ret:
+                return ret
+            else:
+                io_card = self.__lplink
+        elif mod_type == 'LPMax':
+            pass
+        else:
+            msg = "unknown module type {}".format(mod_type)
+            self.__logger.critical(msg)
+            return msg
+        return Motor(actor_info, io_card, self.__bulletin)
             
-    def __resource_check(self, require):
-        if 'DO' in require:
-            for port in require['DO']:
-                if port >= self.__adlink_do_count:
-                    msg = 'DO port {} exceeds the max port ({})'.format(
-                        port, self.__adlink_do_count)
+    def __resource_check(self, actor_name, require):
+        for resource_type, resource_list in require.items():
+            for port in resource_list:
+                # check max port
+                max_port = self.__resource_map[resource_type]['count']
+                if port >= max_port:
+                    msg = "{} required {} {} that exceed max port {}".format(
+                        actor_name,
+                        resource_type,
+                        port,
+                        max_port
+                    )
                     self.__logger.error(msg)
                     return msg
-                elif self.__adlink_do_in_service[port]:
-                    msg = 'DO port {} was occupied'.format(port)
-                    self.__logger.error(msg)
-                    return msg
-                else:
-                    self.__adlink_do_in_service[port] = 1
-        if 'DI' in require:
-            for port in require['DI']:
-                if port >= self.__adlink_di_count:
-                    msg = 'DI port {} exceeds the max port ({})'.format(
-                        port, self.__adlink_di_count)
-                    self.__logger.error(msg)
-                    return msg
-                elif self.__adlink_di_in_service[port]:
-                    msg = 'DI port {} was occupied'.format(port)
-                    self.__logger.error(msg)
-                    return msg
-                else:
-                    self.__adlink_di_in_service[port] = 1
-        if 'AXIS' in require:
-            for port in require['AXIS']:
-                if port >= self.__adlink_axis_count:
-                    msg = 'AXIS id {} exceeds the max port ({})'.format(
-                        port, self.__adlink_axis_count)
-                    self.__logger.error(msg)
-                    return msg
-                elif self.__adlink_axis_in_service[port]:
-                    msg = 'AXIS {} was occupied'.format(port)
+                # check if the port is occupied
+                if port in self.__resource_map[resource_type]:
+                    msg = "{} required {} {}, but it was occupied by {}".format(
+                        actor_name,
+                        resource_type,
+                        port,
+                        self.__resource_map[resource_type][port]
+                    )
                     self.__logger.error(msg)
                     return msg
                 else:
-                    self.__adlink_axis_in_service[port] = 1
-        return 0
-    
+                    self.__resource_map[resource_type][port] = actor_name
