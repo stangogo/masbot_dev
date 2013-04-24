@@ -3,6 +3,8 @@ from PySide import QtGui, QtCore
 from masbot.ui.robot.major.major_widget import MajorWidget
 from masbot.ui.robot.io.io_widget import IOWidget
 from masbot.config.utils import Path
+from masbot.ui.control.ui_utils import *
+
     
 class RobotPageDock(QtGui.QTabWidget):
     
@@ -13,11 +15,11 @@ class RobotPageDock(QtGui.QTabWidget):
         
     def init_tabs(self):
 
-        self.addTab(MajorWidget(), self.get_rotate_icon('main.png', 90), '')
-        self.addTab(IOWidget(), self.get_rotate_icon('IO.png', 90), '')
-        self.addTab(QtGui.QWidget(), self.get_rotate_icon('system_settings.png', 90), '')
-        self.addTab(QtGui.QWidget(), self.get_rotate_icon('message.png', 90), '')
-        self.addTab(QtGui.QWidget(), self.get_rotate_icon('test.png', 90), '')
+        self.addTab(MajorWidget(), get_rotate_qicon('main.png', 90), '')
+        self.addTab(IOWidget(), get_rotate_qicon('IO.png', 90), '')
+        self.addTab(QtGui.QWidget(), get_rotate_qicon('system_settings.png', 90), '')
+        self.addTab(QtGui.QWidget(), get_rotate_qicon('message.png', 90), '')
+        self.addTab(QtGui.QWidget(), get_rotate_qicon('test.png', 90), '')
         
         self.sizeHint()
         
@@ -37,14 +39,14 @@ class RobotPageDock(QtGui.QTabWidget):
         self.setTabToolTip(3, '訊息')
         self.setTabToolTip(4, '測試模式')
 
-    def get_rotate_icon(self, file_name, r_angle):
-        file_path = "{0}/{1}".format(Path.imgs_dir(), file_name)
-        qimage = QtGui.QImage(file_path)        
-        rotate = QtGui.QTransform()
-        rotate.rotate(r_angle)
-        r_qimage = qimage.transformed(rotate)
+    #def get_rotate_icon(self, file_name, r_angle):
+        #file_path = "{0}/{1}".format(Path.imgs_dir(), file_name)
+        #qimage = QtGui.QImage(file_path)        
+        #rotate = QtGui.QTransform()
+        #rotate.rotate(r_angle)
+        #r_qimage = qimage.transformed(rotate)
         
-        return QtGui.QIcon(QtGui.QPixmap.fromImage(r_qimage))
+        #return QtGui.QIcon(QtGui.QPixmap.fromImage(r_qimage))
      
 if __name__ == '__main__':  
     import sys  

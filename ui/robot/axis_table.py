@@ -122,7 +122,7 @@ class AxisTable(QtGui.QTableWidget):
         self.setRowCount(len(V_Header))
         
         self.checkbox_widget_item = QtGui.QTableWidgetItem()    # 設定 check box 的圖到垂直 header
-        self.checkbox_widget_item.setIcon(QtGui.QPixmap('{0}/checkbox_unchecked.png'.format(Path.imgs_dir())))        
+        self.checkbox_widget_item.setIcon(QtGui.QPixmap('{0}/checkbox_checked.png'.format(Path.imgs_dir())))        
         self.setVerticalHeaderItem(self.row_dict['display'], self.checkbox_widget_item)
         
         self.setVerticalHeaderLabels(V_Header)              # 設定header名稱
@@ -218,11 +218,11 @@ class AxisTable(QtGui.QTableWidget):
         if index == self.row_dict['display']:
             if self.checkbox_widget_item.checkState() == QtCore.Qt.CheckState.Checked:
                 self.checkbox_widget_item.setCheckState(QtCore.Qt.CheckState.Unchecked)
-                self.checkbox_widget_item.setIcon(QtGui.QPixmap('{0}/checkbox_unchecked.png'.format(Path.imgs_dir())))
+                self.checkbox_widget_item.setIcon(QtGui.QPixmap('{0}/checkbox_checked.png'.format(Path.imgs_dir())))
                 bCheck = True
             else:
                 self.checkbox_widget_item.setCheckState(QtCore.Qt.CheckState.Checked)
-                self.checkbox_widget_item.setIcon(QtGui.QPixmap('{0}/checkbox_checked.png'.format(Path.imgs_dir())))
+                self.checkbox_widget_item.setIcon(QtGui.QPixmap('{0}/checkbox_unchecked.png'.format(Path.imgs_dir())))
                 bCheck = False
                 
             for column in range(self.columnCount()):

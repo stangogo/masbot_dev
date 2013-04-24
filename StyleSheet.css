@@ -1,12 +1,16 @@
+QApplication{font-family: Microsoft JhengHei}
+
 QTabBar{
     text-align: left;
     font-size:12px;
+    font-family:%(fontfamily)s;
     icon-size:0px;
 }
 
 QTabBar::tab {
     padding: 2px;
     font-size:12px;
+    font-family:%(fontfamily)s;
     border-top-left-radius: 1px;
     border-top-right-radius: 1px;
     border: 1px solid #C4C4C3;
@@ -29,6 +33,7 @@ QTabBar::tab:selected {
 
 QStatusBar QLabel{
     font-size:%(fontsize)s;
+    font-family:%(fontfamily)s;
 }
 
 QSplitter::handle:horizontal {
@@ -36,10 +41,12 @@ QSplitter::handle:horizontal {
 }
 
 QSplitter::handle:vertical {
-    height: 5px;
+    height: 0px;
 }
 
 QToolTip{
+    font-family:%(fontfamily)s;
+    font-size:14px;
     color:green;
 }
 
@@ -70,14 +77,30 @@ QScrollBar::handle:horizontal {
 
 QPushButton::indicator::checked {
      background: %(tabcolor)s;
+     font-family:%(fontfamily)s;
 }
 
-QHeaderView::section { background-color:%(tablecolor)s; }
+QHeaderView::section { 
+    background-color:%(tablecolor)s; 
+    font-family:%(fontfamily)s;
+}
+
+QTableWidget{
+    font-family:%(fontfamily)s;
+
+}
+
+QWidget
+{
+    font-family:%(fontfamily)s;
+}
 /*set the header color of table */
 
-RobotBanner .QLabel  {
-background-color : lightblue; 
-font-size:28pt ;
+RobotBanner .QLabel  
+{
+    background-color : lightblue; 
+    font-size:28pt ;
+    font-family:%(fontfamily)s;
 }    
 /* RobotBanner 裡 所有QLabel都套用 */
 

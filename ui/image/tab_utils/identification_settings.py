@@ -34,20 +34,29 @@ class Slider(QGroupBox):
         self.cur_label.setStyleSheet('QLabel{color : blue;}')# text-decoration: underline color blue}')
         self.cur_label.setContentsMargins(0,0,0,0)
         
+        circle_btn = create_button('round.png', '', '切換實心/空心模式')
+        circle_btn.setCheckable(True)
+        default_btn = create_button('reload.png', '', '載入預設值')
+        
         self.set_range(min_, max_)
         
-        hbox = QHBoxLayout()
+        slider_hbox = QHBoxLayout()
+        slider_hbox.addWidget(self.min_label)
+        slider_hbox.addWidget(self.slider)          # 水平: slider, min and max label
+        slider_hbox.addWidget(self.max_label)        
         
-        hbox.addWidget(self.min_label)
-        hbox.addWidget(self.slider)          # 水平 Layout, 放置 slider, min and max label
-        hbox.addWidget(self.max_label)        
+        value_hbox = QHBoxLayout()                  # 水平: 現值, 預設值, 顯示模式
+        value_hbox.addWidget(self.cur_label,1)
+        value_hbox.addWidget(circle_btn, 0)
+        value_hbox.addWidget(default_btn, 0)
+        value_hbox.setAlignment(self.cur_label, Qt.AlignCenter)
         
-        vbox = QVBoxLayout()            # 垂直 Layout, 放置 最大, 最小, 和 slider.
-        vbox.addWidget(self.cur_label)
-        vbox.addLayout(hbox)        
+        vbox = QVBoxLayout()                        # 垂直: 
+        vbox.addLayout(value_hbox)
+        vbox.addLayout(slider_hbox)
                 
-        vbox.setAlignment(hbox, Qt.AlignLeft)       # 置中
-        vbox.setAlignment(self.cur_label, Qt.AlignCenter)        
+        vbox.setAlignment(slider_hbox, Qt.AlignLeft)       # 置中
+        vbox.setAlignment(value_hbox, Qt.AlignCenter)
         
         vbox.setContentsMargins(2,2,2,2)
         
@@ -110,14 +119,9 @@ class IdentificationSettings(QWidget):
         left_layout.addWidget(self.slider)
         
         # 右邊
-        mode_combobox = QComboBox()
-        mode_combobox.addItems(['顯示模式'])
-        default_btn = create_button('', '預設值', '預設值')
         prev_btn =  create_button('up.png', '', '上一步')
         next_btn = create_button('down.png', '', '下一步')
 
-        right_layout.addWidget(mode_combobox)
-        right_layout.addWidget(default_btn)
         right_layout.addWidget(prev_btn)
         right_layout.addWidget(next_btn)
         right_layout.setSpacing(0)
@@ -216,7 +220,7 @@ class IdentificationSettings(QWidget):
         
         save_btn.setFixedSize(48,30)
         load_btn.setFixedSize(48,30)
-        apply_btn.setFixedSize(48,30)        
+        apply_btn.setFixedSize(48,30)
         
         #vbox.addWidget(adjust_btn, 1, Qt.AlignTop)
         vbox.addWidget(save_btn, 1, Qt.AlignBottom)

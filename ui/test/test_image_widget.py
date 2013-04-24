@@ -80,10 +80,10 @@ class ImageWidgetTest(QWidget):
             index = self.change_thumbnail_image(index, '4', imgs_dir)
             index = self.change_thumbnail_image(index, '5', imgs_dir)
             index = self.change_thumbnail_image(index, '6', imgs_dir)
-            #index = self.change_thumbnail_image(index, '7', imgs_dir)
-            #index = self.change_thumbnail_image(index, '8', imgs_dir)
-            #index = self.change_thumbnail_image(index, '9', imgs_dir)
-            #index = self.change_thumbnail_image(index, '10', imgs_dir)
+            index = self.change_thumbnail_image(index, '7', imgs_dir)
+            index = self.change_thumbnail_image(index, '8', imgs_dir)
+            index = self.change_thumbnail_image(index, '9', imgs_dir)
+            index = self.change_thumbnail_image(index, '10', imgs_dir)
 
             time.sleep(0.15)
     

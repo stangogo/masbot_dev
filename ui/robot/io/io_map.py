@@ -134,7 +134,7 @@ class IOMap(QtGui.QWidget):
 def main():
     
     app = QtGui.QApplication(sys.argv)
-    ex = IOMap(8)
+    ex = IOMap(16)
     app.exec_()
 
 

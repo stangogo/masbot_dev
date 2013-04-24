@@ -17,3 +17,12 @@ def create_button(icon_file, text, hint):
 
     btn.setToolTip(hint)
     return btn
+
+def get_rotate_qicon(file_name, r_angle):
+    file_path = "{0}/{1}".format(Path.imgs_dir(), file_name)
+    qimage = QImage(file_path)        
+    rotate = QTransform()
+    rotate.rotate(r_angle)
+    r_qimage = qimage.transformed(rotate)
+
+    return QIcon(QPixmap.fromImage(r_qimage))
