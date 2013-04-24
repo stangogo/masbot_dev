@@ -23,6 +23,8 @@ else:
     from masbot.device.motion.lplink_fake import LPLink
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
+from masbot.device import camera
+
 
 class DeviceManager(object):
     _instance = None
@@ -102,7 +104,6 @@ class DeviceManager(object):
         Raises:
         
         """
-        from pprint import pprint
         if actor_type == 'piston':
             return self.__allocate_piston(actor_info, actor_type)
         elif actor_type == 'motor':

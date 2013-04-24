@@ -12,7 +12,7 @@ from ctypes import *
 
 
 # loaded shared libraries
-Framegrabber_dll = CDLL('D:\\test\\Framegrabber.dll')
+Framegrabber_dll = CDLL(__file__+'/../Framegrabber.dll')
 
 # define the argument and return type for the functions  
 

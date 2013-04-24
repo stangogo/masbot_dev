@@ -218,28 +218,25 @@ col_names = []
 for col in range(col_info.count()):
     col_names.append(col_info.fieldName(col))
 
-camera_info = {}
+camera_info = []
 while result.next():
     dic = {}
     light_dic = {}
     job_dic = {}
-    actor_name = ''
     for i, col in enumerate(col_names):
         cell_value = result.value(i)
-        if col == 'camera_name':
-            actor_name = cell_value
-        elif pattern.match(col):
+        if pattern.match(col):
             if cell_value != '' and cell_value in light_info:
                 light_dic.update({cell_value:light_info.get(cell_value)})
         else:
             dic.update({col:cell_value})
     for i in range(len(job_info)):
         info = job_info[i]
-        if info.get('camera') == actor_name:            
+        if info.get('camera') == dic.get('camera_name'):            
             info.pop('camera')
             job_name = info.pop('job_name')
             job_dic.update({job_name:info})
             #del job_info[i]
     dic.update({'light':light_dic})
     dic.update({'camera_job':job_dic})
-    camera_info.update({actor_name:dic})
+    camera_info.append(dic)

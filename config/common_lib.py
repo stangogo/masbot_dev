@@ -15,6 +15,11 @@ from masbot.config.gather_data import *
 from masbot.actor.piston_actor import PistonActor
 from masbot.actor.motor_actor import MotorActor
 
+# enum is like in c++ (eg. num = enum('a','b','c')) 
+def enum(*sequential, **named):
+    enums = dict(zip(sequential, range(len(sequential))), **named)
+    return enums
+
 # setup logging
 masbot_dir = os.path.abspath(__file__ + "/../../")
 os.chdir(masbot_dir)

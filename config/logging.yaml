@@ -97,7 +97,7 @@ handlers:
         class: logging.handlers.RotatingFileHandler
         level: DEBUG
         formatter: simple
-        filename: log/camera_module.log
+        filename: log/camera_info.log
         maxBytes: 10485760 # 10MB
         backupCount: 20
         encoding: utf8
@@ -106,7 +106,7 @@ handlers:
         class: logging.handlers.RotatingFileHandler
         level: DEBUG
         formatter: simple
-        filename: log/image_dll_handler.log
+        filename: log/image_dll_info.log
         maxBytes: 10485760 # 10MB
         backupCount: 20
         encoding: utf8
