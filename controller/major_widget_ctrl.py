@@ -43,7 +43,7 @@ class MajorWidgetCtrl:
             self.set_proxy_switch(1)
         
     def __do_clicked(self, do_port, on_off):
-        self.__adlink.DO(do_port, on_off)
+        self.__device_proxy['ADLink'].DO(do_port, on_off)
         
     def __servo_on_off(self, on):
         if self.__servo_status == 0:
@@ -101,7 +101,7 @@ class MajorWidgetCtrl:
             do_status.append(status)
             
         di_status = []
-        for i in range(self.__device_proxy['ADLink'].di_count()):
+        for i in range(self.__device_proxy[module_type].di_count()):
             status = self.__device_proxy[module_type].DI(i)
             di_status.append(status)
             
