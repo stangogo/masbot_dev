@@ -38,7 +38,7 @@ class MainUI(QtGui.QMainWindow):
         
         width = tk.winfo_screenwidth() - 20
         height = tk.winfo_screenheight() - 30
-        tk.quit()
+        tk.destroy()
         
         #width = 1420
         #height = 880

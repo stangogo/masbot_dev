@@ -61,10 +61,12 @@ class DeviceManager(object):
         return self.__resource_map
             
     def _get_device_proxy(self):
-        proxy = {}
-        proxy['ADLink'] = self.__adlink
-        proxy['LPLink'] = self.__lplink
-        #proxy['LPMax'] = self.__lpmax
+        proxy = {
+            'ADLink': self.__adlink,
+            'LPLink': self.__lplink,
+            #'LPMax': self.__lpmax,
+        }
+
         return proxy
 
     def request(self, actor_info, actor_type):
