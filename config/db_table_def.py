@@ -66,20 +66,7 @@ CREATE TABLE IF NOT EXISTS nozzle(
     PRIMARY KEY(key)
 );
 """
-,
-"""
-CREATE TABLE IF NOT EXISTS nozzle_ui(
-    ui_id INTEGER not null,
-    reference_val TEXT,
-    display_text TEXT,
-    col_order INTEGER,
-    display_type TEXT,
-    btn_on_str TEXT,
-    btn_off_str TEXT,
-    value_set TEXT,
-    PRIMARY KEY(ui_id)
-);
-"""
+
 ,
 """
 CREATE TABLE IF NOT EXISTS single_axis(
@@ -105,7 +92,7 @@ CREATE TABLE IF NOT EXISTS single_axis(
 """
 ,
 """
-CREATE TABLE IF NOT EXISTS single_axis_points(
+CREATE TABLE IF NOT EXISTS single_axis_point(
     key TEXT not null,
     point_index REAL not null,
     position REAL,
@@ -132,7 +119,7 @@ CREATE TABLE IF NOT EXISTS double_axis(
 """
 ,
 """
-CREATE TABLE IF NOT EXISTS double_axis_points(
+CREATE TABLE IF NOT EXISTS double_axis_point(
     key TEXT not null,
     point_index TEXT not null,
     axis1_position REAL,
@@ -162,7 +149,7 @@ CREATE TABLE IF NOT EXISTS triple_axis(
 """
 ,
 """
-CREATE TABLE IF NOT EXISTS triple_axis_points(
+CREATE TABLE IF NOT EXISTS triple_axis_point(
     key TEXT not null,
     point_index TEXT not null,
     axis1_position REAL,
@@ -187,34 +174,7 @@ CREATE TABLE IF NOT EXISTS piston(
     PRIMARY KEY(key)
 );
 """
-,
-"""
-CREATE TABLE IF NOT EXISTS point(
-    id INTEGER not null,
-    x_axis REAL,
-    y_axis REAL,
-    note TEXT,
-    display_text TEXT,
-    key TEXT,
-    go INTEGER,
-    replace INTEGER,
-    PRIMARY KEY(id)
-);
-"""
-,
-"""
-CREATE TABLE IF NOT EXISTS point_ui(
-    id INTEGER not null,
-    reference_val TEXT,
-    display_text TEXT,
-    col_order INTEGER,
-    display_type TEXT,
-    btn_on_str TEXT,
-    btn_off_str TEXT,
-    value_set TEXT,
-    PRIMARY KEY(id)
-);
-"""
+
 ,
 """
 CREATE TABLE IF NOT EXISTS ui_layout(

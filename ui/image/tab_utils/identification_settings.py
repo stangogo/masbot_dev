@@ -24,6 +24,7 @@ class Slider(QGroupBox):
         if len(args) == 3:
             (title, min_, max_) = args
             self.set_range(min_, max_)
+        self.setStyleSheet('QGroupBox{font-size:18px}')
         
     def init_ui(self):
         (min_, max_) = [0, 100] 
@@ -34,7 +35,7 @@ class Slider(QGroupBox):
         self.slider.valueChanged.connect(self.sliderChanged)
          
         self.cur_label = QLabel('{0}'.format(self.slider.value()))
-        self.cur_label.setStyleSheet('QLabel{color : blue;}')# text-decoration: underline color blue}')
+        self.cur_label.setStyleSheet('QLabel{color : blue; font-size:20px}')# text-decoration: underline color blue}')
         self.cur_label.setContentsMargins(0,0,0,0)
         
         circle_btn = create_button('hollow_circle.png', '', '切換實心/空心模式')

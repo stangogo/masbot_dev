@@ -6,19 +6,20 @@ import logging
 import sys
 
 from datetime import datetime
-from PySide import QtGui, QtCore, QtSql
+from PySide import QtCore, QtSql
+from PySide.QtGui import *
 
-#from masbot.config.sqldb import SqlDB
+
 from masbot.config.sqldb import sqldb
 from masbot.config.utils import Path
 from masbot.ui.control.dio_button import *
 from masbot.ui import preaction
 from masbot.ui.robot.io.IO_table_template import  IOTableTemplate
 
-class PointTable(IOTableTemplate):
+class DoubleAxisPointTable(IOTableTemplate):
         
-    def __init__(self, data_table_name, horizontal):
-        super(PointTable, self).__init__(data_table_name, horizontal)
+    def __init__(self, data_table_name, order_by, horizontal):
+        super(DoubleAxisPointTable, self).__init__(data_table_name, order_by, horizontal)
         
         
     def do_clicked(self, io_num, on_off, row, column, table):
@@ -40,8 +41,60 @@ class PointTable(IOTableTemplate):
         elif io_num == 2:
             print('replace {0}, {1}'.format(x_item.text(),y_item.text()))
                 
+class SingleAxisPointTable(IOTableTemplate):
+        
+    def __init__(self, data_table_name, order_by, horizontal):
+        super(SingleAxisPointTable, self).__init__(data_table_name, order_by, horizontal)
+        
+        
+    def do_clicked(self, io_num, on_off, row, column, table):
+        if not table == self.table_name:
+            return    
+        
+        if row == -1 or column == -1:
+            return
+        
+        if self.orientation == QtCore.Qt.Orientation.Horizontal:
+            x_item = self.item(1, column)
+            y_item = self.item(2, column)
+        else:
+            x_item = self.item(row, 1)
+            y_item = self.item(row, 2)
 
-class Point(QtGui.QSplitter):
+        if io_num == 1: 
+            print('go to {0}, {1}'.format(x_item.text(),y_item.text()))
+        elif io_num == 2:
+            print('replace {0}, {1}'.format(x_item.text(),y_item.text()))
+                
+                
+class TripleAxisPointTable(IOTableTemplate):
+        
+    def __init__(self, data_table_name, order_by, horizontal):
+        super(TripleAxisPointTable, self).__init__(data_table_name, order_by, horizontal)
+        
+        
+    def do_clicked(self, io_num, on_off, row, column, table):
+        if not table == self.table_name:
+            return    
+        
+        if row == -1 or column == -1:
+            return
+        
+        if self.orientation == QtCore.Qt.Orientation.Horizontal:
+            x_item = self.item(1, column)
+            y_item = self.item(2, column)
+        else:
+            x_item = self.item(row, 1)
+            y_item = self.item(row, 2)
+
+        if io_num == 1: 
+            print('go to {0}, {1}'.format(x_item.text(),y_item.text()))
+        elif io_num == 2:
+            print('replace {0}, {1}'.format(x_item.text(),y_item.text()))
+            
+            
+            
+class Point(QSplitter):
     """    
     Point is a QWidget embeded point_table and tab on io_tab
     
@@ -53,34 +106,9 @@ class Point(QtGui.QSplitter):
     
     def init_ui(self, title):
         
-        self.point_table = PointTable('point', QtCore.Qt.Orientation.Vertical)        
-        
-        single_axis_point_table = sqldb.get_table_model('single_axis_points')
-        
-        table = QtGui.QTableView()
-        table.setModel(single_axis_point_table)
-        
-        #table.setRowCount(3)
-        #table.setColumnCount(4)
-        
-        
-        double_axis_point_table = sqldb.get_table_model('double_axis_points')
-        table2 = QtGui.QTableView()
-        #table2 = QtGui.QTableWidget()        
-        table2.setModel(double_axis_point_table)
-        #table2.setRowCount(3)
-        #table2.setColumnCount(4)        
-        
-        #v_layout = QtGui.QVBoxLayout()
-        #v_layout.addWidget(single_point_box)
-        #v_layout.addWidget(table)
-        
-        #a = QtGui.QWidget()
-        #a.setLayout(v_layout)
-            
-        self.addWidget(self.point_table)
-        self.addWidget(table)
-        self.addWidget(table2)
+        self.addWidget(self.init_d_axis_group())
+        self.addWidget(self.init_s_axis_group())
+        self.addWidget(self.init_t_axis_group())
         
         self.setOrientation(QtCore.Qt.Vertical)
         self.setSizes([300, 200, 200])
@@ -89,7 +117,8 @@ class Point(QtGui.QSplitter):
                 
         
         
-        # self.setLayout(v_layout)        
+        
+        self.setChildrenCollapsible(False)  # Splitter 手動改變比例時, 不能把child折到不見
         self.setWindowTitle(title)
         self.show()
         
@@ -99,6 +128,37 @@ class Point(QtGui.QSplitter):
     #def delete_point(self):
         #pass
     
+    def init_d_axis_group(self):
+        point_group = QGroupBox('雙軸點位')
+        point_box = QHBoxLayout()
+        point_box.setContentsMargins(0,1,0,0)
+        self.point_table = DoubleAxisPointTable('double_axis_point', ['KEY', 'point_index'], QtCore.Qt.Orientation.Vertical)
+        point_box.addWidget(self.point_table)
+        point_group.setLayout(point_box)
+        
+        return point_group
+        
+    def init_s_axis_group(self):
+        point_group = QGroupBox('單軸點位')
+        point_box = QHBoxLayout()
+        point_box.setContentsMargins(0,1,0,0)
+        self.point_table = DoubleAxisPointTable('single_axis_point', ['KEY', 'point_index'], QtCore.Qt.Orientation.Vertical)
+        point_box.addWidget(self.point_table)
+        point_group.setLayout(point_box)
+        
+        return point_group
+    
+    def init_t_axis_group(self):
+        point_group = QGroupBox('三軸點位')
+        point_box = QHBoxLayout()
+        point_box.setContentsMargins(0,1,0,0)
+        self.point_table = TripleAxisPointTable('triple_axis_point', ['KEY', 'point_index'], QtCore.Qt.Orientation.Vertical)
+        point_box.addWidget(self.point_table)
+        point_group.setLayout(point_box)
+        
+        return point_group
+    
+    
     def save(self):
         self.point_table.save()
     
@@ -107,7 +167,7 @@ class Point(QtGui.QSplitter):
 
 def main():
     
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
 
     ex = Point()
     app.exec_()

@@ -41,7 +41,7 @@ QSplitter::handle:horizontal {
 }
 
 QSplitter::handle:vertical {
-    height: 0px;
+    height: 5px;
 }
 
 QToolTip{

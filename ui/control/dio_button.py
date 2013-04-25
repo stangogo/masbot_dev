@@ -80,14 +80,14 @@ class DIOButton(QtGui.QPushButton):
 
 
 
-class NozzleDOButtonSignal(QtCore.QObject):
-    """ 建立這個Signal 和 NozzleDoButton clicked 間的連結
+class ButtonForTableSignal(QtCore.QObject):
+    """ 建立這個Signal 和 ButtonForTable clicked 間的連結
         在原來的clicked被觸發時, 由此Signal送出更多參數
         
     """
     clicked = QtCore.Signal(int, bool, int, int, str)  #io_num, on or off, row, column, table_name
 
-class NozzleDoButton(QtGui.QPushButton):
+class ButtonForTable(QtGui.QPushButton):
     nOn = 1
     io_num = -1
     
@@ -99,7 +99,7 @@ class NozzleDoButton(QtGui.QPushButton):
     column = -1
     table = ''
    
-    signals = NozzleDOButtonSignal()
+    signals = ButtonForTableSignal()
     
     #def __new__(self, io_num=None):
         #if icon == None:
@@ -108,11 +108,12 @@ class NozzleDoButton(QtGui.QPushButton):
             #return QtGui.QPushButton.__new__(self, icon, self.__on_str)
         
     def __init__(self, io_num, table):
-        super(NozzleDoButton, self).__init__()
+        super(ButtonForTable, self).__init__()
         self.io_num = io_num
         self.clicked.connect(self.on_clicked)
         self.on_off(False)
         self.table = table
+        self.setMaximumWidth(58)
         
     def set_properties(self, on_str, off_str, key, action):
         self.__on_str = on_str
@@ -138,7 +139,8 @@ class NozzleDoButton(QtGui.QPushButton):
         self.nOn = on
         if on:
             self.setText(self.__on_str)
-            self.setStyleSheet('QPushButton{background-color:lightgreen}')
+            if not self.__on_str == self.__off_str: #當 on 和 off 字串都一樣時, 表示button 不需要顏色變化
+                self.setStyleSheet('QPushButton{background-color:lightgreen}')
         else: 
             self.setText(self.__off_str)
             self.setStyleSheet('QPushButton{background-color:white}')
@@ -163,6 +165,7 @@ class DIOLabel(QtGui.QLabel):
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.set_size(26, 26)
         self.setAutoFillBackground(True)
+        
         
     def set_size(self, width, height):
         self.setFixedWidth(width)

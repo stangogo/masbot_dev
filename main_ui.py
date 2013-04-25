@@ -39,6 +39,7 @@ class VisibleStatus(QtCore.QObject):
         
 class MainUI(QtGui.QMainWindow):
     
+    
     def __init__(self):
         super(MainUI, self).__init__()
         

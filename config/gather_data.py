@@ -74,7 +74,7 @@ while result.next():
 #==========================================================================
 points_map = {}
 
-result = sqldb.execute("select * from single_axis_points")
+result = sqldb.execute("select * from single_axis_point")
 col_info = result.record()
 col_names = []
 
@@ -85,7 +85,7 @@ while result.next():
     position_list = []
     for i, col in enumerate(col_names):
         cell_value = result.value(i)
-        if col == 'key' and cell_value not in points_map:
+        if col == 'KEY' and cell_value not in points_map:
             actor_name = cell_value
             points_map[actor_name] = {}
         elif col == 'point_index':
@@ -94,7 +94,7 @@ while result.next():
             position_list.append(cell_value)
     points_map[actor_name][pt_index] = position_list
 
-result = sqldb.execute("select * from double_axis_points")
+result = sqldb.execute("select * from double_axis_point")
 col_info = result.record()
 col_names = []
 pattern = compile('^axis[0-9]_position$')

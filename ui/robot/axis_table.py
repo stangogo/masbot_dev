@@ -67,6 +67,7 @@ class ScaleComboBox(QtGui.QComboBox):
         self.column = -1
         self.axis= ''
         self.init()
+        self.setStyleSheet('QComboBox{font-size:16px}')
 
     def init(self):
         self.addItem('0.01')
@@ -93,6 +94,8 @@ class AxisTable(QtGui.QTableWidget):
         UISignals.GetSignal(SigName.ENTER_AXIS_TABLE).connect(self.from_outside)
         self.cellClicked.connect(self.new_cell)
         
+        for i in range(self.columnCount()):            
+            self.setColumnWidth(i, 80)
         
     def new_cell(self, row, column):
         print("row: {0}, column: {1}, currentRow:{2}, currentColumn:{3}".format(row, column, self.currentRow(), self.currentColumn()))
@@ -168,8 +171,23 @@ class AxisTable(QtGui.QTableWidget):
         try:
             n_row = self.row_dict[row]
             n_col = self.column_dict[axis]
-            item = QtGui.QTableWidgetItem("{0:.3f}".format(value))
-            self.setItem(n_row, n_col, item)
+
+            item = self.item(n_row, n_col)
+            
+            if not item:
+                item = QtGui.QTableWidgetItem()
+                fnt=QtGui.QFont()
+                fnt.setPointSize(14)
+                item.setFont(fnt)
+                
+                self.setItem(n_row, n_col, item)
+            
+            item.setText("{0:.3f}".format(value))
+            
+            # 自動調整欄寬
+            #check_widget = self.cellWidget(self.row_dict['display'], n_col)            
+            #if check_widget.bChecked:
+                #self.resizeColumnToContents(n_col)
             
         except:
             print("from_outside error: {0}".format(sys.exc_info()[1]))
