@@ -151,7 +151,7 @@ loggers:
         handlers: [console, ui_handler]
         propagate: false
     
-    masbot.device.camera:     #Henry
+    masbot.device.camera.camera:     #Henry
         level: DEBUG
         handlers: [console, camera_info_handler]
         propagate: false
