@@ -17,14 +17,15 @@ from masbot.config.gather_data import *
 if hardware_simulation:
     from masbot.device.motion.adlink_fake import ADLink
     from masbot.device.motion.lplink_fake import LPLink
+    from masbot.device.camera.camera_fake import Camera
 else:
     from masbot.device.motion.adlink import ADLink
     #from masbot.device.motion.lplink import LPLink
     from masbot.device.motion.lplink_fake import LPLink
+    from masbot.device.camera.camera import Camera
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
-from masbot.device.camera_module import CameraModule
-
+#from masbot.device.camera_module import CameraModule
 
 class DeviceManager(object):
     _instance = None

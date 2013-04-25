@@ -220,7 +220,8 @@ for col in range(col_info.count()):
 
 camera_info = []
 while result.next():
-    dic = {}
+    all_dic = {}
+    cam_dic = {}
     light_dic = {}
     job_dic = {}
     for i, col in enumerate(col_names):
@@ -229,14 +230,13 @@ while result.next():
             if cell_value != '' and cell_value in light_info:
                 light_dic.update({cell_value:light_info.get(cell_value)})
         else:
-            dic.update({col:cell_value})
-    for i in range(len(job_info)):
-        info = job_info[i]
-        if info.get('camera') == dic.get('camera_name'):            
+            cam_dic.update({col:cell_value})
+    all_dic.update({'light':light_dic})
+    all_dic.update({'camera_set':cam_dic})
+    for info in job_info:
+        if info.get('camera') == cam_dic.get('camera_name'):            
             info.pop('camera')
             job_name = info.pop('job_name')
-            job_dic.update({job_name:info})
-            #del job_info[i]
-    dic.update({'light':light_dic})
-    dic.update({'camera_job':job_dic})
-    camera_info.append(dic)
+            job_dic.update({job_name:info})    
+    all_dic.update({'camera_job':job_dic})
+    camera_info.append(all_dic)
