@@ -34,7 +34,6 @@ class PistonActor(pykka.ThreadingActor):
         self.__logger = logging.getLogger(__name__)
         self.__state = 'ready'
         DM = DeviceManager()
-        actor_info['module_type'] = 'ADLink'
         self.__piston_obj = DM.request(actor_info, 'piston')
         self.__actor_info = actor_info
         self.__detect_type()

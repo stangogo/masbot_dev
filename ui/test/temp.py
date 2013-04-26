@@ -53,7 +53,7 @@ class MyDialog(QtGui.QWidget):
         self.view = GtGui.QGraphicsView()
         self.scene = QtGui.QGraphicsScene()
         self.view.setScene(self.scene)
-        self.graph_item = QtGui.QGraphicsPixmapItem(QtGui.QPixmap("R:\\TEMP\\1.tif").scaledToHeight(400))
+        self.graph_item = QtGui.QGraphicsPixmapItem(QtGui.QPixmap("D:\\Images\\LPCam1\\Image20120809_211043_584.bmp").scaledToHeight(400))
         
         self.scene.addItem(self.graph_item)
         self.show()
@@ -105,7 +105,7 @@ class ImageThumbnail(QtGui.QListWidget):
             self.add_label(id_)
             
         for id_ in thumbnail_id:
-            self.change_image("R:\\TEMP\\1.bmp", id_)
+            self.change_image("D:\\Images\\LPCam1\\Image20120809_211043_584.bmp", id_)
         
         self.setFlow(QtGui.QListWidget.LeftToRight)
         self.setWindowTitle('Image thumbnail')
@@ -120,8 +120,9 @@ class ImageThumbnail(QtGui.QListWidget):
         
         img_label.setContentsMargins(3, 0, 0, 0)    #圖片偏左, 用margin往中間調
         #img_label.clicked.connect(self.__thumbnail_clicked)
-        #graph_item = QtGui.QGraphicsPixmapItem(QtGui.QPixmap("R:\\TEMP\\1.bmp").scaledToHeight(70))
-        graph_item = QtGui.QGraphicsPixmapItem()
+        graph_item = QtGui.QGraphicsPixmapItem(QtGui.QPixmap("D:\\Images\\LPCam1\\Image20120809_211043_584.bmp"), )
+        graph_item.setShapeMode(QtGui.QGraphicsPixmapItem.BoundingRectShape)
+        #graph_item = QtGui.QGraphicsPixmapItem()
         scene.addItem(graph_item)
         
         item = QtGui.QListWidgetItem()

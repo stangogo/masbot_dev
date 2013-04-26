@@ -1,1 +1,1 @@
-__all__ = ['axis_banner', 'axis_table', 'robot_banner', 'robot_tab']
+__all__ = ['robot_info', 'axis_table', 'robot_banner', 'robot_tab']

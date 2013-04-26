@@ -14,9 +14,6 @@ class SigName:
     """axis_banner"""
     DI_DO_SHOW = 'DI_DO_SHOW'
         # DIO顯示按鈕
-    
-    TO_ROBOT_BANNER = 'TO_ROBOT_BANNER'
-        # 顯示機台資訊
         
     REMOVE_IMG_SIDE = 'REMOVE_IMG_SIDE'
         # 移除影像側

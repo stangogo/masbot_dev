@@ -34,7 +34,7 @@ while result.next():
     io_card_info[card_module].append(card_list)
 
 # define all the motion card module
-card_module = ['ADLink', 'LPLink', 'LPMax']
+card_module = ['8154', '8158', 'LPLink', 'LPMax']
 for module in card_module:
     if module not in io_card_info:
         io_card_info[module] = []
@@ -80,7 +80,7 @@ while result.next():
 #==========================================================================
 points_map = {}
 
-result = sqldb.execute("select * from single_axis_points")
+result = sqldb.execute("select * from single_axis_point")
 col_info = result.record()
 col_names = []
 
@@ -100,7 +100,7 @@ while result.next():
             position_list.append(cell_value)
     points_map[actor_name][pt_index] = position_list
 
-result = sqldb.execute("select * from double_axis_points")
+result = sqldb.execute("select * from double_axis_point")
 col_info = result.record()
 col_names = []
 pattern = compile('^axis[0-9]_position$')
@@ -157,6 +157,7 @@ while result.next():
             key = cell_value
             dic['axis_info'].append(axis_map[key])
             dic['sub_axis'].append(key)
+            dic['module_type'] = axis_map[key]['module_type']
         else:
             dic[col] = cell_value
         if col == 'key':

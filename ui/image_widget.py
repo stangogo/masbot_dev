@@ -43,23 +43,21 @@ class ImageWidget(QtGui.QWidget):
     def init_ui(self):
         imgs_dir = Path.imgs_dir()
 
+        # Image thumbnail
+        self.img_thumbnail = ImageThumbnail([])
+        self.img_thumbnail.thumbnail_clicked.connect(self.thumbnail_clicked)
+        self.img_thumbnail.setMinimumHeight(105)
+        
         # preview image
         self.preview_label = PixelMapLabel(0) 
         self.preview_label.update_pixmap("{0}//zero.jpg".format(imgs_dir))
         self.preview_label.setMinimumHeight(400)
-        
         
         # tool bar        
         #toolbar = ImageToolbar()
         #toolbar.file_selected.connect(self.file_selected)
         #toolbar.button_clicked.connect(self.toolbar_btn_clicked)
         
-        # Image thumbnail
-        self.img_thumbnail = ImageThumbnail([])
-        self.img_thumbnail.thumbnail_clicked.connect(self.thumbnail_clicked)
-        self.img_thumbnail.setMinimumHeight(105)
-        
-        #IPI result table (方法1)
         image_utils_tab = ImageUtilsTab()
      
         v_layout = QtGui.QVBoxLayout(self)
