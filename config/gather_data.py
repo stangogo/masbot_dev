@@ -34,7 +34,7 @@ while result.next():
     io_card_info[card_module].append(card_list)
 
 # define all the motion card module
-card_module = ['ADLink', 'LPLink', 'LPMax']
+card_module = ['8154', '8158', 'LPLink', 'LPMax']
 for module in card_module:
     if module not in io_card_info:
         io_card_info[module] = []
@@ -157,6 +157,7 @@ while result.next():
             key = cell_value
             dic['axis_info'].append(axis_map[key])
             dic['sub_axis'].append(key)
+            dic['module_type'] = axis_map[key]['module_type']
         else:
             dic[col] = cell_value
         if col == 'key':

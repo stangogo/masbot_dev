@@ -15,11 +15,13 @@ from masbot.config.global_settings import *
 from masbot.config.gather_data import *
 # hardware detecttion
 if hardware_simulation:
-    from masbot.device.motion.adlink_fake import ADLink
+    from masbot.device.motion.adlink_fake import ADLink as ADLink8154
+    from masbot.device.motion.adlink_fake import ADLink as ADLink8158
     from masbot.device.motion.lplink_fake import LPLink
     from masbot.device.camera.camera_fake import Camera
 else:
-    from masbot.device.motion.adlink import ADLink
+    from masbot.device.motion.adlink import ADLink8154
+    from masbot.device.motion.adlink import ADLink8158
     #from masbot.device.motion.lplink import LPLink
     from masbot.device.motion.lplink_fake import LPLink
     from masbot.device.camera.camera import Camera
@@ -39,14 +41,18 @@ class DeviceManager(object):
     def __initial(self):
         self.__logger = logging.getLogger(__name__)
         self.__bulletin = {}
-        self.__adlink = ADLink(io_card_info['ADLink'])
+        self.__adlink8154 = ADLink8154(io_card_info['8154'])
+        self.__adlink8158 = ADLink8158(io_card_info['8158'])
         self.__lplink = LPLink(io_card_info['LPLink'])
         #self.__lpmax = LPMax(io_card_info['LPMax'])
 
         self.__resource_map = {
-            'ADLink_DO': {'count': self.__adlink.do_count()},
-            'ADLink_DI': {'count': self.__adlink.di_count()},
-            'ADLink_AXIS': {'count': 16},
+            '8154_DO': {'count': self.__adlink8154.do_count()},
+            '8154_DI': {'count': self.__adlink8154.di_count()},
+            '8154_AXIS': {'count': self.__adlink8154.axis_count()},
+            '8158_DO': {'count': self.__adlink8158.do_count()},
+            '8158_DI': {'count': self.__adlink8158.di_count()},
+            '8158_AXIS': {'count': self.__adlink8158.axis_count()},
             'LPLink_DO': {'count': self.__lplink.do_count()},
             'LPLink_DI': {'count': self.__lplink.di_count()},
             'LPLink_AXIS': {'count': 30},
@@ -63,7 +69,8 @@ class DeviceManager(object):
             
     def _get_device_proxy(self):
         proxy = {
-            'ADLink': self.__adlink,
+            '8154': self.__adlink8154,
+            '8158': self.__adlink8158,
             'LPLink': self.__lplink,
             #'LPMax': self.__lpmax,
         }
@@ -106,8 +113,10 @@ class DeviceManager(object):
         ret = self.__resource_check(actor_info['key'], require)
         if ret:
             return ret
-        if mod_type == 'ADLink':
-            io_card = self.__adlink
+        if mod_type == '8154':
+            io_card = self.__adlink8154
+        elif mod_type == '8158':
+            io_card = self.__adlink8158
         elif mod_type == 'LPLink':
             io_card = self.__lplink
         elif mod_type == 'LPMax':
@@ -120,12 +129,13 @@ class DeviceManager(object):
         return Piston(io_card, actor_info, self.__bulletin)
 
     def __allocate_axis(self, actor_info, actor_type):
+        ADLink_pattern = compile('^8[1-2]5[4,8]')
         mod_type = actor_info['module_type']
         do_module = "{}_DO".format(mod_type)
         di_module = "{}_DI".format(mod_type)
         axis_module = "{}_AXIS".format(mod_type)
         require = {do_module: [], di_module: [], axis_module: []}
-        if mod_type == 'ADLink':
+        if ADLink_pattern.match(mod_type):
             for axis in actor_info['axis_info']:
                 if axis['motor_type'] == 'servo':             
                     require[do_module].append(axis['ABSM'])
@@ -137,8 +147,10 @@ class DeviceManager(object):
             ret = self.__resource_check(actor_info['key'], require)
             if ret:
                 return ret
-            else:
-                io_card = self.__adlink
+            elif mod_type == '8154':
+                io_card = self.__adlink8154
+            elif mod_type == '8158':
+                io_card = self.__adlink8158
         elif mod_type == 'LPLink':
             for axis in actor_info['axis_info']:
                 if axis['motor_type'] == 'servo':             

@@ -14,52 +14,52 @@ from random import *
 from masbot.device.motion.motion_card import Motion
 
 class ADLink(Motion):
-    def __init__(self, cards_config=[]):
+    def __init__(self, cards_config=[], manual_id=0):
         self.__logger = logging.getLogger(__name__)
         self.__mode = 'pci8158'
-        self.__cards_config = cards_config
         self.__do_cards_index = []
         self.__di_cards_index = []
         self.__do_card_status = []
         self.__di_card_status = []
-        self.__axis_servo_status = 8 * [0]
-        self.__axis_pulse = 8 * [0.0]
-        self.__motion_status = 8 * [0]
-        self.__initial()
+        self.__port_per_card = 32
+        self.__motion_card_count = 10
+        self.__axis_servo_status = [0] * self.__motion_card_count * 4
+        self.__axis_pulse = [0.0] * self.__motion_card_count * 4
+        self.__motion_status = [0] * self.__motion_card_count * 4
+        self.__initial(cards_config, manual_id)
 
     def __del__(self):
-        self.close_io_cards()
         self.close()
 
-    def __initial(self, manual_id = 0):
+    def __initial(self, cards_config, manual_id = 0):
         self.__logger.debug('adlink_fake card initial')
-        self.__join_io_cards()
-        return 0
+        sleep(0.2)
+        for num, type in cards_config:
+            self.__logger.debug('adlink_fake %s %d initial', type, num)
+            empty_card = 32 * [0]
+            if type == 'DO':
+                self.__do_card_status.append(empty_card)
+                self.__do_cards_index.append(num)
+            elif type == 'DI':
+                self.__di_card_status.append(empty_card)
+                self.__di_cards_index.append(num)
 
     def close(self):
         self.__logger.debug('adlink_fake card close')
 
-    def __join_io_cards(self):
-        sleep(0.2)
-        for num, type in self.__cards_config:
-            self.__logger.debug('adlink_fake %s %d initial', type, num)
-            empty_card = 32 * [0]
-            if type == 'DO_CARD':
-                self.__do_card_status.append(empty_card)
-                self.__do_cards_index.append(num)
-            elif type == 'DI_CARD':
-                self.__di_card_status.append(empty_card)
-                self.__di_cards_index.append(num)
-
+    def refresh(self, card_config, manual_id=0):
+        self.close()
+        self.__initial(card_config , manual_id) 
+        
     def do_count(self):
-        return len(self.__do_cards_index) * 32
-
+        return len(self.__do_cards_index) * self.__port_per_card
+        
     def di_count(self):
-        return len(self.__di_cards_index) * 32
+        return len(self.__di_cards_index) * self.__port_per_card
 
-    def close_io_cards(self):
-        self.__logger.debug('adlink_fake db51 close')
-
+    def axis_count(self):
+        return self.__motion_card_count * 4
+        
     def DO(self, port, state):
         card_order = int(port/32)
         if card_order < len(self.__do_cards_index):
@@ -157,23 +157,3 @@ class ADLink(Motion):
         self.set_position(axis_id, proportion*current_position)
         return 0
         
-    def check_sensor(self, port, timeout=5000, on_off=1):
-        """ check if sensor is on
-        
-        Example:
-            check_sensor(12, 200)
-            check_sensor(20, on_off=0)
-            
-        Args:
-            axis(integer): sensor port
-            timeout(integer): timeout (ms)
-            on_off(0 or 1): expect the sensor is 0 or 1
-        
-        Returns:
-            1: in place
-            timeout message
-
-        Raises:
-            
-        """
-        return 1

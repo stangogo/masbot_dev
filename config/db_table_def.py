@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS options(
 """
 CREATE TABLE IF NOT EXISTS nozzle(
     key TEXT not null,
-    module_type TEXT DEFAULT 'ADLink',
+    module_type TEXT,
     updown_action INTEGER,
     blow_action INTEGER,
     suck_action INTEGER,
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS single_axis(
     key TEXT not null,
     axis_id INTEGER,
     display_text TEXT,
-    module_type TEXT DEFAULT 'ADLink',
+    module_type TEXT,
     motor_type TEXT DEFAULT 'servo',
     proportion INTEGER DEFAULT 500,
     speed INTEGER DEFAULT 200,
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS single_axis(
 """
 ,
 """
-CREATE TABLE IF NOT EXISTS single_axis_points(
+CREATE TABLE IF NOT EXISTS single_axis_point(
     key TEXT not null,
     point_index REAL not null,
     position REAL,
@@ -119,7 +119,6 @@ CREATE TABLE IF NOT EXISTS single_axis_points(
 CREATE TABLE IF NOT EXISTS double_axis(
     key TEXT not null,
     display_text TEXT,
-    module_type INTEGER DEFAULT 'ADLink',
     group_id INTEGER,
     axis1 TEXT,
     axis2 TEXT,
@@ -132,7 +131,7 @@ CREATE TABLE IF NOT EXISTS double_axis(
 """
 ,
 """
-CREATE TABLE IF NOT EXISTS double_axis_points(
+CREATE TABLE IF NOT EXISTS double_axis_point(
     key TEXT not null,
     point_index TEXT not null,
     axis1_position REAL,
@@ -147,7 +146,6 @@ CREATE TABLE IF NOT EXISTS double_axis_points(
 CREATE TABLE IF NOT EXISTS triple_axis(
     key TEXT not null,
     display_text TEXT,
-    module_type INTEGER DEFAULT 'ADLink',
     group_id INTEGER,
     axis1 TEXT,
     axis2 TEXT,
@@ -162,7 +160,7 @@ CREATE TABLE IF NOT EXISTS triple_axis(
 """
 ,
 """
-CREATE TABLE IF NOT EXISTS triple_axis_points(
+CREATE TABLE IF NOT EXISTS triple_axis_point(
     key TEXT not null,
     point_index TEXT not null,
     axis1_position REAL,
@@ -177,7 +175,7 @@ CREATE TABLE IF NOT EXISTS triple_axis_points(
 """
 CREATE TABLE IF NOT EXISTS piston(
     key TEXT not null,
-    module_type TEXT DEFAULT 'ADLink',
+    module_type TEXT,
     output1 INTEGER,
     output2 INTEGER,
     input1 INTEGER,
@@ -233,7 +231,7 @@ CREATE TABLE IF NOT EXISTS ui_layout(
 ,
 """
 CREATE TABLE IF NOT EXISTS io_card(
-    card_module TEXT not null DEFAULT 'ADLink',
+    card_module TEXT not null,
     card_num INTEGER not null,
     card_type TEXT DEFAULT 'DO_CARD',
     PRIMARY KEY(card_module, card_num)
@@ -243,7 +241,7 @@ CREATE TABLE IF NOT EXISTS io_card(
 """
 CREATE TABLE IF NOT EXISTS light(
     light_name TEXT not null,
-    module_type TEXT not null DEFAULT 'ADLink',
+    module_type TEXT not null,
     port INTEGER not null,
     display_text TEXT,
     PRIMARY KEY(light_name)
