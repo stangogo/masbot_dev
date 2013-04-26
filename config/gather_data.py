@@ -80,7 +80,7 @@ while result.next():
 #==========================================================================
 points_map = {}
 
-result = sqldb.execute("select * from single_axis_points")
+result = sqldb.execute("select * from single_axis_point")
 col_info = result.record()
 col_names = []
 
@@ -100,7 +100,7 @@ while result.next():
             position_list.append(cell_value)
     points_map[actor_name][pt_index] = position_list
 
-result = sqldb.execute("select * from double_axis_points")
+result = sqldb.execute("select * from double_axis_point")
 col_info = result.record()
 col_names = []
 pattern = compile('^axis[0-9]_position$')

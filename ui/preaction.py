@@ -45,7 +45,7 @@ class SigAgent(QtCore.QObject):
     #"""
     
     do_out = QtCore.Signal(int, int)
-    """ 提供 DIOButton, NozzleDoButton clicked時, 輸出DO port 和 on-off的接口
+    """ 提供 DIOButton, ButtonForTable clicked時, 輸出DO port 和 on-off的接口
     @ int: do port number
     @ int: on or off (1 or 0)
     """

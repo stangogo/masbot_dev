@@ -5,8 +5,8 @@ import sys
 from PySide import QtGui, QtCore
 from masbot.ui.robot.robot_tab import RobotPageDock
 from masbot.ui.robot.robot_banner import RobotBanner
-from masbot.ui.robot.axis_banner import AxisBanner
-from masbot.config.utils import UISignals, SigName
+from masbot.config.utils import UISignals, SigName, Path
+
 
 class RobotWidget(QtGui.QWidget):
     
@@ -17,41 +17,43 @@ class RobotWidget(QtGui.QWidget):
         
     def init_ui(self):
 
-        v_layout = QtGui.QVBoxLayout()
-        v_layout
-
-        v_layout.setSpacing(0)
-        v_layout.setContentsMargins(5,0,0,0)
-
         robot_tab = RobotPageDock()
         robot_tab.currentChanged.connect(self.page_changed)
-        self.stack_layout = QtGui.QStackedLayout()
-        self.stack_layout.addWidget(RobotBanner())
-        
-        self.stack_layout.addWidget(AxisBanner())
-        UISignals.GetSignal(SigName.TO_ROBOT_BANNER).connect(self.show_robot_banner)
-        self.stack_layout.setCurrentIndex(1)
 
-        #di_do_btn = QtGui.QPushButton("Test")
-        #di_do_btn.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        
-        v_layout.addLayout(self.stack_layout, 1)
-        #v_layout.addWidget(di_do_btn, 1, QtCore.Qt.AlignRight)
-        v_layout.addWidget(robot_tab, 3)
+        vbox = QtGui.QVBoxLayout()
+        vbox.setSpacing(0)
+        vbox.setContentsMargins(5,0,0,0)
+        vbox.addWidget(RobotBanner(), 1)        
+        vbox.addWidget(robot_tab, 3)
 
-        self.setLayout(v_layout)
+        hbox = QtGui.QHBoxLayout()
+        hbox.addLayout(vbox)
+        hbox.addWidget(self.init_shrink_button())
+        hbox.setSpacing(0)
+
+        self.setLayout(hbox)
         
         self.setWindowTitle('Robot')
         self.show()
-    
+
+    def init_shrink_button(self):
+        shrink_button = QtGui.QPushButton(QtGui.QIcon("{0}/push.ico".format(Path.imgs_dir())), '')
+        shrink_button.setCheckable(True)
+        shrink_button.setChecked(True)
+        shrink_button.setFixedWidth(10)
+        shrink_button.setFixedHeight(400)        
+        shrink_button.setStyleSheet('QPushButton{ border:0px;}')
+        UISignals.RegisterSignal(shrink_button.clicked, SigName.REMOVE_IMG_SIDE)
+        
+        shrink_button.setToolTip('顯示/隱藏右側 (Show/Hide right side)')
+        return shrink_button
+
     def page_changed(self, index):    # 改變stacklayout 的顯示頁面
-        if index:
-            self.stack_layout.setCurrentIndex(1)    # 單軸移動
+        pass
+        #if index:
+            #self.stack_layout.setCurrentIndex(1)    # 單軸移動
         #else: 
             #self.stack_layout.setCurrentIndex(0)    # 機台資訊
-            
-    def show_robot_banner(self):
-        self.stack_layout.setCurrentIndex(0)    # 機台資訊
     
 def main():
     
