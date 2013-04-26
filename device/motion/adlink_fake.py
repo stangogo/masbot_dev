@@ -61,10 +61,11 @@ class ADLink(Motion):
         return self.__motion_card_count * 4
         
     def DO(self, port, state):
-        card_order = int(port/32)
+        port_per_card = self.__port_per_card
+        card_order = int(port/port_per_card)
         if card_order < len(self.__do_cards_index):
             card_num = self.__do_cards_index[card_order]
-            port = port % 32
+            port = port % port_per_card
         else:
             return '[DO port is out of range]: port = %d, total cards = %d' % (port, len(self.__do_cards_index))
         sleep(0.1)
@@ -73,20 +74,20 @@ class ADLink(Motion):
         return 0
 
     def DO_read(self, port):
-        card_order = int(port/32)
+        port_per_card = self.__port_per_card
+        card_order = int(port/port_per_card)
         if card_order < len(self.__do_cards_index):
-            #card_num = self.__do_cards_index[card_order]
-            port = port % 32
+            port = port % port_per_card
         else:
             return '[DO port is out of range]: port = %d, total cards = %d' % (port, len(self.__do_cards_index))
         
         return self.__do_card_status[card_order][port]
 
     def DI(self, port):
+        port_per_card = self.__port_per_card
         card_order = int(port/32)
         if card_order < len(self.__di_cards_index):
-            #card_num = self.__di_cards_index[card_order]
-            port = port % 32
+            port = port % self.__port_per_card
         else:
             return '[DI port is out of range]: port = %d, total cards = %d' % (port, len(self.__di_cards_index))
         

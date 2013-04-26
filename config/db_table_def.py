@@ -1,4 +1,4 @@
-#!/usr/bin/python
+﻿#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
  Title          : db_table_def.py
@@ -12,26 +12,26 @@
 from collections import OrderedDict
 
 """
-類別裡�?供�?資�?庫�?資�?表�?位�?定義
-?�是UI裡表?��??�?�橫軸�?緃軸?�表??
-    TrayInfo: ?�?��??��?資�?表�?�?
-    SingleAxis: ?�軸移�?資�?表�?�?
-    AxisOP: ?�軸移�?UI表格縱軸表頭
+類別裡提供了資料庫的資料表欄位的定義
+或是UI裡表格所需的橫軸或緃軸的表頭
+    TrayInfo: 退盤資料的資料表欄位
+    SingleAxis: 單軸移動資料表欄位
+    AxisOP: 單軸移動UI表格縱軸表頭
 
 """
 
 
 class DBTableDefine():
-    table = {'TrayInfo': OrderedDict( [ ('LogTime',     ['varchar(20)', '?�?��???]) , 
-                                        ('CT',          ['float',       '?��?組�??��?']),
-                                        ('ProdName',    ['varchar(20)', '?��??�稱']),
-                                        ('MatchAngle',  ['float',       '?��?角度']),
-                                        ('AssembleMode',['varchar(20)', '組�?模�?']),
-                                        ('ProdBarCode', ['varchar(20)', '?��??��?�?]),
-                                        ('ProdNum',     ['varchar(20)', '?��??��?']),
-                                        ('Total',       ['int',         '?��?總數'])] )
+    table = {'TrayInfo': OrderedDict( [ ('LogTime',     ['varchar(20)', '退盤時間']) , 
+                                        ('CT',          ['float',       '單顆組裝時間']),
+                                        ('ProdName',    ['varchar(20)', '產品名稱']),
+                                        ('MatchAngle',  ['float',       '配對角度']),
+                                        ('AssembleMode',['varchar(20)', '組裝模式']),
+                                        ('ProdBarCode', ['varchar(20)', '成品盤條碼']),
+                                        ('ProdNum',     ['varchar(20)', '成品盤號']),
+                                        ('Total',       ['int',         '成品總數'])] )
                                     ,
-             'AxisOP': [['position', '位置'], ['state','?�??], [' + ','??], [' - ','�?], ['scale','?��?'], ['display','']]
+             'AxisOP': [['position', '位置'], ['state','狀態'], [' + ','加'], [' - ','減'], ['scale','單位'], ['display','']]
              #                       ,
              #'ImageThumbnailID': ['1stCorrect', 'GlueIdentify', '2stCorrect', '66Six']
              
@@ -39,6 +39,7 @@ class DBTableDefine():
     
     def get_table_def(self, table_name):
         return self.table[table_name]
+
 
 table_schemas = [
 """
