@@ -10,159 +10,77 @@
 
 import logging
 from re import compile
+from masbot.config.global_settings import *
 from masbot.device.bulletin import Bulletin
+#if hardware_simulation:
+    #from masbot.device.camera.camera_fake import Camera
+#else:
 from masbot.device.camera.camera import Camera
-
-
+    
 class CameraModule(Bulletin):    
     def __init__(self, camera_info, board={}):
-        owner = camera_info['camera_name']
+        owner = camera_info['camera_set']['camera_name']
         super(CameraModule, self).__init__(owner, board)
         self.__logger = logging.getLogger(__name__)    
         self.__cam_info = camera_info
+        #self.__io_card = io_card
         self.__initial()  
         
-    def __del__(self):
-        self.close_camera()   
+    #def __del__(self): 
         
-    def __initial(self):
-        self.__logger.debug(' Camera device:{0} is beginnig to initial.'.format(camera_info.get('display_text', 'No camera')))        
-        self.__port = camera_info.get('port', -1)
-        self.__camera_type = camera_info.get('camera_type','')
-        self.__camera_mode = camera_info.get('camera_mode','')       
-        self.__color_type = camera_info.get('color_type', 'gray')
-        self.__display_text = camera_info.get('display_text', '')
-        self.run(Framegrabber_dll.initial_dll)  # initial dll handler
-        ret = self.open_framegrabber()
-        self.get_parameter_values(camera_info)
-        
-    def open_framegrabber(self): 
-        cstr = (c_char*self.__str_length)(0)
-        cstr.value = self.__camera_type.encode()    #set camera type in advance
-        ret = self.run(Framegrabber_dll.set_camera_type, self.__port, cstr)
-        if ret:
-            self.__logger.warning('Camera:{0} device open framegrabber fail when setting {1}.'.format(self.__display_text,self.__camera_type))
-            return ret
-        cstr.value = self.__color_type.encode()    #set camera type in advance
-        ret = self.run(Framegrabber_dll.set_camera_color_type, self.__port, cstr)
-        if ret:
-            self.__logger.warning('Camera:{0} device open framegrabber fail when setting {1}.'.format(self.__display_text,self.__camera_mode))  
-            return ret
-        cstr.value = self.__camera_mode.encode()    #set camera mode in advance
-        ret = self.run(Framegrabber_dll.set_camera_mode, self.__port, cstr)
-        if ret:
-            self.__logger.warning('Camera:{0} device open framegrabber fail when setting {1}.'.format(self.__display_text,self.__camera_mode))
-            return ret
-        ret = self.run(Framegrabber_dll.initial_grabber, self.__port)
-        if ret:
-            self.__logger.error('Camera:{0} device open framegrabber fail when initialled camera grabber.'.format(self.__display_text))
-            return ret 
-        self.__logger.debug('Camera:{0} device open framegrabber successful.'.format(self.__display_text))
-        return ret;
-    
-    def get_parameter_values(self, cam_info):
-        value = c_int(0)
-        for i, index in enumerate(self.__para_enum):
-            ret = self.run(Framegrabber_dll.get_camera_parameter, self.__port, self.__para_enum[index], pointer(value))
-            if ret:
-                sself.__logger.warning('Camera:{0} device setting {1} fail.'.format(self.__display_text, index))
-                self.__para_set.update(i,0)
-            else:
-                self.__para_set.update({index:value.value})
-        #setting parameter in advance
-        self.set_parameter('reverse_type', cam_info['reverse_type'])
-        self.set_parameter('gain_value', cam_info['gain_value'])
-        self.set_parameter('shutter_value', cam_info['shutter_value'])
+    def __initial(self):      
+        self.__camera = Camera(self.__cam_info.get('camera_set'))      
         
     def get_parameter(self, para_name):
-        if para_name in self.__para_enum.keys():
-            return self.__para_set.get(para_name, None)
-        elif para_name == 'camera_type':
-            return self.__camera_type
-        elif para_name == 'camera_mode':
-            return self.__camera_mode
-        elif para_name == 'color_type':
-            return self.__color_type
-        
+        return self.__camera.get_parameter(para_name)
+    
     def set_parameter(self, para_name, value):
-        if para_name in self.__para_enum.keys():
-            if para_name in ['gain_value','shutter_value','reverse_type']:
-                ret = self.run(Framegrabber_dll.set_camera_parameter, self.__port, self.__para_enum[para_name], value)
-                if ret:
-                    self.__logger.warning('Camera:{0} device setting {1} fail.'.format(self.__display_text, para_name))
-                else:
-                    self.__para_set[para_name] = value
-                    self.__logger.debug('Camera:{0} device setting {1} successful.'.format(self.__display_text, para_name))
-                return ret                
-        return None
+        return self.__camera.set_parameter(para_name, value)
     
     def grab_image(self):
-        pData = (c_ubyte*(self.get_parameter('width')*self.get_parameter('height')*self.get_parameter('channel')))()
-        ret = self.run(Framegrabber_dll.grab_image, self.__port, pData) 
-        if ret != 0:
-            self.__logger.warning('Camera:{0} device grab image occurred {1} error.'.format(self.__display_text, self.get_error_msg(ret)))
-            return None
-        else:
-            if cam.get_parameter('channel') == 1:
-                im = Image.frombuffer('L', [self.get_parameter('width'),self.get_parameter('height')], pData, 'raw', 'L', 0, 1)
-            elif cam.get_parameter('channel') == 3:
-                im = Image.frombuffer('RGB', [imgwidth,imgheight], pData, 'raw', 'RGB', 0, 1)    
-            return im
-    def get_error_msg(self, error_type):
-        cstrp = c_char_p(0)
-        cstrp = self.run(Framegrabber_dll.get_err_msg, error_type)
-        cstr = cast(cstrp, c_char_p)
-        pstr = cstr.value.decode()
-        return pstr   
-    
-    def get_dll_version(self, error_type):
-        cstrp = c_char_p(0)
-        cstrp = self.run(Framegrabber_dll.get_version)
-        cstr = cast(cstrp, c_char_p)
-        pstr = cstr.value.decode()
-        return pstr         
+        return self.__camera.grab_image()
         
     def close_camera(self):
-        ret = self.run(Framegrabber_dll.close_grabber, self.__port)
-        if ret != 0:
-            self.__logger.warning('Camera:{0} device close grabber occurred {1} error.'.format(self.__display_text, self.get_error_msg(ret)))   
+        return self.__camera.close_camera()
             
 #-------------------------------------------------------------------------------------------------
 #-----------------------------------------test----------------------------------------------------
 #-------------------------------------------------------------------------------------------------
 #camera_inf =  {
-        #'pixel_size': 0.00725,
-        #'shutter_value': 800,
-        #'display_text': '上攝影機模組',
-        #'light': {...
+        #'camera_set': {
+            #'display_text': '上光源模組',
+            #'shutter_value': 800,
+            #'port': 0,
+            #'camera_type': '1394IIDC',
+            #'pixel_size': 0.00725,
+            #'reverse_type': 0,
+            #'camera_name': 'top_camera',
+            #'color_type': 'gray',
+            #'gain_value': 100,
+            #'camera_mode': '7:0:0'
         #},
-        #'IPQC': {
-            #'light': ['top_camera_ISL', 'top_camera_RL'],
-            #'dll_name': 'IPQC_9552A1',
-            #'display_text': '成品檢查'
+        #'camera_job': {
+            #'CAMERA_CHECK': {
+                #'display_text': '成品檢查',
+                #'dll_name': 'camera_check',
+                #'light': ['top_camera_ISL']
+            #},
+            #'IPQC': {
+                #'display_text': '成品檢查',
+                #'dll_name': 'IPI_9552A1',
+                #'light': ['top_camera_ISL']
+            #},
+            #'BARREL': {
+                #'display_text': '自裝鈑定位',
+                #'dll_name': 'camera_check',
+                #'light': ['top_camera_ISL', 'top_camera_RL']
+            #}
         #},
-        #'gain_value': 100,
-        #'camera_type': '1394IIDC',
-        #'color_type': 'gray',
-        #'port': 0,
-        #'top_camera_RL': ['ADLink', 102, '環形光源'],
-        #'CAMERA_CHECK': {
-            #'light': ['top_camera_ISL'],
-            #'dll_name': 'camera_check',
-            #'display_text': 'CAMERA校正點確認'
-        #},
-        #'camera_job': {...
-        #},
-        #'top_camera_CL': ['ADLink', 101, '同軸光源'],
-        #'camera_mode': '7:0:0',
-        #'BARREL': {
-            #'light': ['top_camera_ISL'],
-            #'dll_name': 'circle_detection',
-            #'display_text': '自裝鈑定位'
-        #},
-        #'top_camera_ISL': ['ADLink', 100, '積分球光源'],
-        #'reverse_type': 0,
-        #'camera_name': 'top_camera'
+        #'light': {
+            #'top_camera_RL': ['ADLink', 102, '環形光源'],
+            #'top_camera_ISL': ['ADLink', 100, '積分球光源'],
+            #'top_camera_CL': ['ADLink', 101, '同軸光源']
+        #}
     #}
 #from time import clock
 #from time import sleep

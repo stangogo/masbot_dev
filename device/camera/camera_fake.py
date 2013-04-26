@@ -27,7 +27,7 @@ class Camera(Channel):
         if camera_info.get('camera_type','') in ['1394IIDC','directshow']:
             if camera_info.get('camera_type','') == '1394IIDC':
                 self.__grabber = 1  
-            elif camera_info.get('camera_type','') == 'directshow':
+            elif camera_info.get('camera_type','') == 'Directshow':
                 self.__grabber = 2
             else:
                 self.__grabber = 0
@@ -83,7 +83,7 @@ class Camera(Channel):
             im = Image.new('L', [width,height], randint(0, 255))
         elif channel == 3:
             im = Image.new('RGB', [width,height], randint(0, 255))
-        sleep(1/cam.get_parameter('frame_rate'))
+        sleep(1/self.get_parameter('frame_rate'))
         return im
         
     def get_error_msg(self, error_type):
@@ -101,9 +101,10 @@ class Camera(Channel):
         return pstr         
         
     def close_camera(self):
-        ret = self.run(self.__grabber.close_grabber)
-        if ret != 0:
-            self.__logger.warning('Camera:{0} device close grabber occurred {1} error.'.format(self.__display_text, self.get_error_msg(ret)))   
+        pass
+        #ret = self.run(self.__grabber.close_grabber)
+        #if ret != 0:
+        #    self.__logger.warning('Camera:{0} device close grabber occurred {1} error.'.format(self.__display_text, self.get_error_msg(ret)))   
             
 #-------------------------------------------------------------------------------------------------
 #-----------------------------------------test----------------------------------------------------

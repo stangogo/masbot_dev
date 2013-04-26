@@ -15,7 +15,8 @@ def initial_grabber(camera_type):
     
     if camera_type == '1394IIDC':
         grabber = CDLL(__file__+'/../camera1394IIDC.dll')
-    elif camera_type == 'directshow':
+        
+    elif camera_type == 'Directshow':
         grabber = CDLL(__file__+'/../cameraDirectshow.dll')
     else:
         grabber = None
@@ -25,33 +26,36 @@ def initial_grabber(camera_type):
         grabber.initial_dll.restype = None
         grabber.initial_dll.argtypes = []    
         grabber.initial_dll()
-        
+
         grabber.initial_grabber.restype = c_int
         grabber.initial_grabber.argtypes = [c_int]
         
         grabber.grab_image.restype = c_int
-        grabber.grab_image.argtypes = [POINTER(c_ubyte)]
+        grabber.grab_image.argtypes = [c_int, POINTER(c_ubyte)]
         
         grabber.set_camera_parameter.restype = c_int
-        grabber.set_camera_parameter.argtypes = [c_int, c_int]
+        grabber.set_camera_parameter.argtypes = [c_int, c_int, c_int]
         
         grabber.get_camera_parameter.restype = c_int
-        grabber.get_camera_parameter.argtypes = [c_int, POINTER(c_int)]
+        grabber.get_camera_parameter.argtypes = [c_int, c_int, POINTER(c_int)]
         
         grabber.set_color_type.restype = c_int
-        grabber.set_color_type.argtypes = [POINTER(c_char)]
+        grabber.set_color_type.argtypes = [c_int, POINTER(c_char)]
         
         grabber.get_color_type.restype = c_int
-        grabber.get_color_type.argtypes = [POINTER(c_char)]
+        grabber.get_color_type.argtypes = [c_int, POINTER(c_char)]
         
         grabber.set_camera_mode.restype = c_int
-        grabber.set_camera_mode.argtypes = [POINTER(c_char)]
+        grabber.set_camera_mode.argtypes = [c_int, POINTER(c_char)]
         
         grabber.get_camera_mode.restype = c_int
-        grabber.get_camera_mode.argtypes = [POINTER(c_char)]
-            
+        grabber.get_camera_mode.argtypes = [c_int, POINTER(c_char)]
+        
+        grabber.get_available_camera.restype = c_int
+        grabber.get_available_camera.argtypes = []            
+
         grabber.close_grabber.restype = c_int
-        grabber.close_grabber.argtypes = []
+        grabber.close_grabber.argtypes = [c_int]
         
         grabber.get_version.restype = POINTER(c_char) 
         grabber.get_version.argtypes = []

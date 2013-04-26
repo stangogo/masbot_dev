@@ -33,16 +33,18 @@ class CameraActor(pykka.ThreadingActor):
         self.__camera_info = camera_info
         self.__state = 0
         DM = DeviceManager()
-        self.__camera_obj = DM.request(camera_info, 'camera')
-        
+        self.__camera_obj = DM.request(camera_info, 'camera_module')
     def on_receive(self, message):
         # action on
         if message.get('msg') == 'state':
             message['reply_to'].set(self.__state)
+        elif message.get('msg') == 'snapshot':        
+            self.__state = 'actioning'
+            ret = self.__camera_obj.grab_image()        
         else:
             ret = 'undefine message format'
             self.__logger.error(ret)
         # message response
-        self.__state = ret
+        self.__state = 'ready'
         message['reply_to'].set(ret)
 
