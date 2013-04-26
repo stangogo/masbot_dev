@@ -24,10 +24,9 @@ else:
     from masbot.device.motion.adlink import ADLink8158
     #from masbot.device.motion.lplink import LPLink
     from masbot.device.motion.lplink_fake import LPLink
-    from masbot.device.camera.camera import Camera
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
-#from masbot.device.camera_module import CameraModule
+from masbot.device.camera_module import CameraModule
 
 class DeviceManager(object):
     _instance = None
@@ -61,7 +60,7 @@ class DeviceManager(object):
             'LPMax_AXIS': {'count': 0},
             'RS232': {'count': 2},
             'Camera_1394': {'count': 10},
-            'Camera_USB': {'count': 0},
+            'Camera_USB2': {'count': 10},
         }
         
     def get_resource_map(self):
@@ -97,6 +96,10 @@ class DeviceManager(object):
             return self.__allocate_piston(actor_info, actor_type)
         elif actor_type == 'motor':
             return self.__allocate_axis(actor_info, actor_type)
+        elif actor_type == 'camera_module':
+            return self.__allocate_camera_module(actor_info, actor_type)
+        else:
+            return None
 
     def __allocate_piston(self, actor_info, actor_type):
         output_pattern = compile('^output[0-9]$')
@@ -167,7 +170,44 @@ class DeviceManager(object):
             self.__logger.critical(msg)
             return msg
         return Motor(actor_info, io_card, self.__bulletin)
-            
+    
+    def __allocate_camera_module(self, actor_info, actor_type):
+        #output_pattern = compile('^output[0-9]$')
+        #input_pattern = compile('^input[0-9]$')        
+        try:
+            mod_type = actor_info['camera_set']['camera_type']
+        except:
+            mod_type = None   
+        if mod_type == '1394IIDC':
+            camera_module = 'Camera_1394'
+        elif mod_type == 'Directshow':
+            camera_module = 'Camera_USB2'
+        else:
+            camera_module = None
+        #do_module = "{}_DO".format(mod_type)
+        #di_module = "{}_DI".format(mod_type)
+        #require = {do_module: [], di_module: []}
+        require = {camera_module:[actor_info['camera_set']['port']]}#do_module: [], di_module: []}
+        #for key, val in actor_info.items():
+        #    if output_pattern.match(key) and isinstance(val, int):
+        #        require[do_module].append(val)
+        #    elif input_pattern.match(key) and isinstance(val, int):
+        #        require[di_module].append(val)
+        ret = self.__resource_check(camera_module, require)
+        if ret:
+            return ret
+        #if mod_type == 'ADLink':
+            #io_card = self.__adlink
+        #elif mod_type == 'LPLink':
+            #io_card = self.__lplink
+        #elif mod_type == 'LPMax':
+            #io_card = None
+            #io_card = self.__lpmax
+        #else:
+            #msg = "unknown module type: {}".format(mod_type)
+            #self.__logger.critical(msg)
+            #return msg
+        return CameraModule(actor_info, self.__bulletin)        
     def __resource_check(self, actor_name, require):
         for resource_type, resource_list in require.items():
             for port in resource_list:
