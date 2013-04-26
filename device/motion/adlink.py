@@ -19,7 +19,7 @@ from masbot.device.motion.adlink_table import *
 
 # common functions in 8154 and 8158
 logger = logging.getLogger(__name__)
-def int32(self, x):
+def int32(x):
     """ to fit the 32 bits format
     """
     if x > 0xFFFFFFFF:
@@ -62,11 +62,12 @@ class ADLink8154(Channel, Motion):
         Raises:
         
         """
-        if len(cards_config) == 0:
-            return
-            
         self.__do_cards_index = []
         self.__di_cards_index = []
+        self.__motion_card_count = 0
+        if len(cards_config) == 0:
+            return
+        
         cardid_inbit = pointer(c_ushort(0))
         ret = self.run(pci_8154._8154_initial, cardid_inbit, manual_id)
         
@@ -521,11 +522,12 @@ class ADLink8158(Channel, Motion):
         Raises:
         
         """
-        if len(cards_config) == 0:
-            return
-            
         self.__do_cards_index = []
         self.__di_cards_index = []
+        self.__motion_card_count = 0
+        if len(cards_config) == 0:
+            return
+
         cardid_inbit = pointer(c_ushort(0))
         ret = self.run(pci_8158._8158_initial, cardid_inbit, manual_id)
         

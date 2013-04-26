@@ -18,7 +18,7 @@ if hardware_simulation:
     from masbot.device.motion.adlink_fake import ADLink as ADLink8154
     from masbot.device.motion.adlink_fake import ADLink as ADLink8158
     from masbot.device.motion.lplink_fake import LPLink
-    from masbot.device.camera.camera_fake import Camera
+    #from masbot.device.camera.camera_fake import Camera
 else:
     from masbot.device.motion.adlink import ADLink8154
     from masbot.device.motion.adlink import ADLink8158
