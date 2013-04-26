@@ -88,7 +88,7 @@ class ADLink8154(Channel, Motion):
         self.run(pci_8154._8154_db51_HSL_set_scan_condition, 0, 0, 0)
         for num, type in cards_config:
             self.run(pci_8154._8154_db51_HSL_slave_live, 0, num, live)
-            logger.debug('adlink %s %d initial', type, num)
+            logger.debug('ADLink8154 DB8151 %s %d initial', type, num)
             if type == 'DO':
                 self.__do_cards_index.append(num)
             elif type == 'DI':
@@ -543,7 +543,7 @@ class ADLink8158(Channel, Motion):
         self.run(pci_8158._8158_db51_HSL_set_scan_condition, 0, 0, 0)
         for num, type in cards_config:
             self.run(pci_8158._8158_db51_HSL_slave_live, 0, num, live)
-            logger.debug('adlink %s %d initial', type, num)
+            logger.debug('ADLink8158 DB8151 %s %d initial', type, num)
             if type == 'DO':
                 self.__do_cards_index.append(num)
             elif type == 'DI':
