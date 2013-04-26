@@ -65,11 +65,13 @@ class ADLink8154(Channel, Motion):
         self.__do_cards_index = []
         self.__di_cards_index = []
         self.__motion_card_count = 0
-        if len(cards_config) == 0:
-            return
-        
+                
         cardid_inbit = pointer(c_ushort(0))
         ret = self.run(pci_8154._8154_initial, cardid_inbit, manual_id)
+        
+        if len(cards_config) == 0:
+            return
+
         
         if ret:
             logger.error('not found ADlink 8154 card (%s)', error_table[ret])
@@ -525,11 +527,12 @@ class ADLink8158(Channel, Motion):
         self.__do_cards_index = []
         self.__di_cards_index = []
         self.__motion_card_count = 0
-        if len(cards_config) == 0:
-            return
 
         cardid_inbit = pointer(c_ushort(0))
         ret = self.run(pci_8158._8158_initial, cardid_inbit, manual_id)
+        
+        if len(cards_config) == 0:
+            return
         
         if ret:
             logger.error('not found ADlink 8158 card (%s)', error_table[ret])
