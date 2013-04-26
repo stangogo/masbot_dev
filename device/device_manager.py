@@ -132,6 +132,7 @@ class DeviceManager(object):
         return Piston(io_card, actor_info, self.__bulletin)
 
     def __allocate_axis(self, actor_info, actor_type):
+        ADLink_pattern = compile('^8[1-2]5[4,8]')
         mod_type = actor_info['module_type']
         do_module = "{}_DO".format(mod_type)
         di_module = "{}_DI".format(mod_type)
