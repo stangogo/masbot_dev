@@ -165,7 +165,10 @@ class IOTableTemplate(QtGui.QTableWidget):
             value_set = query.value(4)
             
             action_data = self.get_property_value(table_name, data_table, property_)
-            self.one_data_set.append([on_str, off_str, property_, display_type, value_set, action_data[0]])
+            try:
+                self.one_data_set.append([on_str, off_str, property_, display_type, value_set, action_data[0]])
+            except: 
+                cell = None
             
             for i in range(0, len(action_data)):
                 
@@ -193,7 +196,7 @@ class IOTableTemplate(QtGui.QTableWidget):
                   
                     self.add_cell(row, column, cell, display_type)
                         
-            if not reload:
+            if not reload and cell:
                 if display_type == 'button':    # disconnect and then connect: 避免button重覆掛載do_clicked. 
                     try:
                         cell.signals.clicked.disconnect(self.do_clicked)
