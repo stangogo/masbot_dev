@@ -69,7 +69,7 @@ class IOTableTemplate(QtGui.QTableWidget):
         
         self.resizeColumnsToContents()  #列寬符合內容S
         self.resizeRowsToContents()
-        table.cellDoubleClicked.connect(self.cellDclicked)
+        self.cellDoubleClicked.connect(self.cellDclicked)
         
         self.setWindowTitle('IO Table Template')        
         
@@ -230,8 +230,9 @@ class IOTableTemplate(QtGui.QTableWidget):
     def cellDclicked(self, row, column):
         """ 在table 上  mouse double click 會傳到這裡. 若display_type 是 'dclick'的, 要進行點位取代
         """
-        if column in [2 ,3] :
-            self.show_slider(row, column)
+        pass
+        #if column in [2 ,3] :
+            #self.show_slider(row, column)
 
     
     def reload(self):
