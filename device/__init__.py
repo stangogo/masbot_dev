@@ -1,1 +1,1 @@
-__all__ = ['device_manager', 'motor', 'piston', 'bulletin']
+__all__ = ['device_manager', 'motor', 'piston', 'bulletin', 'camera_module', 'image_dll_handler']

@@ -12,7 +12,7 @@ from masbot.config.sqldb import sqldb
 from re import compile
 
 #==========================================================================
-# io_card_info
+# gather io card
 #==========================================================================
 result = sqldb.execute("select * from io_card")
 col_info = result.record()
@@ -33,8 +33,14 @@ while result.next():
             card_list.append(cell_value)
     io_card_info[card_module].append(card_list)
 
+# define all the motion card module
+card_module = ['ADLink', 'LPLink', 'LPMax']
+for module in card_module:
+    if module not in io_card_info:
+        io_card_info[module] = []
+
 #==========================================================================
-# piston_info
+# piston info
 #==========================================================================
 result = sqldb.execute("select * from piston")
 col_info = result.record()
@@ -115,7 +121,7 @@ while result.next():
             position_list.append(cell_value)
     points_map[actor_name][pt_index] = position_list
 #==========================================================================
-# single_axis_info
+# gather single axis info
 #==========================================================================
 motor_info = []
 necessary_attribute = ['key', 'speed', 'safe_speed', 'module_type']
@@ -134,7 +140,7 @@ for axis in axis_info:
         motor_info.append(dic)
 
 #==========================================================================
-# double axis_info
+# gather double axis info
 #==========================================================================
 pattern = compile('^axis[0-9]$')
 result = sqldb.execute("select * from double_axis")
@@ -212,28 +218,25 @@ col_names = []
 for col in range(col_info.count()):
     col_names.append(col_info.fieldName(col))
 
-camera_info = {}
+camera_info = []
 while result.next():
-    dic = {}
+    all_dic = {}
+    cam_dic = {}
     light_dic = {}
     job_dic = {}
-    actor_name = ''
     for i, col in enumerate(col_names):
         cell_value = result.value(i)
-        if col == 'camera_name':
-            actor_name = cell_value
-        elif pattern.match(col):
+        if pattern.match(col):
             if cell_value != '' and cell_value in light_info:
                 light_dic.update({cell_value:light_info.get(cell_value)})
         else:
-            dic.update({col:cell_value})
-    for i in range(len(job_info)):
-        info = job_info[i]
-        if info.get('camera') == actor_name:            
+            cam_dic.update({col:cell_value})
+    all_dic.update({'light':light_dic})
+    all_dic.update({'camera_set':cam_dic})
+    for info in job_info:
+        if info.get('camera') == cam_dic.get('camera_name'):            
             info.pop('camera')
             job_name = info.pop('job_name')
-            job_dic.update({job_name:info})
-            #del job_info[i]
-    dic.update({'light':light_dic})
-    dic.update({'camera_job':job_dic})
-    camera_info.update({actor_name:dic})
+            job_dic.update({job_name:info})    
+    all_dic.update({'camera_job':job_dic})
+    camera_info.append(all_dic)

@@ -14,7 +14,7 @@ from masbot.device.motion.motion_card import Motion
 from masbot.device.motion.lplink_dll import *
 #from masbot.device.motion.adlink_table import *
 
-class LPLink(Motion):
+class LPLink(Motion, Channel):
     def __init__(self, cards_config=[]):
         self.__logger = logging.getLogger(__name__)
         self.__initial()
@@ -42,10 +42,10 @@ class LPLink(Motion):
         """
         pass
 
-    def do_card_count(self):
+    def do_count(self):
         return 0
-        
-    def di_card_count(self):
+
+    def di_count(self):
         return 0
         
     def close_io_cards(self):

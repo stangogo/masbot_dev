@@ -13,15 +13,18 @@ from queue import Queue
 
 class Channel(object):
     def __init__(self):
+        self.init_channel()
+        
+    def __del__(self):
+        pass
+        
+    def init_channel(self):
         self.__channel_is_run = True
         self.__command_queue = Queue()
         thread = Thread(target=self.__handle_command)
         thread.daemon = True
         thread.start()
-    
-    def __del__(self):
-        pass
-
+        
     def start(self):
         """ start the channel (it will start initially)
         
@@ -66,7 +69,7 @@ class Channel(object):
             result_queue.put(ret)
     
     def run(self, func_name, *argv):
-        """ run command by using the unique channel
+        """ executing command by only one channel
         
         Example:
             channel.run(some_function, arg1, arg2, ...)
