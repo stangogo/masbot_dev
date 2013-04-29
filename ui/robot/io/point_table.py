@@ -16,13 +16,13 @@ from masbot.ui.control.dio_button import *
 from masbot.ui import preaction
 from masbot.ui.robot.io.IO_table_template import  IOTableTemplate
 
-class DoubleAxisPointTable(IOTableTemplate):
+class XAxisPointTable(IOTableTemplate):
         
     def __init__(self, data_table_name, order_by, horizontal):
-        super(DoubleAxisPointTable, self).__init__(data_table_name, order_by, horizontal)
+        super(XAxisPointTable, self).__init__(data_table_name, order_by, horizontal)
         
         
-    def do_clicked(self, io_num, on_off, row, column, table):
+    def do_clicked(self, go_replace, on_off, row, column, table):
         if not table == self.table_name:
             return    
         
@@ -30,67 +30,66 @@ class DoubleAxisPointTable(IOTableTemplate):
             return
         
         if self.orientation == QtCore.Qt.Orientation.Horizontal:
-            x_item = self.item(1, column)
-            y_item = self.item(2, column)
+            position = [self.item(x, column).text() for x in self.dclick]
+            
         else:
-            x_item = self.item(row, 1)
-            y_item = self.item(row, 2)
+            position = [self.item(row, x).text() for x in self.dclick]
 
-        if io_num == 1: 
-            print('go to {0}, {1}'.format(x_item.text(),y_item.text()))
-        elif io_num == 2:
-            print('replace {0}, {1}'.format(x_item.text(),y_item.text()))
+        if go_replace == 1: 
+            print('go to ', position)
+        elif go_replace == 2:
+            print('replace ', position)
                 
-class SingleAxisPointTable(IOTableTemplate):
+#class SingleAxisPointTable(IOTableTemplate):
         
-    def __init__(self, data_table_name, order_by, horizontal):
-        super(SingleAxisPointTable, self).__init__(data_table_name, order_by, horizontal)
+    #def __init__(self, data_table_name, order_by, horizontal):
+        #super(SingleAxisPointTable, self).__init__(data_table_name, order_by, horizontal)
         
         
-    def do_clicked(self, io_num, on_off, row, column, table):
-        if not table == self.table_name:
-            return    
+    #def do_clicked(self, io_num, on_off, row, column, table):
+        #if not table == self.table_name:
+            #return    
         
-        if row == -1 or column == -1:
-            return
+        #if row == -1 or column == -1:
+            #return
         
-        if self.orientation == QtCore.Qt.Orientation.Horizontal:
-            x_item = self.item(1, column)
-            y_item = self.item(2, column)
-        else:
-            x_item = self.item(row, 1)
-            y_item = self.item(row, 2)
+        #if self.orientation == QtCore.Qt.Orientation.Horizontal:
+            #x_item = self.item(1, column)
+            #y_item = self.item(2, column)
+        #else:
+            #x_item = self.item(row, 1)
+            #y_item = self.item(row, 2)
 
-        if io_num == 1: 
-            print('go to {0}, {1}'.format(x_item.text(),y_item.text()))
-        elif io_num == 2:
-            print('replace {0}, {1}'.format(x_item.text(),y_item.text()))
+        #if io_num == 1: 
+            #print('go to {0}, {1}'.format(x_item.text(),y_item.text()))
+        #elif io_num == 2:
+            #print('replace {0}, {1}'.format(x_item.text(),y_item.text()))
                 
                 
-class TripleAxisPointTable(IOTableTemplate):
+#class TripleAxisPointTable(IOTableTemplate):
         
-    def __init__(self, data_table_name, order_by, horizontal):
-        super(TripleAxisPointTable, self).__init__(data_table_name, order_by, horizontal)
+    #def __init__(self, data_table_name, order_by, horizontal):
+        #super(TripleAxisPointTable, self).__init__(data_table_name, order_by, horizontal)
         
         
-    def do_clicked(self, io_num, on_off, row, column, table):
-        if not table == self.table_name:
-            return    
+    #def do_clicked(self, io_num, on_off, row, column, table):
+        #if not table == self.table_name:
+            #return    
         
-        if row == -1 or column == -1:
-            return
+        #if row == -1 or column == -1:
+            #return
         
-        if self.orientation == QtCore.Qt.Orientation.Horizontal:
-            x_item = self.item(1, column)
-            y_item = self.item(2, column)
-        else:
-            x_item = self.item(row, 1)
-            y_item = self.item(row, 2)
+        #if self.orientation == QtCore.Qt.Orientation.Horizontal:
+            #x_item = self.item(1, column)
+            #y_item = self.item(2, column)
+        #else:
+            #x_item = self.item(row, 1)
+            #y_item = self.item(row, 2)
 
-        if io_num == 1: 
-            print('go to {0}, {1}'.format(x_item.text(),y_item.text()))
-        elif io_num == 2:
-            print('replace {0}, {1}'.format(x_item.text(),y_item.text()))
+        #if io_num == 1: 
+            #print('go to {0}, {1}'.format(x_item.text(),y_item.text()))
+        #elif io_num == 2:
+            #print('replace {0}, {1}'.format(x_item.text(),y_item.text()))
             
             
             
@@ -101,22 +100,22 @@ class Point(QSplitter):
     """
     def __init__(self, title = 'Point', parent = None):
         super(Point, self).__init__(parent)
-        
+        self.point_table = []        
         self.init_ui(title)
     
     def init_ui(self, title):
-        
         self.addWidget(self.init_d_axis_group())
         self.addWidget(self.init_s_axis_group())
         self.addWidget(self.init_t_axis_group())
         
+        total = sum([table.data_count() for table in self.point_table])
+
+        size_rate = [ int(700 * table.data_count() /total) for table in self.point_table ]
+                         
         self.setOrientation(QtCore.Qt.Vertical)
-        self.setSizes([300, 200, 200])
+        self.setSizes(size_rate)
         self.setContentsMargins(1,5,1,1)
         #self.setStretchFactor(0,1);
-                
-        
-        
         
         self.setChildrenCollapsible(False)  # Splitter 手動改變比例時, 不能把child折到不見
         self.setWindowTitle(title)
@@ -132,38 +131,43 @@ class Point(QSplitter):
         point_group = QGroupBox('雙軸點位')
         point_box = QHBoxLayout()
         point_box.setContentsMargins(0,1,0,0)
-        self.point_table = DoubleAxisPointTable('double_axis_point', ['KEY', 'point_index'], QtCore.Qt.Orientation.Vertical)
-        point_box.addWidget(self.point_table)
+        table = XAxisPointTable('double_axis_point', ['KEY', 'point_index'], QtCore.Qt.Orientation.Vertical)
+        point_box.addWidget(table)
         point_group.setLayout(point_box)
         
+        self.point_table.append(table)
         return point_group
         
     def init_s_axis_group(self):
         point_group = QGroupBox('單軸點位')
         point_box = QHBoxLayout()
         point_box.setContentsMargins(0,1,0,0)
-        self.point_table = DoubleAxisPointTable('single_axis_point', ['KEY', 'point_index'], QtCore.Qt.Orientation.Vertical)
-        point_box.addWidget(self.point_table)
+        table= XAxisPointTable('single_axis_point', ['KEY', 'point_index'], QtCore.Qt.Orientation.Vertical)
+        point_box.addWidget(table)
         point_group.setLayout(point_box)
         
+        self.point_table.append(table)
         return point_group
     
     def init_t_axis_group(self):
         point_group = QGroupBox('三軸點位')
         point_box = QHBoxLayout()
         point_box.setContentsMargins(0,1,0,0)
-        self.point_table = TripleAxisPointTable('triple_axis_point', ['KEY', 'point_index'], QtCore.Qt.Orientation.Vertical)
-        point_box.addWidget(self.point_table)
+        table = XAxisPointTable('triple_axis_point', ['KEY', 'point_index'], QtCore.Qt.Orientation.Vertical)
+        point_box.addWidget(table)
         point_group.setLayout(point_box)
         
+        self.point_table.append(table)
         return point_group
     
     
     def save(self):
-        self.point_table.save()
+        for table in self.point_table:
+            table.save()
     
     def reload(self):
-        self.point_table.reload()
+        for table in self.point_table:
+            table.reload()
 
 def main():
     

@@ -10,7 +10,20 @@ class Constants:
     SQLITE_DB_NAME = 'Mastiff.db'
     VERSION = '1.0.0.0'
 
+
+class ImagePreviewMode():
+    
+    RealTime = 1
+    Locked = 2
+    FixedId = 3
+    Unlocked = 4
+    
+
 class SigName:
+    """Main"""
+    MAIN_CLOSE = 'Main_CLOSe'
+        # UI Ãö³¬
+    
     """axis_banner"""
     DI_DO_SHOW = 'DI_DO_SHOW'
         # DIOÅã¥Ü«ö¶s
@@ -65,7 +78,7 @@ class SigName:
                 
     IMG_THUMBNAIL = 'IMG_THUMBNAIL'
         # Receive the preview data of image, applied at image thumbnail and preview label
-        # @list: file path(str), id (str), and name(str)
+        # @list: a list containing three items; file path(str), id (str), name(str), mode (int)
     
     IMG_MESSAGE = 'IMG_MESSAGE'
             # Communication port for image message, send by image actor,
@@ -91,14 +104,6 @@ class UISignals():
             return UISignals.signal_dict[name]
         except:
             return None    
-    
-class Communicate(QtCore.QObject):
-    """
-    create two new signals on the fly: one will handle
-    int type, the other will handle strings
-    """
-    speak_number = QtCore.Signal(int)
-    speak_word = QtCore.Signal(str)
 
 class Path():
     @staticmethod

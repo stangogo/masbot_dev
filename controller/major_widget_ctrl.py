@@ -3,7 +3,7 @@
 
 import logging
 import threading
-from time import sleep
+from time import sleep, clock
 from imp import reload
   
 from masbot.config.utils import SigName, UISignals
@@ -29,6 +29,10 @@ class MajorWidgetCtrl:
         timer = threading.Timer(1, self.__update_ui)
         timer.daemon = True
         timer.start()
+        image_thumbnail_timer = threading.Thread(target=self.__update_image_thumbnail)
+        image_thumbnail_timer.daemon = True
+        image_thumbnail_timer.start()   
+        
         # initail the flow actor
         self.__main_flow = masbot.flow.main_flow.MainFlow().start()
         
@@ -175,6 +179,21 @@ class MajorWidgetCtrl:
                 rel_position_list[index] = offset
                 ret = actor[actor_name].send('rel_move', position=rel_position_list)
                 return ret
+
+    def __update_image_thumbnail(self):
+        slot = UISignals.GetSignal(SigName.IMG_THUMBNAIL)
+        sleep(1)
+        while True:
+            impath = []
+            for i in range(len(camera_info)):
+                #s1 = clock()
+                actor_unit = camera_info[i]
+                impath = actor[actor_unit['camera_set']['camera_name']].send('snapshot')
+                #print('%.5f'%(clock()-s1))
+                msg = [impath, actor_unit['camera_set']['camera_name'], actor_unit['camera_set']['display_text']]
+                slot.emit(msg)
+                
+            sleep(0.05)
 
     def __login_out(self):
         #self.__main_flow.stop()

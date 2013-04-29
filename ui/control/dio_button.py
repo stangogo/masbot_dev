@@ -89,17 +89,16 @@ class ButtonForTableSignal(QtCore.QObject):
 
 class ButtonForTable(QtGui.QPushButton):
     nOn = 1
-    io_num = -1
-    
+    io_num = -1    
     __on_str = "On"
     __off_str ="Off"
-    key = ""            #屬誰
+    #key = ""            #屬誰
     action =""          #動作; blow, suck, up/down ...etc.
     row = -1
     column = -1
     table = ''
    
-    signals = ButtonForTableSignal()
+    signals = QtCore.Signal(int, bool, int, int, str) # ButtonForTableSignal()
     
     #def __new__(self, io_num=None):
         #if icon == None:
@@ -118,7 +117,7 @@ class ButtonForTable(QtGui.QPushButton):
     def set_properties(self, on_str, off_str, key, action):
         self.__on_str = on_str
         self.__off_str = off_str
-        self.key = key
+        # self.key = key
         self.action = action
         self.nOn = not self.nOn 
         
@@ -127,10 +126,10 @@ class ButtonForTable(QtGui.QPushButton):
     def set_row_column(self, row, colum):
         self.row = row
         self.column = colum
-    
         
     def on_clicked(self):        
-        self.on_off(not self.nOn)
+        self.signals.emit(self.io_num, not self.nOn, self.row, self.column, self.table)
+        #self.on_off(not self.nOn)
     
     def on_off(self, on):
         if self.nOn == on:
@@ -145,12 +144,12 @@ class ButtonForTable(QtGui.QPushButton):
             self.setText(self.__off_str)
             self.setStyleSheet('QPushButton{background-color:white}')
         
-        self.signals.clicked.emit(self.io_num, on, self.row, self.column, self.table)
+        #self.signals.emit(self.io_num, on, self.row, self.column, self.table)
 
 class DIOLabel(QtGui.QLabel):
     nOn = 1
     io_num = -1
-    key = ""            #屬誰
+    # key = ""            #屬誰
     action =""          #動作; blow, suck, up/down ...etc.    
     
     #clicked = QtCore.Signal(str) # can be other types (list, dict, object...)
@@ -191,7 +190,7 @@ class DIOLabel(QtGui.QLabel):
         self.off_style = "QLabel{%s}"% off_img 
     
     def set_properties(self, key, action):
-        self.key = key
+        # self.key = key
         self.action = action    
     
     def on_off(self, on):
