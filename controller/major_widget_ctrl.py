@@ -44,7 +44,7 @@ class MajorWidgetCtrl:
             self.set_proxy_switch(1)
         
     def __do_clicked(self, do_port, on_off):
-        self.__device_proxy['8154'].DO(do_port, on_off)
+        self.__device_proxy['8158'].DO(do_port, on_off)
         
     def __servo_on_off(self, on):
         if self.__servo_status == 0:
@@ -112,7 +112,7 @@ class MajorWidgetCtrl:
         di_slot = UISignals.GetSignal(SigName.DI_IN)
         
         do_status = []
-        module_type = '8154'
+        module_type = '8158'
         for i in range(self.__device_proxy[module_type].do_count()):
             status = self.__device_proxy[module_type].DO_read(i)
             do_status.append(status)
