@@ -19,9 +19,10 @@ class IOTableTemplate(QtGui.QTableWidget):
     def __init__(self, table_name, data_order_by, orientation):
         super(IOTableTemplate, self).__init__()
         
-        self.one_data_set = []   #one data sample for adding/updating data column/row
+        self.one_data_set = []                          # 儲存第一筆資料的值, 用在回存資料時型別的轉換
         self.do_dict = {}
         self.di_dict = {}
+        self.dclick = []        # 儲存display_type 為 'dclick' 的欄位的row 或 column index.
         self.table_name = table_name
         self.ui_table_name = ui_table_name = 'ui_layout' # ui layout 在資料庫的 table name 
         self.orientation = orientation
@@ -30,9 +31,10 @@ class IOTableTemplate(QtGui.QTableWidget):
         
         header_key = 'display_text'
         
-        self.data_table = data_table = sqldb.get_table_model(table_name)
-        self.ui_table = ui_table = sqldb.get_table_model(ui_table_name)
+        self.data_table = data_table = sqldb.get_table_model(table_name)    # 取得資料表的model
+        self.ui_table = ui_table = sqldb.get_table_model(ui_table_name)     # 取得UI設定資料表的model
         
+        # 取得及設定表頭
         if orientation == QtCore.Qt.Orientation.Horizontal:
             vertical_header = self.query_header_data(header_key, ui_table, ui_table_name, 'col_order', table_name)
             horizontal_header = self.query_header_data('key', data_table, table_name, self.order_by)
@@ -45,13 +47,12 @@ class IOTableTemplate(QtGui.QTableWidget):
         
         self.setRowCount(len(vertical_header))
         self.setVerticalHeaderLabels(vertical_header)            
-            
+        # ##    
 
 
         self.fill_cells(ui_table_name, table_name, ui_table, data_table, orientation, False)
         
         self.set_table_properties(orientation)
-        
         self.logger = logging.getLogger('ui.log')
         
         
@@ -79,6 +80,7 @@ class IOTableTemplate(QtGui.QTableWidget):
             do_cell = ButtonForTable(cur_value, table_name)
             do_cell.set_properties(on_str, off_str, key, action)
             self.do_dict[do_cell.io_num] = do_cell
+            #do_cell.signals.connect(self.do_clicked)
             
             return do_cell
         elif type_ == 'DI_label': #DI
@@ -94,7 +96,6 @@ class IOTableTemplate(QtGui.QTableWidget):
                         
             return cell_widget
         elif type_ == 'combobox': #ComboBox            
-            self.get_value_set(value_set)
             selection_cell = QtGui.QComboBox()
             selection_cell.setInsertPolicy(QtGui.QComboBox.InsertPolicy.InsertAlphabetically)
             options = self.get_value_set(value_set)
@@ -109,7 +110,8 @@ class IOTableTemplate(QtGui.QTableWidget):
             return selection_cell
         else:            
             widget_item = QtGui.QTableWidgetItem('{0}'.format(cur_value))
-            if type_ == 'dclick' or type_ == 'uneditable': 
+            if type_ == 'dclick' or type_ == 'uneditable':      
+            # 資料為 dclick 或 uneditable時, 要設定為唯讀
                 widget_item.setFlags(widget_item.flags() ^ QtCore.Qt.ItemIsEditable)
             return widget_item
 
@@ -133,23 +135,21 @@ class IOTableTemplate(QtGui.QTableWidget):
         
         data = []        
         while query.next():
-            try:
-                data.append(int(query.value(0)))
-            except:
-                data.append(query.value(0))
+            data.append(query.value(0))
         return data
     
     def add_cell(self, row, column, cell, display_type):
         if display_type == 'button':
             cell.set_row_column(row, column)     # 在點位的table裡, 必須知道其所在的 row 跟 column
             
-        if isinstance(cell, QtGui.QTableWidgetItem):
+        if isinstance(cell, QtGui.QTableWidgetItem):    # cell 為一般的 cell item,
             self.setItem(row, column, cell)
         else:
-            self.setCellWidget(row, column, cell)
+            self.setCellWidget(row, column, cell)       # cell 為 QWidget 的衍生物件
         
     def fill_cells(self, ui_table_name, table_name, ui_table, data_table, orientation, reload):
         self.one_data_set.clear()
+        self.dclick.clear()
         
         self.keys = self.get_property_value(table_name, data_table, 'key')
         
@@ -157,6 +157,8 @@ class IOTableTemplate(QtGui.QTableWidget):
         query = ui_table.query()
         query.exec_("select btn_on_str,btn_off_str,reference_val,display_type,value_set from {0} where ui_name = '{1}' order by col_order".format(ui_table_name, table_name) )
         data_count = 0
+        
+        index = 0
         while query.next():
             on_str = query.value(0)
             off_str = query.value(1)
@@ -165,7 +167,14 @@ class IOTableTemplate(QtGui.QTableWidget):
             value_set = query.value(4)
             
             action_data = self.get_property_value(table_name, data_table, property_)
-            self.one_data_set.append([on_str, off_str, property_, display_type, value_set, action_data[0]])
+            try:
+                self.one_data_set.append([on_str, off_str, property_, display_type, value_set, action_data[0]])
+                if display_type == 'dclick':
+                    self.dclick.append(index)
+            except:
+                cell = None
+            
+            index += 1            
             
             for i in range(0, len(action_data)):
                 
@@ -192,14 +201,11 @@ class IOTableTemplate(QtGui.QTableWidget):
                     cell = self.make_cell(display_type, on_str, off_str, key, property_, value_set, action_data[i], table_name) 
                   
                     self.add_cell(row, column, cell, display_type)
-                        
-            if not reload:
-                if display_type == 'button':    # disconnect and then connect: 避免button重覆掛載do_clicked. 
-                    try:
-                        cell.signals.clicked.disconnect(self.do_clicked)
-                    except:
-                        pass
-                    cell.signals.clicked.connect(self.do_clicked)
+                            
+                if not reload and cell:
+                            
+                    if display_type == 'button':
+                        cell.signals.connect(self.do_clicked)
                     
             data_count += 1
 
@@ -222,18 +228,31 @@ class IOTableTemplate(QtGui.QTableWidget):
         #覆寫 do_clicked 時, 若有button type的cell, " if not table == self.data_table_name: " 判斷一定要寫
         #因button click 掛上後, 不管那個button被按, 會發給所有的button. 用table name 比對做判斷
     def do_clicked(self, io_num, on_off, row, column, table):   
-        if not table == self.table_name:   
-            return
+        return table == self.table_name
+    
+        #if not table == self.table_name:   
+            #return 
         
-        print('do {0} clicked {1}, row: {2}, column: {3}, table: {4}'.format(io_num, on_off, row, column, table))
+        #print('do {0} clicked {1}, row: {2}, column: {3}, table: {4}'.format(io_num, on_off, row, column, table))
 
     def cellDclicked(self, row, column):
-        """ 在table 上  mouse double click 會傳到這裡. 若display_type 是 'dclick'的, 要進行點位取代
+        """ mouse double click table 上的cell, 若cell 是在self.dclick 列表裡, 進行點位取代(單一軸)
         """
-        pass
-        #if column in [2 ,3] :
-            #self.show_slider(row, column)
-
+        if self.orientation == QtCore.Qt.Orientation.Horizontal:
+            replace = row in self.dclick                
+        else:
+            replace = column in self.dclick
+            
+        if replace:
+            item = self.item(row, column)
+            print (item.text(), 'is replace')
+             
+                
+    def data_count(self):
+        if self.orientation == QtCore.Qt.Orientation.Horizontal:
+            return self.columnCount()
+        else:
+            return self.rowCount()
     
     def reload(self):
         self.fill_cells(self.ui_table_name, self.table_name, self.ui_table, self.data_table, self.orientation, True)
@@ -241,21 +260,43 @@ class IOTableTemplate(QtGui.QTableWidget):
     def apply(self):        
         self.logger.debug('{0} apply changed'.format(self.table_name))
         pass
+    
+    def set_data(self, table, data_dict):
+        order_key = self.order_by.split(',')    # 把order_by 字串, 分解出原來的 order key.
+        order_key = [key.lower() for key in order_key]
+        
+        for index in range(table.rowCount()):   
+            record = table.record(index)        # 依序找每個record
+            found = True    
+            for key in order_key:       # 比對每個order_key
+                if not record.value(key) == data_dict[key]:
+                    found = False       # 一個值不對, 就跳出
+                    break
+            if found:
+                for key, value in data_dict.items():    
+                    if not key.lower() in order_key:
+                        record.setValue(key, value)
+                table.setRecord(index, record)
+                break;
+    
     def save(self):        
-        for record_index in range(self.data_table.rowCount()):  # 由原始資料表依序處理
-            record = self.data_table.record(record_index)       # 單筆原始資料
-            if self.orientation == QtCore.Qt.Orientation.Horizontal: # self.list_horizontal:            
-                column = record_index 
-            else:
-                row = record_index
+        for index in range(self.data_table.rowCount()):  # 由原始資料表依序處理
+            data_dict = {}  # UI 表上的資料暫存
             
             for n_data_index in range(len(self.one_data_set)):  # 事先儲存的一筆資料, 為取得資料欄位屬性
-                if self.orientation == QtCore.Qt.Orientation.Horizontal: #if self.list_horizontal:
+                if self.orientation == QtCore.Qt.Orientation.Horizontal: 
                     row = n_data_index
+                    column = index 
+                    key = self.horizontalHeaderItem(column).text()
                 else:
                     column = n_data_index
+                    row = index
+                    key = self.verticalHeaderItem(row).text()
+                    
+                data_dict['key'] = key                
                 
                 cell = self.cellWidget(row, column) # UI 表格上cell 有兩個type: QTableWidgetItem 和 QWidget (QCombox, QPushButton ...etc)
+                
                 if cell == None:                    # QTableWidgetItem
                     cell = self.item(row, column)
                     text = cell.text()              # 取得item上的字串
@@ -264,19 +305,19 @@ class IOTableTemplate(QtGui.QTableWidget):
                         text = cell.currentText()   # QCombox 才有currentText 函式. 其他QWidget會丟出exception.
                     except:
                         text = None
-                        
-                property_ = self.one_data_set[n_data_index][2]
+
+                property_ = '{0}'.format(self.one_data_set[n_data_index][2])
                 value = self.one_data_set[n_data_index][5]
+                if text:
+                    data_dict[property_] = type(value)(text)
+                                
+            # 把資料從UI 寫進 table model 裡
+            self.set_data(self.data_table, data_dict)
                 
-                if not text == None:
-                    record.setValue("{0}".format(property_), type(value)(text) )
-                #else:
-                    #record.setValue("{0}".format(property_), value)
-            self.data_table.setRecord(record_index, record)
+        # 儲存進實體資料庫
         self.data_table.submitAll()
         
-        self.logger.debug('{0} save changed'.format(self.data_table_name))
-        
+        self.logger.debug('{0} save changed'.format(self.table_name))    
     
         
     # 新增欄位由Sqlite的 utiltiy (Sqlite studio 或 導航貓) 操作

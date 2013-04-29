@@ -12,7 +12,7 @@ from PySide.QtGui import *
 from PySide.QtCore import *
 
 from masbot.ui.image.tab_utils.data_manager import *
-from masbot.config.utils import SigName, UISignals
+from masbot.config.utils import *
 
 class ImageMessage(QWidget):
     def __init__(self):
@@ -95,7 +95,7 @@ class ImageMessage(QWidget):
 
     def show_file(self, file_path):
         if os.path.exists(file_path):
-            UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([file_path, None, ''])
+            UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([file_path, None, '', ImagePreviewMode.RealTime])
             #print('open {0}'.format(file_path))
         else:
             print('not exist {0}'.format(file_path))

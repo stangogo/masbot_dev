@@ -11,7 +11,7 @@ from PySide import QtCore, QtGui
 import unittest
 from masbot.config.utils import SigName, UISignals
 from masbot.ui.robot.major.major_widget import MajorWidget
-from masbot.ui.test.test_init_lib import *
+
 
     
 class RobotPageDock(QtGui.QMainWindow):
@@ -30,7 +30,7 @@ class RobotPageDock(QtGui.QMainWindow):
         main_title_widget = QtGui.QWidget()
         
         self.pages['main_page'] = MajorWidget('主頁', self)
-        self.pages['main_page'].setTitleBarWidget(main_title_widget)
+        #self.pages['main_page'].setTitleBarWidget(main_title_widget)
 
         self.setDockOptions(self.AnimatedDocks | self.ForceTabbedDocks)
 

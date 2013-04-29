@@ -19,7 +19,7 @@ from masbot.device.motion.adlink_table import *
 
 # common functions in 8154 and 8158
 logger = logging.getLogger(__name__)
-def int32(self, x):
+def int32(x):
     """ to fit the 32 bits format
     """
     if x > 0xFFFFFFFF:
@@ -62,18 +62,12 @@ class ADLink8154(Channel, Motion):
         Raises:
         
         """
-        if len(cards_config) == 0:
-            return
-            
         self.__do_cards_index = []
         self.__di_cards_index = []
+        self.__motion_card_count = 0
+
         cardid_inbit = pointer(c_ushort(0))
         ret = self.run(pci_8154._8154_initial, cardid_inbit, manual_id)
-        
-        if ret:
-            logger.error('not found ADlink 8154 card (%s)', error_table[ret])
-            return
-            
         # cardid_inbit:
         #    1 = 0001 means finding 1 card
         #    3 = 0011 means finding 2 cards
@@ -81,9 +75,11 @@ class ADLink8154(Channel, Motion):
         #    motion card count example:
         #    log(7+1, 2) = 3
         self.__motion_card_count = log(cardid_inbit[0]+1, 2)
-        logger.info('ADLink8154 initial, card count = %d', self.__motion_card_count)
+        logger.info('ADLink8154 initial, motion card count = %d', self.__motion_card_count)
         ret = self.run(pci_8154._8154_config_from_file)
         logger.debug('8154 read config...ret = %d', ret)
+        if len(cards_config) == 0:
+            return
         
         # join all the I/O cards from configuration of cards
         live = pointer(c_short(0))
@@ -521,18 +517,12 @@ class ADLink8158(Channel, Motion):
         Raises:
         
         """
-        if len(cards_config) == 0:
-            return
-            
         self.__do_cards_index = []
         self.__di_cards_index = []
+        self.__motion_card_count = 0
+
         cardid_inbit = pointer(c_ushort(0))
         ret = self.run(pci_8158._8158_initial, cardid_inbit, manual_id)
-        
-        if ret:
-            logger.error('not found ADlink 8158 card (%s)', error_table[ret])
-            return
-            
         # cardid_inbit:
         #    1 = 0001 means finding 1 card
         #    3 = 0011 means finding 2 cards
@@ -540,10 +530,12 @@ class ADLink8158(Channel, Motion):
         #    motion card count example:
         #    log(7+1, 2) = 3
         self.__motion_card_count = log(cardid_inbit[0]+1, 2)
-        logger.info('ADLink8158 initial, card count = %d', self.__motion_card_count)
+        logger.info('ADLink8158 initial, motion card count = %d', self.__motion_card_count)
         ret = self.run(pci_8158._8158_config_from_file)
         logger.debug('8158 read config...ret = %d', ret)
-        
+        if len(cards_config) == 0:
+            return
+
         # join all the I/O cards from configuration of cards
         live = pointer(c_short(0))
         self.run(pci_8158._8158_db51_HSL_initial, 0)

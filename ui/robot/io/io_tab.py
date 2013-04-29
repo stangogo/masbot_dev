@@ -53,13 +53,13 @@ class IOTab(QtGui.QTabWidget):
         try:
             self.currentWidget().reload()
         except:
-            self.logger.debug('{0} no save function'.format(type(self.currentWidget())))
+            self.logger.debug('{0} no reload function'.format(type(self.currentWidget())))
     
     def apply(self):
         try:
             self.currentWidget().aplly()
         except:
-            self.logger.debug('{0} no save function'.format(type(self.currentWidget())))
+            self.logger.debug('{0} no apply function'.format(type(self.currentWidget())))
 
 if __name__ == '__main__':  
     import sys  

@@ -21,6 +21,8 @@ from PySide import QtGui, QtCore
 from masbot.ui.image.pixelmap_label import PixelMapLabel
 from masbot.config.utils import Path
 
+
+
 class ImageThumbnail(QtGui.QListWidget):
 
     thumbnail_clicked = QtCore.Signal(str)
@@ -52,8 +54,9 @@ class ImageThumbnail(QtGui.QListWidget):
         img_label = PixelMapLabel(id_)
         img_label.setContentsMargins(3, 0, 0, 0)    # 圖片偏左, 用margin往中間調
     
-        img_label.clicked.connect(self.__thumbnail_clicked)                
-        img_label.update_pixmap("{0}//Sunset.jpg".format(Path.imgs_dir()), 70)  # 預設圖片跟大小
+        img_label.clicked.connect(self.__thumbnail_clicked)
+        img_label.set_height(70)
+        #img_label.update_pixmap("{0}//Sunset.jpg".format(Path.imgs_dir()), 70)  # 預設圖片跟大小
         img_text = QtGui.QLabel(text)
         img_text.setContentsMargins(0,0,0,0)
         
@@ -94,7 +97,7 @@ class ImageThumbnail(QtGui.QListWidget):
         if not self.thumbnail.get(id_):
             self.add_item_signal.emit(id_)  # 新增一個image label
         else:            
-            self.thumbnail[id_][0].change_image(image_path) # 0 是 檔案路徑
+            self.thumbnail[id_][0].change_image(image_path) # 0 是 ImageLabel
             self.thumbnail[id_][2].setText(name)            # 2 是 名稱
         
     def change_qimage(self, qimage, id_):

@@ -12,8 +12,8 @@ from PySide.QtGui import *
 from PySide.QtCore import *
 
 from masbot.ui.image.tab_utils.data_manager import *
-from masbot.config.utils import Path
-from masbot.config.utils import UISignals, SigName
+from masbot.config.utils import *
+
 from masbot.ui.control.ui_utils import *
 
 class Slider(QGroupBox):
@@ -185,9 +185,10 @@ class IdentificationSettings(QWidget):
         
         # check box
         open_file_box = QHBoxLayout()
-        preview_file_checkbox = QCheckBox('顯示檔案')
-        preview_file_checkbox.clicked.connect(self.preview_file_checked)
-        open_file_box.addWidget(preview_file_checkbox)
+        self.preview_file_checkbox = QCheckBox('使用檔案')        
+        self.preview_file_checkbox.clicked.connect(self.preview_file_checked)
+        
+        open_file_box.addWidget(self.preview_file_checkbox)
         open_file_box.addWidget(self.file_path_edit)
         open_file_box.addWidget(open_file_btn)
         open_file_box.setContentsMargins(0,0,0,0)
@@ -374,29 +375,36 @@ class IdentificationSettings(QWidget):
         text = list(light.text() for light in self.lights if light.isChecked())
         self.light_label.setText('{0}'.format(text))            
 
-    def preview_file_checked(self):
-        sender = self.sender()
+    def preview_file_checked(self):        
         path = self.file_path_edit.text()
         try:
-            if sender.isChecked():
-                UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([path, None, ''])
+            if self.preview_file_checkbox.isChecked():  # 顯示固定檔案
+                UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([path, None, '', ImagePreviewMode.Locked])
             else:
-                UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([path, 'rollback', ''])
+                id_ = self.camera_label.text()          # 顯示固定Camera(特定ID)的檔案
+                UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([path, id_, '', ImagePreviewMode.FixedId])
         except:
             pass
 
-    def correction_click(self):
+    def correction_click(self): # '校正'按鈕
         self.setCorrectionMode(self.sender().isChecked())
+        
+        if self.sender().isChecked():   # '校正'鈕按下 ; 
+            self.preview_file_checked()     # 根據 '顯示檔案' 決定
+        else:
+            UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit(['', None, '', ImagePreviewMode.Unlocked])
+
         
     def setCorrectionMode(self, correction_mode):
         self.info_bar.setEnabled(not correction_mode)
-        #self.file_list.setEnabled(not correction_mode)
         self.mgr_buttons.setVisible(not correction_mode)
-        
         self.lights_box.setVisible(not correction_mode)
-        
         self.parameter_box.setVisible(correction_mode)
         self.job_list.setEnabled(not correction_mode)
+        
+        
+        
+        
         
     
     def prev_step(self):        

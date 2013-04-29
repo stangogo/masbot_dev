@@ -72,7 +72,7 @@ class ImageWidgetTest(QWidget):
         imgs_dir = Path.imgs_dir()
         
         while self.stop_thread == False:
-            index = (index + 1) % 15
+            index = (index + 1) % 10
             
             index = self.change_thumbnail_image(index, '1', imgs_dir)
             index = self.change_thumbnail_image(index, '2', imgs_dir)
@@ -90,7 +90,7 @@ class ImageWidgetTest(QWidget):
     def change_thumbnail_image(self, index, id_, imgs_dir):   # 測試用     
         index = (index + 1) % 15
         image_path = "{0}\\{1}.tif".format( imgs_dir, index + 1)
-        img_receiver = UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([image_path, id_, '{0}'.format(index)])
+        img_receiver = UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([image_path, id_, '{0}'.format(index), 1])
         
         return index     
     
