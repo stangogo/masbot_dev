@@ -12,19 +12,19 @@ import logging
 from re import compile
 from ctypes import *
 from random import *
-from time import sleep
+from time import sleep, clock
 from PIL import Image
 from masbot.device.channel import Channel
 
 class Camera(Channel):    
     def __init__(self, camera_info):
-        owner = camera_info.get('camera_name', 'No_camera')
+        self.__owner = camera_info.get('camera_name', 'No_camera')
         super(Camera, self).__init__()
         self.__logger = logging.getLogger(__name__)  
         self.__str_length = 1024
         self.__para_set = {}
         self.__logger.debug('camera device:{0} is beginnig to initial.'.format(camera_info.get('display_text', 'No Name')))
-        if camera_info.get('camera_type','') in ['1394IIDC','directshow']:
+        if camera_info.get('camera_type','') in ['1394IIDC','Directshow']:
             if camera_info.get('camera_type','') == '1394IIDC':
                 self.__grabber = 1  
             elif camera_info.get('camera_type','') == 'Directshow':
@@ -61,8 +61,16 @@ class Camera(Channel):
             return 1
     
     def get_parameter_values(self, cam_info):
-        self.__para_set.update({'width':1624,'height':1224,'channel':1,'frame_rate':30,'reverse_type':0,'gain_value':100,
+        if cam_info.get('camera_type','') == '1394IIDC':
+            self.__para_set.update({'width':1624,'height':1224,'channel':1,'frame_rate':30,'reverse_type':0,'gain_value':100,
+                            'gain_min':0,'gain_max':519,'shutter_value':800,'shutter_min':0,'shutter_max':1340})  
+        elif cam_info.get('camera_type','') == 'Directshow':
+            self.__para_set.update({'width':640,'height':480,'channel':3,'frame_rate':15,'reverse_type':0,'gain_value':100,
                             'gain_min':0,'gain_max':519,'shutter_value':800,'shutter_min':0,'shutter_max':1340})
+        else:
+            self.__para_set.update({'width':1624,'height':1224,'channel':1,'frame_rate':15,'reverse_type':0,'gain_value':100,
+                            'gain_min':0,'gain_max':519,'shutter_value':800,'shutter_min':0,'shutter_max':1340})        
+        
         #setting parameter in advance
         self.set_parameter('reverse_type', cam_info['reverse_type'])
         self.set_parameter('gain_value', cam_info['gain_value'])
@@ -82,9 +90,11 @@ class Camera(Channel):
         if channel == 1:
             im = Image.new('L', [width,height], randint(0, 255))
         elif channel == 3:
-            im = Image.new('RGB', [width,height], randint(0, 255))
+            im = Image.new('RGB', [width,height], (randint(0, 255),randint(0, 255),randint(0, 255)))
         sleep(1/self.get_parameter('frame_rate'))
-        return im
+        image_path = 'R:\\{0}_{1:.6f}.bmp'.format(self.__owner,clock())
+        im.save(image_path)
+        return image_path
         
     def get_error_msg(self, error_type):
         cstrp = c_char_p(0)
