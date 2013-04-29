@@ -39,15 +39,20 @@ class ImageWidgetTest(QWidget):
         
         send_img_btn = QPushButton('送影像')
         send_msg_btn = QPushButton('送訊息')
+        send_run_btn = QPushButton('執行')
+        send_run_btn.setCheckable(True)
         
         send_img_btn.clicked.connect(self.img_btn_click)
         send_msg_btn.clicked.connect(self.img_msg_click)
+        send_run_btn.clicked.connect(self.img_run_click)
         
         vbox.addWidget(send_img_btn, 0)
-        vbox.addWidget(send_msg_btn, 1)
+        vbox.addWidget(send_msg_btn, 0)
+        vbox.addWidget(send_run_btn, 1)
         
         vbox.setAlignment(send_img_btn, QtCore.Qt.AlignTop)
         vbox.setAlignment(send_msg_btn, QtCore.Qt.AlignTop)
+        vbox.setAlignment(send_run_btn, QtCore.Qt.AlignTop)
         
         return vbox
         
@@ -66,6 +71,10 @@ class ImageWidgetTest(QWidget):
         UISignals.GetSignal(SigName.IMG_MESSAGE).emit([new_time_str, 'IPI', 'OK', 0.125, 'D:\\Images\\LPCam2\\Image20120809_211043_287.bmp'])
         
     
+    def img_run_click(self):
+        sender = self.sender()
+        UISignals.GetSignal(SigName.MAIN_PLAY).emit(sender.isChecked())        
+    
     def threadFunc(self):
         self.stop_thread = False
         index = 0
@@ -74,23 +83,13 @@ class ImageWidgetTest(QWidget):
         while self.stop_thread == False:
             index = (index + 1) % 10
             
-            index = self.change_thumbnail_image(index, '1', imgs_dir)
-            index = self.change_thumbnail_image(index, '2', imgs_dir)
-            index = self.change_thumbnail_image(index, '3', imgs_dir)
-            index = self.change_thumbnail_image(index, '4', imgs_dir)
-            index = self.change_thumbnail_image(index, '5', imgs_dir)
-            index = self.change_thumbnail_image(index, '6', imgs_dir)
-            index = self.change_thumbnail_image(index, '7', imgs_dir)
-            index = self.change_thumbnail_image(index, '8', imgs_dir)
-            index = self.change_thumbnail_image(index, '9', imgs_dir)
-            index = self.change_thumbnail_image(index, '10', imgs_dir)
+            index = self.change_thumbnail_image(index, '{0}'.format(index), imgs_dir)
 
             time.sleep(0.15)
     
-    def change_thumbnail_image(self, index, id_, imgs_dir):   # 測試用     
-        index = (index + 1) % 15
-        image_path = "{0}\\{1}.tif".format( imgs_dir, index + 1)
-        img_receiver = UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([image_path, id_, '{0}'.format(index), 1])
+    def change_thumbnail_image(self, index, id_, imgs_dir):   # 測試用             
+        image_path = "{0}\\{1}.tif".format( imgs_dir, index)
+        img_receiver = UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([image_path, id_, '{0}'.format(index), 3])
         
         return index     
     

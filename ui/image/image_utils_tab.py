@@ -29,17 +29,14 @@ class ImageUtilsTab(QtGui.QTabWidget):
         except:
             pass
         
-        #IPI result table (方法2)
-        # IPI_result_table = QtGui.QTableView()
-        # model = QtGui.QStandardItemModel(3, 4)
-        # model.setHorizontalHeaderLabels(['Time', 'Checking', 'Result' ])
-        # model.setHorizontalHeaderItem(3, QtGui.QStandardItem('Spend Time'))
-        # IPI_result_table.setModel(model)
-        # model.setItem(0,0,QtGui.QStandardItem('88'))
-        
     def aided_data(self, data_dict):
         for key, value in data_dict.items():
             print(key, value)    
+            
+    def set_run_time_mode(self, b_run_time):        
+        for i in range(1 ,self.count()):            
+            self.setTabEnabled(i, not b_run_time)
+        self.widget(2).disable_correct_mode()
 
 if __name__ == '__main__':  
     import sys  

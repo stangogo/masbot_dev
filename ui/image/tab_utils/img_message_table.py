@@ -95,8 +95,7 @@ class ImageMessage(QWidget):
 
     def show_file(self, file_path):
         if os.path.exists(file_path):
-            UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([file_path, None, '', ImagePreviewMode.RealTime])
-            #print('open {0}'.format(file_path))
+            UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([file_path, None, '', ImagePreviewMode.Locked])            
         else:
             print('not exist {0}'.format(file_path))
             

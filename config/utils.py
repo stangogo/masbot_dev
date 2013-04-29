@@ -17,6 +17,7 @@ class ImagePreviewMode():
     Locked = 2
     FixedId = 3
     Unlocked = 4
+    Correct = 5
     
 
 class SigName:
@@ -79,6 +80,8 @@ class SigName:
     IMG_THUMBNAIL = 'IMG_THUMBNAIL'
         # Receive the preview data of image, applied at image thumbnail and preview label
         # @list: a list containing three items; file path(str), id (str), name(str), mode (int)
+        
+    QIMAGE_THUMBNAIL = 'QIMAGE_THUMBNAIL'
     
     IMG_MESSAGE = 'IMG_MESSAGE'
             # Communication port for image message, send by image actor,
