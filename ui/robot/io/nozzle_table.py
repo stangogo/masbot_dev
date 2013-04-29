@@ -23,16 +23,17 @@ class NozzleTable(IOTableTemplate):
         UISignals.GetSignal(SigName.DO_IN).connect(self.do_changed)        
         self.horizontalHeader().hide()   
    
-    def do_clicked(self, io_num, on_off, row, column, table):
+    def do_clicked(self, io_num, on_off, row, column, table):   
+        #if not super(NozzleTable, self).do_clicked(io_num, on_off, row, column, table):
+            #return  
         if not table == self.table_name:
-            return        
-                
+            return
+
         sig = UISignals.GetSignal(SigName.DO_OUT)
         sig.emit(io_num, on_off)
         print(io_num)
     
     def do_di_changed(self, new_status, dio_list, bOn):
-
         
         if new_status == None:
             return

@@ -15,9 +15,22 @@ import logging
 import sys
 from datetime import date
 from PySide import QtGui, QtCore
-from masbot.config.utils import Constants, Communicate
+from masbot.config.utils import Constants
+
+
+    
+#class Communicate(QtCore.QObject):
+    #"""
+    #create two new signals on the fly: one will handle
+    #int type, the other will handle strings
+    #"""
+    #speak_number = QtCore.Signal(int)
+    #speak_word = QtCore.Signal(str)
+
 
 class MessageAndLog(QtGui.QListWidget):
+    speak_number = QtCore.Signal(int)
+    speak_word = QtCore.Signal(str)
     
     def __init__(self, name):
         super(MessageAndLog, self).__init__()
@@ -26,8 +39,8 @@ class MessageAndLog(QtGui.QListWidget):
         self.time_str = ""                      # save the date str in log file, if the log opened over one day, time_str must be updated.
         self.logger = logging.getLogger(name)
         #self.logger.setLevel(logging.DEBUG)
-        self.talker = Communicate()             # asynchronous to update the message to list
-        self.talker.speak_word.connect(self.__add_message)
+        #self.talker = Communicate()             # asynchronous to update the message to list
+        self.speak_word.connect(self.__add_message)
         #current_dir= os.path.abspath(__file__ +  "//..//..//")
         #self.log_dir = "{0}\\{1}\\{2}\\{3}".format(current_dir,
                                                #Constants.DAT_FOLDER,
@@ -45,7 +58,7 @@ class MessageAndLog(QtGui.QListWidget):
         #self.add_message("lkdjf;laskdjf;lkjl4jk2;3l4kj2;3lrkj;wlekfl;sd")
            
     def add_message(self, new_message):
-        self.talker.speak_word.emit(new_message)
+        self.speak_word.emit(new_message)
                 
     @QtCore.Slot(str)
     def __add_message(self, new_message):

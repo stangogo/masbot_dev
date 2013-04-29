@@ -3,7 +3,7 @@
 
 import logging
 import threading
-from time import sleep
+from time import sleep, clock
 from imp import reload
   
 from masbot.config.utils import SigName, UISignals
@@ -23,11 +23,16 @@ class MajorWidgetCtrl:
         UISignals.GetSignal(SigName.MAIN_LOG_IN).connect(self.__login_out)
         UISignals.GetSignal(SigName.DO_OUT).connect(self.__do_clicked)
         
+        
         DM = DeviceManager()
         self.__device_proxy = DM._get_device_proxy()
         timer = threading.Timer(1, self.__update_ui)
         timer.daemon = True
         timer.start()
+        image_thumbnail_timer = threading.Thread(target=self.__update_image_thumbnail)
+        image_thumbnail_timer.daemon = True
+        image_thumbnail_timer.start()   
+        
         # initail the flow actor
         self.__main_flow = MainFlow().start()
         self.__first_import = True
@@ -181,3 +186,18 @@ class MajorWidgetCtrl:
         if not self.__first_import:
             reload(masbot.controller.test_flow)
         self.__first_import = False
+        
+    def __update_image_thumbnail(self):
+        slot = UISignals.GetSignal(SigName.IMG_THUMBNAIL)
+        sleep(1)
+        while True:
+            impath = []
+            for i in range(len(camera_info)):
+                #s1 = clock()
+                actor_unit = camera_info[i]
+                impath = actor[actor_unit['camera_set']['camera_name']].send('snapshot')
+                #print('%.5f'%(clock()-s1))
+                msg = [impath, actor_unit['camera_set']['camera_name'], actor_unit['camera_set']['display_text']]
+                slot.emit(msg)
+                
+            sleep(0.05)
