@@ -12,19 +12,21 @@ import logging
 from re import compile
 from ctypes import *
 from PIL import Image
+from masbot.config.common_lib import *
 from masbot.device.channel import Channel
 from masbot.device.camera import camera_dll
 
 class Camera(Channel):    
     def __init__(self, camera_info):
-        owner = camera_info.get('camera_name', 'No_camera')
+        self.__owner = camera_info.get('camera_name', 'No_camera')
         super(Camera, self).__init__()
         self.__logger = logging.getLogger(__name__)  
         self.__str_length = 1024
         self.__para_set = {}
-        self.__logger.debug('camera device:{0} is beginnig to initial.'.format(camera_info.get('display_text', 'No Name')))
+        self.__logger.debug('camera device:{} is beginnig to initial.'.format(self.__owner))
         self.__grabber = camera_dll.initial_grabber(camera_info.get('camera_type','')) 
         if self.__grabber:
+            print(self.__grabber)
             self.__para_enum = self.__grabber.para_enum
             self.__initial(camera_info)        
         else:
@@ -40,33 +42,34 @@ class Camera(Channel):
         self.__display_text = camera_info.get('display_text', '')
         if not self.open_framegrabber():
             self.get_parameter_values(camera_info)
-            self.__logger.debug('camera device:{0} initialled successful.'.format(camera_info.get('display_text', 'No Name')))
-        self.__logger.debug('camera device:{0} initialled fail.'.format(camera_info.get('display_text', 'No Name')))            
+            self.__logger.debug('camera:{} initialled successful.'.format(self.__owner))
+        else:
+            self.__logger.debug('camera:{} initialled fail.'.format(self.__owner))            
     def open_framegrabber(self): 
         cstr = (c_char*self.__str_length)(0)        
         cstr.value = self.__color_type.encode()    #set camera type in advance
-        ret = self.run(self.__grabber.set_color_type, cstr)
+        ret = self.run(self.__grabber.set_color_type, self.__port, cstr)
         if ret:
-            self.__logger.warning('Camera:{0} device open framegrabber fail when setting {1}.'.format(self.__display_text,self.__camera_mode))  
+            self.__logger.warning('Camera:{} device open framegrabber fail when setting {}.'.format(self.__owner,self.__camera_mode))  
             return ret
         cstr.value = self.__camera_mode.encode()    #set camera mode in advance
-        ret = self.run(self.__grabber.set_camera_mode, cstr)
+        ret = self.run(self.__grabber.set_camera_mode, self.__port, cstr)
         if ret:
-            self.__logger.warning('Camera:{0} device open framegrabber fail when setting {1}.'.format(self.__display_text,self.__camera_mode))
+            self.__logger.warning('Camera:{} device open framegrabber fail when setting {}.'.format(self.__owner,self.__camera_mode))
             return ret
         ret = self.run(self.__grabber.initial_grabber, self.__port)
         if ret:
-            self.__logger.error('Camera:{0} device open framegrabber fail when initialled camera grabber.'.format(self.__display_text))
+            self.__logger.error('Camera:{} device open framegrabber fail when initialled camera grabber.'.format(self.__owner))
             return ret 
-        self.__logger.debug('Camera:{0} device open framegrabber successful.'.format(self.__display_text))
+        self.__logger.debug('Camera:{} device open framegrabber successful.'.format(self.__owner))
         return ret;
     
     def get_parameter_values(self, cam_info):
         value = c_int(0)
         for i, index in enumerate(self.__para_enum):
-            ret = self.run(self.__grabber.get_camera_parameter, self.__para_enum[index], pointer(value))
+            ret = self.run(self.__grabber.get_camera_parameter, self.__port, self.__para_enum[index], pointer(value))
             if ret:
-                sself.__logger.warning('Camera:{0} device setting {1} fail.'.format(self.__display_text, index))
+                sself.__logger.warning('Camera:{} device setting {} fail.'.format(self.__owner, index))
                 self.__para_set.update(i,0)
             else:
                 self.__para_set.update({index:value.value})
@@ -86,12 +89,12 @@ class Camera(Channel):
     def set_parameter(self, para_name, value):
         if para_name in self.__para_enum.keys():
             if para_name in ['gain_value','shutter_value','reverse_type']:
-                ret = self.run(self.__grabber.set_camera_parameter, self.__para_enum[para_name], value)
+                ret = self.run(self.__grabber.set_camera_parameter, self.__port, self.__para_enum[para_name], value)
                 if ret:
-                    self.__logger.warning('Camera:{0} device setting {1} fail.'.format(self.__display_text, para_name))
+                    self.__logger.warning('Camera:{} device setting {} fail.'.format(self.__owner, para_name))
                 else:
                     self.__para_set[para_name] = value
-                    self.__logger.debug('Camera:{0} device setting {1} successful.'.format(self.__display_text, para_name))
+                    self.__logger.debug('Camera:{} device setting {} successful.'.format(self.__owner, para_name))
                 return ret                
         return None
     
@@ -99,9 +102,9 @@ class Camera(Channel):
         width, height, channel = [self.get_parameter('width'),self.get_parameter('height'), self.get_parameter('channel')]
         
         pData = (c_ubyte*(width*height*channel))()
-        ret = self.run(self.__grabber.grab_image, pData) 
-        if ret != 0:
-            self.__logger.warning('Camera:{0} device grab image occurred {1} error.'.format(self.__display_text, self.get_error_msg(ret)))
+        ret = self.run(self.__grabber.grab_image, self.__port, pData) 
+        if ret:
+            self.__logger.warning("Camera:{} device grab image occurred error ({})".format(self.__owner, self.get_error_msg(ret)))
             return None
         else:
             if channel == 1:
@@ -125,15 +128,15 @@ class Camera(Channel):
         return pstr         
         
     def close_camera(self):
-        ret = self.run(self.__grabber.close_grabber)
+        ret = self.run(self.__grabber.close_grabber, self.__port)
         if ret != 0:
-            self.__logger.warning('Camera:{0} device close grabber occurred {1} error.'.format(self.__display_text, self.get_error_msg(ret)))   
+            self.__logger.warning('Camera:{} device close grabber occurred error ({})'.format(self.__owner, self.get_error_msg(ret)))   
             
 #-------------------------------------------------------------------------------------------------
 #-----------------------------------------test----------------------------------------------------
 #-------------------------------------------------------------------------------------------------
-#camera_info =  {
-            #'display_text': '上光源模組',
+#camera_info1 =  {
+            #'display_text': '12',
             #'shutter_value': 800,
             #'port': 0,
             #'camera_type': '1394IIDC',
@@ -144,25 +147,44 @@ class Camera(Channel):
             #'gain_value': 100,
             #'camera_mode': '7:0:0'
         #}
+#camera_info2 =  {
+            #'display_text': '12',
+            #'shutter_value': 800,
+            #'port': 1,
+            #'camera_type': '1394IIDC',
+            #'pixel_size': 0.00725,
+            #'reverse_type': 0,
+            #'camera_name': 'under_camera',
+            #'color_type': 'gray',
+            #'gain_value': 100,
+            #'camera_mode': '7:0:0'
+        #}
 #from time import clock
 #from time import sleep
 #from threading import Thread
-#cam = Camera(camera_info)
-#print(cam.get_parameter('gain_value'))
-#print(cam.get_parameter('shutter_value'))
-#print(cam.get_parameter('channel'))
-#print(cam.get_parameter('shutter_max'))
-#print(cam.set_parameter('shutter_value', 1000))
-#print(cam.get_parameter('shutter_value'))
-#print(cam.set_parameter('reverse_type',3))
-#def run ():
-    #while True:
+#cam1 = Camera(camera_info1)
+#cam2 = Camera(camera_info2)
+##print(cam.get_parameter('gain_value'))
+##print(cam.get_parameter('shutter_value'))
+##print(cam.get_parameter('channel'))
+##print(cam.get_parameter('shutter_max'))
+##print(cam.set_parameter('shutter_value', 1000))
+##print(cam.get_parameter('shutter_value'))
+##print(cam.set_parameter('reverse_type',3))
+##def run ():
+    ##while True:
     ##for i in range(10):
-        #s1 = clock()
-        #im = cam.grab_image()
-        #s2 = clock()
-        #print(s2-s1)
+        ##s1 = clock()
+        ##im = cam.grab_image()
+        ##s2 = clock()
+        ##print(s2-s1)
         ##sleep(0.1)
-    #print(cam.close_camera())
-#grab = Thread(target = run)
-#grab.start()
+    ##print(cam.close_camera())
+##grab = Thread(target = run)
+##grab.start()
+#im1 = cam1.grab_image()
+#im2 = cam2.grab_image()
+#im1.save('D:\\im1.tif')
+#im2.save('D:\\im2.tif')
+#cam1.close_camera()
+#cam2.close_camera()

@@ -17,10 +17,6 @@ class Motion(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def close_io_cards(self):
-        pass
-
-    @abstractmethod
     def DO(self, port, state):
         pass
 
