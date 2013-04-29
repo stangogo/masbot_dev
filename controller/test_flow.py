@@ -1,7 +1,7 @@
-from masbot.controller.major_widget_ctrl import actor
-from masbot.device.device_manager import DeviceManager
-DM = DeviceManager()
-adlink = DM._get_device_proxy('ADLink')
+from masbot.controller.wake_actor import *
+#from masbot.device.device_manager import DeviceManager
+#DM = DeviceManager()
+#device_proxy = DM._get_device_proxy()
 
 # utility sample
 # actor['tbar'].send('servo_on')

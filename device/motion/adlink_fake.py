@@ -35,8 +35,8 @@ class ADLink(Motion):
         self.__logger.debug('adlink_fake card initial')
         sleep(0.2)
         for num, type in cards_config:
-            self.__logger.debug('adlink_fake %s %d initial', type, num)
-            empty_card = 32 * [0]
+            self.__logger.debug('adlink_fake %s card %d initial', type, num)
+            empty_card = self.__port_per_card * [0]
             if type == 'DO':
                 self.__do_card_status.append(empty_card)
                 self.__do_cards_index.append(num)
@@ -85,7 +85,7 @@ class ADLink(Motion):
 
     def DI(self, port):
         port_per_card = self.__port_per_card
-        card_order = int(port/32)
+        card_order = int(port/port_per_card)
         if card_order < len(self.__di_cards_index):
             port = port % self.__port_per_card
         else:

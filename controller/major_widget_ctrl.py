@@ -9,7 +9,8 @@ from imp import reload
 from masbot.config.utils import SigName, UISignals
 from masbot.controller.wake_actor import *
 from masbot.device.device_manager import DeviceManager
-from masbot.flow.main_flow import MainFlow
+#from masbot.flow.main_flow import MainFlow
+import masbot.flow.main_flow
 
 class MajorWidgetCtrl:
 
@@ -23,7 +24,6 @@ class MajorWidgetCtrl:
         UISignals.GetSignal(SigName.MAIN_LOG_IN).connect(self.__login_out)
         UISignals.GetSignal(SigName.DO_OUT).connect(self.__do_clicked)
         
-        
         DM = DeviceManager()
         self.__device_proxy = DM._get_device_proxy()
         timer = threading.Timer(1, self.__update_ui)
@@ -34,8 +34,7 @@ class MajorWidgetCtrl:
         image_thumbnail_timer.start()   
         
         # initail the flow actor
-        self.__main_flow = MainFlow().start()
-        self.__first_import = True
+        self.__main_flow = masbot.flow.main_flow.MainFlow().start()
         
     def set_proxy_switch(self, on_off=0):
         self.__proxy_switch = on_off
@@ -49,7 +48,7 @@ class MajorWidgetCtrl:
             self.set_proxy_switch(1)
         
     def __do_clicked(self, do_port, on_off):
-        self.__device_proxy['8154'].DO(do_port, on_off)
+        self.__device_proxy['8158'].DO(do_port, on_off)
         
     def __servo_on_off(self, on):
         if self.__servo_status == 0:
@@ -117,7 +116,7 @@ class MajorWidgetCtrl:
         di_slot = UISignals.GetSignal(SigName.DI_IN)
         
         do_status = []
-        module_type = '8154'
+        module_type = '8158'
         for i in range(self.__device_proxy[module_type].do_count()):
             status = self.__device_proxy[module_type].DO_read(i)
             do_status.append(status)
@@ -181,12 +180,6 @@ class MajorWidgetCtrl:
                 ret = actor[actor_name].send('rel_move', position=rel_position_list)
                 return ret
 
-    def __login_out(self):
-        import masbot.controller.test_flow
-        if not self.__first_import:
-            reload(masbot.controller.test_flow)
-        self.__first_import = False
-        
     def __update_image_thumbnail(self):
         slot = UISignals.GetSignal(SigName.IMG_THUMBNAIL)
         sleep(1)
@@ -201,3 +194,11 @@ class MajorWidgetCtrl:
                 slot.emit(msg)
                 
             sleep(0.05)
+
+    def __login_out(self):
+        #self.__main_flow.stop()
+        self.__play_flow(0)
+        del(self.__main_flow)
+        reload(masbot.flow.main_flow)
+        self.__main_flow = masbot.flow.main_flow.MainFlow().start()
+        
