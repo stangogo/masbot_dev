@@ -12,10 +12,10 @@ import logging
 from re import compile
 from masbot.config.global_settings import *
 from masbot.device.bulletin import Bulletin
-#if hardware_simulation:
-from masbot.device.camera.camera_fake import Camera
-#else:
-#from masbot.device.camera.camera import Camera
+if hardware_simulation:
+    from masbot.device.camera.camera_fake import Camera
+else:
+    from masbot.device.camera.camera import Camera
     
 class CameraModule(Bulletin):    
     def __init__(self, camera_info, board={}):
