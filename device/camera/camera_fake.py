@@ -13,7 +13,7 @@ from re import compile
 from ctypes import *
 from random import *
 from time import sleep, clock
-from PIL import Image
+from PIL import Image, ImageStat, ImageFont, ImageDraw
 from masbot.device.channel import Channel
 
 class Camera(Channel):    
@@ -87,11 +87,20 @@ class Camera(Channel):
     
     def grab_image(self):  
         width, height, channel = [self.get_parameter('width'),self.get_parameter('height'), self.get_parameter('channel')]
+        font = ImageFont.truetype("verdana.ttf", int((height/640)*40))
+        
         if channel == 1:
-            im = Image.new('L', [width,height], randint(0, 255))
+            rand_num = randint(0, 255)
+            im = Image.new('RGB', [width,height], (rand_num, rand_num, rand_num))
+            rand_num = randint(0, 255)
+            draw = ImageDraw.Draw(im)
+            draw = draw.text([randint((width/4),width/4+10),randint(height/4-10,height/4+10)],text = 'Camera:{}'.format(self.__owner), fill = (rand_num,rand_num,rand_num),font = font)
         elif channel == 3:
             im = Image.new('RGB', [width,height], (randint(0, 255),randint(0, 255),randint(0, 255)))
-        sleep(1/self.get_parameter('frame_rate'))
+            draw = ImageDraw.Draw(im)            
+            draw = draw.text([randint((width/4),width/4+10),randint(height/4-10,height/4+10)],text = 'Camera:{}'.format(self.__owner), fill = (randint(0, 255),randint(0, 255),randint(0, 255)),font = font)
+            
+        sleep(2/self.get_parameter('frame_rate'))
         image_path = 'R:\\{0}_{1:.6f}.bmp'.format(self.__owner,clock())
         im.save(image_path)
         return image_path
