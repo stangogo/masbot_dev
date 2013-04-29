@@ -24,10 +24,47 @@ from masbot.ui.image.pixelmap_label import PixelMapLabel
 from masbot.ui.image.image_utils_tab import ImageUtilsTab
 from masbot.ui.image.image_thumbnail import ImageThumbnail
 from masbot.ui.image.image_toolbar import ImageToolbar
-from masbot.config.utils import Path
-from masbot.config.utils import UISignals, SigName
+from masbot.config.utils import *
+
 from masbot.ui import preaction
 from masbot.config.db_table_def import DBTableDefine
+
+    
+class PreviewImage(PixelMapLabel):
+    def __init__(self):
+        super(PreviewImage, self).__init__(0)
+        self.mode = ImagePreviewMode.RealTime
+        self.id_ = None
+
+        
+    def set_image(self, file_path, id_, mode):
+        self.set_mode(mode, id_)
+                
+        if self.mode == ImagePreviewMode.RealTime:
+            bUpdate = True  
+        elif self.mode == ImagePreviewMode.FixedId and self.id_ == id_: # 固定thunmbnail ID
+            bUpdate = True
+        elif self.mode == ImagePreviewMode.Locked and not id_:          # Locked 模式, 且沒有ID, 鎖定一張圖
+            bUpdate = True
+        else:
+            bUpdate = False
+                    
+        if bUpdate:
+            self.update_pixmap(file_path)
+        
+    def set_mode(self, mode, id_):
+        if not mode:
+            return
+
+        # 鎖定和解鎖, 直接設定
+        if not mode == ImagePreviewMode.RealTime:
+            self.mode = mode
+        
+        if mode == ImagePreviewMode.FixedId and id_:
+            self.id_ = id_
+        elif mode == ImagePreviewMode.Unlocked:
+            self.mode = ImagePreviewMode.RealTime
+        print('current mode: ', self.mode)    
 
 
 class ImageWidget(QtGui.QWidget):
@@ -37,8 +74,12 @@ class ImageWidget(QtGui.QWidget):
         self.init_ui()
         self.cur_preview_id = None
         self.previous_preview_id = None
+        self.b_autorun = False
         
         UISignals.GetSignal(SigName.IMG_THUMBNAIL).connect(self.img_thumbnail_income)
+        
+        UISignals.GetSignal(SigName.MAIN_PLAY).connect(self.play_button_on)
+        
         
     def init_ui(self):
         imgs_dir = Path.imgs_dir()
@@ -49,25 +90,17 @@ class ImageWidget(QtGui.QWidget):
         self.img_thumbnail.setMinimumHeight(105)
         
         # preview image
-        self.preview_label = PixelMapLabel(0) 
-        self.preview_label.update_pixmap("{0}//zero.jpg".format(imgs_dir))
-        self.preview_label.setMinimumHeight(400)
+        self.preview_image = PreviewImage() 
+        self.preview_image.update_pixmap("{0}//zero.jpg".format(imgs_dir))
+        self.preview_image.setMinimumHeight(400)
         
-        # tool bar        
-        #toolbar = ImageToolbar()
-        #toolbar.file_selected.connect(self.file_selected)
-        #toolbar.button_clicked.connect(self.toolbar_btn_clicked)
-        
+        # image utility
         image_utils_tab = ImageUtilsTab()
      
         v_layout = QtGui.QVBoxLayout(self)
         v_layout.addWidget(self.img_thumbnail)
-        v_layout.addWidget(self.preview_label)
-        #v_layout.addWidget(toolbar)
-        
-        v_layout.addWidget(image_utils_tab)
-
-        v_layout.setAlignment(self.preview_label, QtCore.Qt.AlignCenter)
+        v_layout.addWidget(self.preview_image)        
+        v_layout.addWidget(image_utils_tab)        
         
         self.setLayout(v_layout)
              
@@ -76,38 +109,26 @@ class ImageWidget(QtGui.QWidget):
         
     def thumbnail_clicked(self, thumbnail_id):
         print("thumbnail {0} is clicked".format(thumbnail_id))
-        self.cur_preview_id = thumbnail_id
+        if self.b_autorun:
+            self.preview_image.set_mode(ImagePreviewMode.FixedId, thumbnail_id)
+        #self.cur_preview_id = thumbnail_id
 
-    #def file_selected(self, file_path):        
-        #UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit( [file_path, self.cur_preview_id, 'file selected'])
-            
-    #def toolbar_btn_clicked(self, button_id):
-        #if button_id == 'zoom_in_id':
-            #pass    # threading.Thread(target = self.threadFunc).start()
-        #elif button_id == 'zoom_out_id':
-            #self.stop_thread = True
-        #elif button_id == 'previous_id':
-            #self.img_thumbnail.change_image( ["r:\\temp\\9.bmp", '1', 'select by previous'])
-        
- 
 
     def img_thumbnail_income(self, image_data):
-        (path, id_, name) = image_data
-        
-        if not id_:                             # id_ 為空或Nonoe - 顯示手動選擇的影像檔案
-            self.preview_label.change_image(path)
-            if self.cur_preview_id:
-                self.previous_preview_id = self.cur_preview_id
-                
-            self.cur_preview_id = ''
-        elif id_ == 'rollback':
-            if self.previous_preview_id and not self.cur_preview_id:
-                self.cur_preview_id = self.previous_preview_id
+        if len(image_data) == 4:
+            (path, id_, name, mode) = image_data
         else:
-            if self.cur_preview_id == id_:
-                self.preview_label.change_image(path)
-            self.img_thumbnail.change_image(image_data)        
+            (path, id_, name) = image_data
+            mode = ImagePreviewMode.RealTime
         
+        self.preview_image.set_image(path, id_, mode)
+        
+        if id_:                             # id_ 為空或Nonoe - 顯示手動選擇的影像檔案            
+            self.img_thumbnail.change_image([path, id_, name])
+       
+    def play_button_on(self, play_btn_on):
+        self.b_autorun = play_btn_on
+            
 def main():
     
     app = QtGui.QApplication(sys.argv)

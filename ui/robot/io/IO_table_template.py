@@ -236,7 +236,7 @@ class IOTableTemplate(QtGui.QTableWidget):
         #print('do {0} clicked {1}, row: {2}, column: {3}, table: {4}'.format(io_num, on_off, row, column, table))
 
     def cellDclicked(self, row, column):
-        """ 在table 上  mouse double click 會傳到這裡. 若display_type 是 'dclick'的, 要進行點位取代
+        """ mouse double click table 上的cell, 若cell 是在self.dclick 列表裡, 進行點位取代(單一軸)
         """
         if self.orientation == QtCore.Qt.Orientation.Horizontal:
             replace = row in self.dclick                
