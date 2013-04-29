@@ -13,7 +13,6 @@ from re import compile
 from ctypes import *
 from time import clock
 from PIL import Image
-from masbot.config.common_lib import *
 from masbot.device.channel import Channel
 from masbot.device.camera import camera_dll
 
