@@ -22,6 +22,7 @@ class Motor(Bulletin):
         self.__axis_list = motor_info['axis_info']
         self.__axis_count = len(motor_info['axis_info'])
         self.__motion = motion
+        self.__timeout = 5000
         
     def get_speed(self):
         return self.__speed
@@ -32,6 +33,15 @@ class Motor(Bulletin):
         else:
             self.__speed = 50
         
+    def get_timeout(self):
+        return self.__timeout
+
+    def set_timeout(self, value):
+        if isinstance(value, int):
+            self.__timeout = value
+        else:
+            self.__timeout = 5000
+            
     def get_acc_time(self):
         return self.__acc_time
         
@@ -101,7 +111,7 @@ class Motor(Bulletin):
             axis_map.append(dic)
         speed = self.__speed * proportion
         ret = self.__motion.absolute_move(
-            axis_map, speed, self.__acc_time, self.__acc_time)
+            axis_map, speed, self.__timeout, self.__acc_time, self.__acc_time)
         if ret:
             msg = "abs move error: {}".format(ret)
             self.__logger.debug(msg)
@@ -137,7 +147,7 @@ class Motor(Bulletin):
             axis_map.append(dic)
         speed = self.__speed * proportion
         ret = self.__motion.relative_move(
-            axis_map, speed, self.__acc_time, self.__acc_time)
+            axis_map, speed, self.__timeout, self.__acc_time, self.__acc_time)
         if ret:
             msg = "rel move error: {}".format(ret)
             self.__logger.debug(msg)

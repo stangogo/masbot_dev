@@ -27,7 +27,6 @@ from masbot.controller.wake_actor import *
 class MainFlow(pykka.ThreadingActor):
     def __init__(self,):
         super(MainFlow, self).__init__()
-        print("mf")
         self._logger = logging.getLogger(__name__)
         # ====================define initial value=======================
         self._state = 'stateA'
@@ -59,14 +58,16 @@ class MainFlow(pykka.ThreadingActor):
     # ====================state machine process==========================
     def stateA(self):
         self._state = 'stateA'
-        position = actor['tbar'].send('get_position')
+        position = actor['xy'].send('get_position')
         sleep(0.2)
+        #actor['axis_z'].send('pt_move', pt='test1')
         if 0:
             return 'pause'
         return 'stateB'
 
     def stateB(self):
         self._state = 'stateB'
-        position = actor['tbar'].send('get_position')
+        position = actor['xy'].send('get_position')
+        #actor['axis_z'].send('pt_move', pt='test2')
         sleep(0.2)
         return 'stateA'

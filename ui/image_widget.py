@@ -64,7 +64,7 @@ class PreviewImage(PixelMapLabel):
             self.id_ = id_
         elif mode == ImagePreviewMode.Unlocked:
             self.mode = ImagePreviewMode.RealTime
-        print('current mode: ', self.mode)    
+        #print('current mode: ', self.mode)    
 
 
 class ImageWidget(QtGui.QWidget):
