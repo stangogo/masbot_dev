@@ -191,14 +191,14 @@ class ADLink8154(Channel, Motion):
         
         return status[0]
 
-    def get_motion_status(self, axis):
+    def get_motion_status(self, axis_id):
         """ get axis status
 
         Example:
             get_motion_status(0)
             
         Args:
-            axis(integer): axis id
+            axis_id(integer): axis id
         
         Returns:
             An Integer, the status code
@@ -228,44 +228,44 @@ class ADLink8154(Channel, Motion):
         Raises:
             
         """
-        ret = self.run(pci_8154._8154_motion_done, axis)
+        ret = self.run(pci_8154._8154_motion_done, axis_id)
         
         return ret
 
-    def get_pulse(self, axis):
+    def get_pulse(self, axis_id):
         """ Get the value of feedback position counter
         """
         position = pointer(c_double(0))
-        ret = self.run(pci_8154._8154_get_position, axis, position)
+        ret = self.run(pci_8154._8154_get_position, axis_id, position)
         
         return position[0]
 
-    def set_position(self, axis, position):
+    def set_position(self, axis_id, position):
         """ Set the feedback position counter
         """
-        ret = self.run(pci_8154._8154_set_position, axis, position)
+        ret = self.run(pci_8154._8154_set_position, axis_id, position)
         
         return error_table[ret]
 
-    def get_command(self, axis):
+    def get_command(self, axis_id):
         """ Get the value of command position counter
         """
         command = pointer(c_long(0))
-        ret = self.run(pci_8154._8154_get_command, axis, command)
+        ret = self.run(pci_8154._8154_get_command, axis_id, command)
         
         return command[0]
 
-    def set_command(self, axis, command):
+    def set_command(self, axis_id, command):
         """ Set the command position counter
         """
-        ret = self.run(pci_8154._8154_set_command, axis, command)
+        ret = self.run(pci_8154._8154_set_command, axis_id, command)
         
         return error_table[ret]
 
-    def emg_stop(self, axis):
+    def emg_stop(self, axis_id):
         """ emergency stop
         """
-        ret = self.run(pci_8154._8154_emg_stop, axis)
+        ret = self.run(pci_8154._8154_emg_stop, axis_id)
         return error_table[ret]
         
     def relative_move(self, axis_list, speed, timeout=5000, Tacc=0.2, Tdec=0.2, SVacc=-1, SVdec=-1):
@@ -382,7 +382,7 @@ class ADLink8154(Channel, Motion):
         """
         count = 0
         interval_time = interval / 1000
-        while True:
+        while 1:
             ret = self.get_motion_status(axis_id)
             if ret:
                 count = count + interval
@@ -392,20 +392,20 @@ class ADLink8154(Channel, Motion):
                 return ret
             sleep(interval_time)
 
-    def set_home_config(self, axis, home_mode=1, org_logic=1, ez_logic=0, ez_count=0, erc_out=0):
+    def set_home_config(self, axis_id, home_mode=1, org_logic=1, ez_logic=0, ez_count=0, erc_out=0):
         """ Set the configuration for home return move motion
         """
-        ret = self.run(pci_8154._8154_set_home_config, axis, home_mode, org_logic, ez_logic, ez_count, erc_out)
+        ret = self.run(pci_8154._8154_set_home_config, axis_id, home_mode, org_logic, ez_logic, ez_count, erc_out)
         
         return error_table[ret]
 
-    def home_search(self, axis, speed, acc_time, ORG_offset):
+    def home_search(self, axis_id, speed, acc_time, ORG_offset):
         """ Perform an auto search home
 
         Example:
             
         Args:
-            axis(integer): axis id
+            axis_id(integer): axis id
             speed(float): speed(pulse/sec)
             acc_time(float): acceleration time(sec)
             ORG_offset(integer): the escape pulse amounts when home search
@@ -417,8 +417,9 @@ class ADLink8154(Channel, Motion):
         Raises:
         
         """
-        start_vel = speed / 10
-        ret = self.run(pci_8154._8154_home_search, axis, start_vel, speed, acc_time, ORG_offset)
+        self.run(pci_8154._8154_set_home_config, axis_id, 9, 1, 0, 0, 0)
+        start_vel = 100
+        ret = self.run(pci_8154._8154_home_search, axis_id, start_vel, speed, acc_time, ORG_offset)
         
         return error_table[ret]
 
@@ -482,8 +483,8 @@ class ADLink8154(Channel, Motion):
             return ret
         return 0
 
-    def set_inp(self, axis, inp_enable, inp_logic=0):
-        ret = self.run(pci_8154._8154_set_inp, axis, inp_enable, inp_logic)
+    def set_inp(self, axis_id, inp_enable, inp_logic=0):
+        ret = self.run(pci_8154._8154_set_inp, axis_id, inp_enable, inp_logic)
         
         return error_table[ret]
 
@@ -646,14 +647,14 @@ class ADLink8158(Channel, Motion):
         
         return status[0]
 
-    def get_motion_status(self, axis):
+    def get_motion_status(self, axis_id):
         """ get axis status
 
         Example:
             get_motion_status(0)
             
         Args:
-            axis(integer): axis id
+            axis_id(integer): axis id
         
         Returns:
             An Integer, the status code
@@ -683,44 +684,44 @@ class ADLink8158(Channel, Motion):
         Raises:
             
         """
-        ret = self.run(pci_8158._8158_motion_done, axis)
+        ret = self.run(pci_8158._8158_motion_done, axis_id)
         
         return ret
 
-    def get_pulse(self, axis):
+    def get_pulse(self, axis_id):
         """ Get the value of feedback position counter
         """
         position = pointer(c_double(0))
-        ret = self.run(pci_8158._8158_get_position, axis, position)
+        ret = self.run(pci_8158._8158_get_position, axis_id, position)
         
         return position[0]
 
-    def set_position(self, axis, position):
+    def set_position(self, axis_id, position):
         """ Set the feedback position counter
         """
-        ret = self.run(pci_8158._8158_set_position, axis, position)
+        ret = self.run(pci_8158._8158_set_position, axis_id, position)
         
         return error_table[ret]
 
-    def get_command(self, axis):
+    def get_command(self, axis_id):
         """ Get the value of command position counter
         """
         command = pointer(c_long(0))
-        ret = self.run(pci_8158._8158_get_command, axis, command)
+        ret = self.run(pci_8158._8158_get_command, axis_id, command)
         
         return command[0]
 
-    def set_command(self, axis, command):
+    def set_command(self, axis_id, command):
         """ Set the command position counter
         """
-        ret = self.run(pci_8158._8158_set_command, axis, command)
+        ret = self.run(pci_8158._8158_set_command, axis_id, command)
         
         return error_table[ret]
 
-    def emg_stop(self, axis):
+    def emg_stop(self, axis_id):
         """ emergency stop
         """
-        ret = self.run(pci_8158._8158_emg_stop, axis)
+        ret = self.run(pci_8158._8158_emg_stop, axis_id)
         return error_table[ret]
         
     def relative_move(self, axis_list, speed, timeout=5000, Tacc=0.2, Tdec=0.2, SVacc=-1, SVdec=-1):
@@ -837,7 +838,7 @@ class ADLink8158(Channel, Motion):
         """
         count = 0
         interval_time = interval / 1000
-        while True:
+        while 1:
             ret = self.get_motion_status(axis_id)
             if ret:
                 count = count + interval
@@ -847,20 +848,20 @@ class ADLink8158(Channel, Motion):
                 return ret
             sleep(interval_time)
 
-    def set_home_config(self, axis, home_mode=1, org_logic=1, ez_logic=0, ez_count=0, erc_out=0):
+    def set_home_config(self, axis_id, home_mode=1, org_logic=1, ez_logic=0, ez_count=0, erc_out=0):
         """ Set the configuration for home return move motion
         """
-        ret = self.run(pci_8158._8158_set_home_config, axis, home_mode, org_logic, ez_logic, ez_count, erc_out)
+        ret = self.run(pci_8158._8158_set_home_config, axis_id, home_mode, org_logic, ez_logic, ez_count, erc_out)
         
         return error_table[ret]
 
-    def home_search(self, axis, speed, acc_time, ORG_offset):
+    def home_search(self, axis_id, speed, acc_time, ORG_offset):
         """ Perform an auto search home
 
         Example:
             
         Args:
-            axis(integer): axis id
+            axis_id(integer): axis id
             speed(float): speed(pulse/sec)
             acc_time(float): acceleration time(sec)
             ORG_offset(integer): the escape pulse amounts when home search
@@ -872,8 +873,9 @@ class ADLink8158(Channel, Motion):
         Raises:
         
         """
-        start_vel = speed / 10
-        ret = self.run(pci_8158._8158_home_search, axis, start_vel, speed, acc_time, ORG_offset)
+        self.run(pci_8158._8158_set_home_config, axis_id, 9, 1, 0, 0, 0)
+        start_vel = 100
+        ret = self.run(pci_8158._8158_home_search, axis_id, start_vel, speed, acc_time, ORG_offset)
         
         return error_table[ret]
 
@@ -937,7 +939,7 @@ class ADLink8158(Channel, Motion):
             return ret
         return 0
 
-    def set_inp(self, axis, inp_enable, inp_logic=0):
-        ret = self.run(pci_8158._8158_set_inp, axis, inp_enable, inp_logic)
+    def set_inp(self, axis_id, inp_enable, inp_logic=0):
+        ret = self.run(pci_8158._8158_set_inp, axis_id, inp_enable, inp_logic)
         
         return error_table[ret]

@@ -9,7 +9,8 @@ from imp import reload
 from masbot.config.utils import SigName, UISignals
 from masbot.controller.wake_actor import *
 from masbot.device.device_manager import DeviceManager
-from masbot.flow.main_flow import MainFlow
+#from masbot.flow.main_flow import MainFlow
+import masbot.flow.main_flow
 
 class MajorWidgetCtrl:
 
@@ -29,8 +30,7 @@ class MajorWidgetCtrl:
         timer.daemon = True
         timer.start()
         # initail the flow actor
-        self.__main_flow = MainFlow().start()
-        self.__first_import = True
+        self.__main_flow = masbot.flow.main_flow.MainFlow().start()
         
     def set_proxy_switch(self, on_off=0):
         self.__proxy_switch = on_off
@@ -177,7 +177,9 @@ class MajorWidgetCtrl:
                 return ret
 
     def __login_out(self):
-        import masbot.controller.test_flow
-        if not self.__first_import:
-            reload(masbot.controller.test_flow)
-        self.__first_import = False
+        #self.__main_flow.stop()
+        self.__play_flow(0)
+        del(self.__main_flow)
+        reload(masbot.flow.main_flow)
+        self.__main_flow = masbot.flow.main_flow.MainFlow().start()
+        

@@ -41,43 +41,38 @@ class MotorActor(pykka.ThreadingActor):
         
     def on_receive(self, message):
         # action on
-        if message.get('msg') == 'state':
+        msg = message.get('msg')
+        if msg == 'state':
             message['reply_to'].set(self.__state)
-        elif message.get('msg') == 'servo_on':
+        elif msg == 'servo_on':
             ret = self.__motor_obj.servo_on()
-        elif message.get('msg') == 'servo_off':
+        elif msg == 'servo_off':
             ret = self.__motor_obj.servo_off()
-        elif message.get('msg') == 'get_position':
+        elif msg == 'get_position':
             ret = self.__motor_obj.get_position()
-        elif message.get('msg') == 'get_status':
+        elif msg == 'get_status':
             ret = self.__motor_obj.get_motion_status()
-        elif message.get('msg') == 'get_speed':
+        elif msg == 'get_speed':
             ret = self.__motor_obj.get_speed()
-        elif message.get('msg') == 'set_speed':
+        elif msg == 'set_speed':
             new_speed = message.get('speed')
             ret = self.__motor_obj.set_speed(new_speed)
-        elif message.get('msg') == 'get_acc_time':
+        elif msg == 'get_acc_time':
             ret = self.__motor_obj.get_acc_time()
-        elif message.get('msg') == 'set_acc_time':
+        elif msg == 'set_acc_time':
             new_acc_time = message.get('acc_time')
             ret = self.__motor_obj.set_acc_time(new_acc_time)
-        elif message.get('msg') == 'abs_move':
+        elif msg == 'abs_move':
             target_position = message.get('position')
-            if isinstance(target_position, (int, float)):
-                target_position = (target_position, )
-            elif isinstance(target_position, list):
-                target_position = tuple(target_position)
             ret = self.__motor_obj.abs_move(target_position)
-        elif message.get('msg') == 'rel_move':
-            target_position = message.get('position')
-            if isinstance(target_position, (int, float)):
-                target_position = (target_position, )
-            elif isinstance(target_position, list):
-                target_position = tuple(target_position)
-            ret = self.__motor_obj.rel_move(target_position)
-        elif message.get('msg') == 'pt_move':
+        elif msg == 'rel_move':
+            rel_position = message.get('position')
+            ret = self.__motor_obj.rel_move(rel_position)
+        elif msg == 'pt_move':
             pt_name = message.get('pt')
             ret = self.pt_move(pt_name)
+        elif msg == 'reset':
+            ret = self.__motor_obj.reset_step()
         else:
             ret = 'undefine message format'
             self.__logger.error(ret)
