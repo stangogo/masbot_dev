@@ -29,23 +29,23 @@ class Motion(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def servo_on_off(self, axis, on_off):
+    def servo_on_off(self, axis_id, on_off):
         pass
 
     @abstractmethod
-    def get_motion_status(self, axis):
+    def get_motion_status(self, axis_id):
         pass
 
     @abstractmethod
-    def get_pulse(self, axis):
+    def get_pulse(self, axis_id):
         pass
 
     @abstractmethod
-    def set_position(self, axis, position):
+    def set_position(self, axis_id, position):
         pass
 
     @abstractmethod
-    def emg_stop(self, axis):
+    def emg_stop(self, axis_id):
         pass
 
     @abstractmethod
@@ -55,3 +55,8 @@ class Motion(metaclass=ABCMeta):
     @abstractmethod
     def di_count(self):
         pass
+
+    @abstractmethod
+    def home_search(self, axis_id, speed, acc_time, ORG_offset):
+        pass
+        

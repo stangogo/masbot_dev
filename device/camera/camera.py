@@ -11,6 +11,7 @@
 import logging
 from re import compile
 from ctypes import *
+from time import clock
 from PIL import Image
 from masbot.config.common_lib import *
 from masbot.device.channel import Channel
@@ -23,10 +24,9 @@ class Camera(Channel):
         self.__logger = logging.getLogger(__name__)  
         self.__str_length = 1024
         self.__para_set = {}
-        self.__logger.debug('camera device:{} is beginnig to initial.'.format(self.__owner))
+        #self.__logger.debug('camera device:{} is beginnig to initial.'.format(self.__owner))
         self.__grabber = camera_dll.initial_grabber(camera_info.get('camera_type','')) 
         if self.__grabber:
-            print(self.__grabber)
             self.__para_enum = self.__grabber.para_enum
             self.__initial(camera_info)        
         else:
@@ -59,7 +59,7 @@ class Camera(Channel):
             return ret
         ret = self.run(self.__grabber.initial_grabber, self.__port)
         if ret:
-            self.__logger.error('Camera:{} device open framegrabber fail when initialled camera grabber.'.format(self.__owner))
+            self.__logger.error('Camera:{} device open framegrabber fail when initialling grabber.'.format(self.__owner))
             return ret 
         self.__logger.debug('Camera:{} device open framegrabber successful.'.format(self.__owner))
         return ret;
@@ -100,9 +100,12 @@ class Camera(Channel):
     
     def grab_image(self):
         width, height, channel = [self.get_parameter('width'),self.get_parameter('height'), self.get_parameter('channel')]
-        
+        if not width or not height or not channel:
+            return None
         pData = (c_ubyte*(width*height*channel))()
+        #s1 = clock()
         ret = self.run(self.__grabber.grab_image, self.__port, pData) 
+        #print('%.5f'%(clock()-s1))
         if ret:
             self.__logger.warning("Camera:{} device grab image occurred error ({})".format(self.__owner, self.get_error_msg(ret)))
             return None
@@ -110,8 +113,10 @@ class Camera(Channel):
             if channel == 1:
                 im = Image.frombuffer('L', [width,height], pData, 'raw', 'L', 0, 1)
             elif channel == 3:
-                im = Image.frombuffer('RGB', [width,height], pData, 'raw', 'RGB', 0, 1)    
-            return im
+                im = Image.frombuffer('RGB', [width,height], pData, 'raw', 'RGB', 0, 1)  
+            image_path = 'R:\\{0}_{1:06d}.bmp'.format(self.__owner,(int(clock()*100000)%100000))
+            im.save(image_path)
+            return image_path
         
     def get_error_msg(self, error_type):
         cstrp = c_char_p(0)

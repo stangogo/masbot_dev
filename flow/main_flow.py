@@ -11,13 +11,26 @@
 from time import sleep
 import logging
 import pykka
-from masbot.config.common_lib import *
+from masbot.controller.wake_actor import *
+
+# utility sample
+# actor['tbar'].send('servo_on')
+# actor['tbar'].send('servo_off')
+# actor['tbar'].send('abs_move', position=(10,20))
+
+# actor['axis_z'].send('set_speed', speed=100)
+# actor['axis_z'].send('set_acc_time', acc_time=0.2)
+# actor['axis_z'].send('get_position')
+# actor['axis_z'].send('rel_move', position=5)
+# actor['axis_z'].send('pt_move', pt='z1')
 
 class MainFlow(pykka.ThreadingActor):
     def __init__(self,):
         super(MainFlow, self).__init__()
         self._logger = logging.getLogger(__name__)
-        self._state = 'get_object'
+        # ====================define initial value=======================
+        self._state = 'stateA'
+        # ===============================================================
         
     def check_continue(self, next_state):
         if self._continue:
@@ -27,55 +40,34 @@ class MainFlow(pykka.ThreadingActor):
         # basic message format
         if message.get('msg') == 'start':
             self._continue = True
-            ret = self._state
+            next_state = self._state
         elif message.get('msg') == 'pause':
             self._continue = False
-            ret = self._state
-        # ###################################################################
-        # start to customize the state machine
-        elif message.get('msg') == 'get_object':
-            ret = self.get_object()
-        elif message.get('msg') == 'put_object':
-            ret = self.put_object()
-        # end to customize the state machine
-        # ###################################################################
+            next_state = self._state
+        # =================customize the state machine===================
+        elif message.get('msg') == 'stateA':
+            next_state = self.stateA()
+        elif message.get('msg') == 'stateB':
+            next_state = self.stateB()
+        # ===============================================================
         else:
-            ret = 'undefine message format'
-        # check if continue running to next state
-        self.check_continue(ret)
-        # message['reply_to'].set(ret)
+            next_state = 'undefine state'
+        self.check_continue(next_state)
+        """message['reply_to'].set(next_state)"""
 
-    # #######################################################################
-    # state machine process
-    # #######################################################################
-    def get_object(self):
-        self._state = 'get_object'
-        ret = actor['tbar'].send('pt_move', pt='get_pt')
+    # ====================state machine process==========================
+    def stateA(self):
+        self._state = 'stateA'
+        position = actor['xy'].send('get_position')
         sleep(0.2)
-        if ret:
-            print(ret)
+        #actor['axis_z'].send('pt_move', pt='test1')
+        if 0:
             return 'pause'
+        return 'stateB'
 
-        return 'put_object'
-
-    def put_object(self):
-        self._state = 'put_object'
-        ret = actor['tbar'].send('pt_move', pt='put_pt')
+    def stateB(self):
+        self._state = 'stateB'
+        position = actor['xy'].send('get_position')
+        #actor['axis_z'].send('pt_move', pt='test2')
         sleep(0.2)
-        if ret:
-            print(ret)
-            return 'pause'
-            
-        ret = actor['noz1'].send('action_on')
-        sleep(0.2)
-        if ret:
-            print(ret)
-            return 'pause'
-            
-        ret = actor['noz1'].send('action_off')
-        sleep(0.2)
-        if ret:
-            print(ret)
-            return 'pause'
-        
-        return 'get_object'
+        return 'stateA'

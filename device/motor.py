@@ -9,6 +9,7 @@
 # notes          : 
 
 import logging
+from time import sleep
 from masbot.device.bulletin import Bulletin
 
 class Motor(Bulletin):
@@ -21,6 +22,7 @@ class Motor(Bulletin):
         self.__axis_list = motor_info['axis_info']
         self.__axis_count = len(motor_info['axis_info'])
         self.__motion = motion
+        self.__timeout = 5000
         
     def get_speed(self):
         return self.__speed
@@ -31,6 +33,15 @@ class Motor(Bulletin):
         else:
             self.__speed = 50
         
+    def get_timeout(self):
+        return self.__timeout
+
+    def set_timeout(self, value):
+        if isinstance(value, int):
+            self.__timeout = value
+        else:
+            self.__timeout = 5000
+            
     def get_acc_time(self):
         return self.__acc_time
         
@@ -52,14 +63,16 @@ class Motor(Bulletin):
                 if ret:
                     msg = "sync pulse error: {} {}".format(axis_info['key'], ret)
                     self.__logger.error(msg)
-            if axis_info['electric_brake'] >= 0:
+            electric_brake = axis_info['electric_brake']
+            if electric_brake and electric_brake >= 0:
                 self.__motion.DO(axis_info['electric_brake'], 1)
             self.__logger.debug('%s servo on ret = %s', axis_info['key'], ret)
         return ret
 
     def servo_off(self):
         for axis_info in self.__axis_list:
-            if axis_info['electric_brake'] >= 0:
+            electric_brake = axis_info['electric_brake']
+            if electric_brake and axis_info['electric_brake'] >= 0:
                 self.__motion.DO(axis_info['electric_brake'], 0)
             ret = self.__motion.servo_on_off(axis_info['axis_id'], 0)
             if ret:
@@ -76,7 +89,11 @@ class Motor(Bulletin):
         return 0
         
     def abs_move(self, position_tuple):
-        # check if parameter legal
+        # check if parameter format legal
+        if isinstance(position_tuple, (int, float)):
+            position_tuple = (position_tuple, )
+        elif isinstance(position_tuple, list):
+            position_tuple = tuple(position_tuple)
         if len(position_tuple) != self.__axis_count:
             return 'axis count = {}'.format(self.__axis_count)
         # check if position under scope
@@ -94,7 +111,7 @@ class Motor(Bulletin):
             axis_map.append(dic)
         speed = self.__speed * proportion
         ret = self.__motion.absolute_move(
-            axis_map, speed, self.__acc_time, self.__acc_time)
+            axis_map, speed, self.__timeout, self.__acc_time, self.__acc_time)
         if ret:
             msg = "abs move error: {}".format(ret)
             self.__logger.debug(msg)
@@ -102,7 +119,11 @@ class Motor(Bulletin):
         return ret
             
     def rel_move(self, rel_position_tuple):
-        # check if parameter legal
+        # check if parameter format legal
+        if isinstance(rel_position_tuple, (int, float)):
+            rel_position_tuple = (rel_position_tuple, )
+        elif isinstance(rel_position_tuple, list):
+            rel_position_tuple = tuple(rel_position_tuple)
         if len(rel_position_tuple) != self.__axis_count:
             return "axis count = {}".format(self.__axis_count)
         # check if position under scope
@@ -126,7 +147,7 @@ class Motor(Bulletin):
             axis_map.append(dic)
         speed = self.__speed * proportion
         ret = self.__motion.relative_move(
-            axis_map, speed, self.__acc_time, self.__acc_time)
+            axis_map, speed, self.__timeout, self.__acc_time, self.__acc_time)
         if ret:
             msg = "rel move error: {}".format(ret)
             self.__logger.debug(msg)
@@ -187,3 +208,50 @@ class Motor(Bulletin):
             return stat
         else:
             return status_list
+
+    def reset_step(self, timeout=5000, interval=20):
+        axis_count = len(self.__axis_list)
+        if axis_count != 1:
+            msg = "axis count of motor is limited to 1, current = {}".format(axis_count)
+            self.__logger.critical(msg)
+            return msg
+        motor_type = self.__axis_list[0]['motor_type']
+        if  motor_type == 'servo':
+            msg = "it can't reset in servo motor"
+            self.__logger.critical(msg)
+            return msg
+        elif motor_type == 'step_line':
+            pre_move_distance = 3
+            ret = self.rel_move(pre_move_distance)
+            if ret:
+                msg = "error when the motor pre-move on reseting"
+            axis_id = self.__axis_list[0]['axis_id']
+            speed = -10 * self.__axis_list[0]['proportion']
+            ret = self.__motion.home_search(axis_id, speed, 0.2, 0)
+        elif motor_type == 'step_rotation':
+            pre_move_distance = 30
+            ret = self.rel_move(pre_move_distance)
+            if ret:
+                msg = "error when the motor pre-move on reseting"
+            axis_id = self.__axis_list[0]['axis_id']
+            speed = -72 * self.__axis_list[0]['proportion']
+            ret = self.__motion.home_search(axis_id, speed, 0.2, 0)
+        
+        sleep(0.1)
+        # wait for motion done
+        count = 0
+        interval_time = interval / 1000
+        while 1:
+            stat = self.get_motion_status()
+            if stat:
+                count = count + interval
+            else:
+                break
+            if count >= timeout:
+                msg = 'timeout({}) when reseting step motor'.format(timeout)
+                self.__logger.info(msg)
+                return msg
+            sleep(interval_time)
+        self.__motion.set_position(axis_id, 0)
+        self.__motion.set_command(axis_id, 0)
+        

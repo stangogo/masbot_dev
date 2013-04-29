@@ -44,11 +44,11 @@ class PixelMapLabel(QtGui.QLabel):
         pixmap = QtGui.QPixmap(image_path).scaledToHeight(self.height)
         self.setPixmap(pixmap)
         
-        #if not self.orig_image_path == None and not self.orig_image_path == image_path:
-            #try:
-                #os.remove(self.orig_image_path)
-            #except:
-                #pass
+        if not self.orig_image_path == None and not self.orig_image_path == image_path:
+            try:
+                os.remove(self.orig_image_path)
+            except:
+                pass
             
         self.orig_image_path = image_path
         
