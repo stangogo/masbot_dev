@@ -55,6 +55,8 @@ class PreviewImage(PixelMapLabel):
             else:
                 self.update_qimage(file_path)
         
+    def del_file(self, image_path):    
+        pass    # preview image label 不砍檔
     
     def set_id(self, id_):
         if not id_:

@@ -93,7 +93,7 @@ class ImageThumbnail(QtGui.QListWidget):
         self.thumbnail_clicked.emit(thumbnail_id, file_path)
     
     def change_image(self, image_data):        
-        (image_path, id_, name) = image_data
+        (image, id_, name) = image_data
         if not id_ :
             return
         
@@ -101,9 +101,9 @@ class ImageThumbnail(QtGui.QListWidget):
             self.add_item_signal.emit(id_)  # 新增一個image label
         else:
             if isinstance(image_path, str):
-                self.thumbnail[id_][0].change_image(image_path) # 0 是 ImageLabel
+                self.thumbnail[id_][0].change_image(image) # 0 是 ImageLabel
             else:
-                self.thumbnail[id_][0].change_qimage(qimage)
+                self.thumbnail[id_][0].change_qimage(image)
             self.thumbnail[id_][2].setText(name)            # 2 是 名稱
         
     def change_qimage(self, qimage, id_):
