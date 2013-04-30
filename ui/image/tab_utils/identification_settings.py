@@ -396,6 +396,8 @@ class IdentificationSettings(QWidget):
         if self.adjust_btn.isChecked():   # '校正'鈕按下 ; 
             self.preview_file_checked()     # 根據 '顯示檔案' 決定
         else:
+            self.preview_file_checkbox.setChecked(False)
+            self.preview_file_checked()     
             UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit(['', None, '', ImagePreviewMode.FixedId])
 
         

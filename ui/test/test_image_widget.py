@@ -82,14 +82,19 @@ class ImageWidgetTest(QWidget):
         
         while self.stop_thread == False:
             index = (index + 1) % 10
-            
+
             index = self.change_thumbnail_image(index, '{0}'.format(index), imgs_dir)
 
             time.sleep(0.15)
     
     def change_thumbnail_image(self, index, id_, imgs_dir):   # 測試用             
-        image_path = "{0}\\{1}.tif".format( imgs_dir, index)
-        img_receiver = UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([image_path, id_, '{0}'.format(index), 3])
+        #image_path = "{0}\\{1}.tif".format( imgs_dir, index)
+        #img_receiver = UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([image_path, id_, '{0}'.format(index), 3])
+        
+        image = QImage ()
+        image.load("{0}\\{1}.tif".format( imgs_dir, index+1))
+        
+        img_receiver = UISignals.GetSignal(SigName.QIMAGE_THUMBNAIL).emit([image, id_, '{0}'.format(index), 3])        
         
         return index     
     
