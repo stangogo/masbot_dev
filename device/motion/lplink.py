@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 
 # Title          : lplink.py
-# Description    : calling functions in LPLink.dll
+# Description    : calling functions in ftd2xx.dll
 # Author         : Stan Liu
-# Date           : 20130410
-# Dependency     : motion.py lplink_dll.py
+# Date           : 20130430
+# Dependency     : motion.py ftd2xx_dll.py
 # usage          : 
 # notes          : 
 
 import logging
 from time import sleep
 from masbot.device.motion.motion_card import Motion
-from masbot.device.motion.lplink_dll import *
-#from masbot.device.motion.adlink_table import *
+from masbot.device.motion.ftd2xx_dll import *
+#from masbot.device.motion.ftdi_table import *
 
 class LPLink(Motion, Channel):
     def __init__(self, cards_config=[]):
