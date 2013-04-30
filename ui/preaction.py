@@ -16,6 +16,8 @@ from masbot.config.utils import UISignals, SigName
 class SigAgent(QtCore.QObject):
     """所有UI對外連接的串口的名稱和參數設定. 
     """
+    main_close = QtCore.Signal()    
+    
     main_start = QtCore.Signal(bool)
     """ signal for start button on major widget
     @ bool : button is clicked to trigger start / shutdown (true/false) system
@@ -64,8 +66,13 @@ class SigAgent(QtCore.QObject):
 
     img_preview = QtCore.Signal(list)
     """影像預覽資料傳入
-    @ list: image data - image path(str), id(str), name(str)
+    @ list: image data - image path(str), id(str), name(str), mode(int)
     """
+    
+    qimage_preview = QtCore.Signal(list)
+    """影像預覽資料傳入
+    @ list: image data - iamge data(QImage), id(str), name(str), mode(int)
+    """    
     
     img_aided_tool = QtCore.Signal(dict)
     """ 影像 - 輔助工具 設定值傳出口
@@ -80,6 +87,7 @@ class SigAgent(QtCore.QObject):
 """初始化所有的接口, 並註冊到UISignals Dictionary
 """
 sig_agent = SigAgent()
+UISignals.RegisterSignal(sig_agent.main_close, SigName.MAIN_CLOSE)
 UISignals.RegisterSignal(sig_agent.main_start, SigName.MAIN_START)
 UISignals.RegisterSignal(sig_agent.main_play, SigName.MAIN_PLAY)
 UISignals.RegisterSignal(sig_agent.di_in, SigName.DI_IN)
@@ -88,6 +96,7 @@ UISignals.RegisterSignal(sig_agent.do_out, SigName.DO_OUT)
 UISignals.RegisterSignal(sig_agent.into_single_axis, SigName.ENTER_AXIS_TABLE)
 UISignals.RegisterSignal(sig_agent.out_single_axis, SigName.FROM_AXIS_TABLE)
 UISignals.RegisterSignal(sig_agent.img_preview, SigName.IMG_THUMBNAIL)
+UISignals.RegisterSignal(sig_agent.qimage_preview, SigName.QIMAGE_THUMBNAIL)
 UISignals.RegisterSignal(sig_agent.img_aided_tool, SigName.IMG_AIDED_TOOL)
 UISignals.RegisterSignal(sig_agent.img_message, SigName.IMG_MESSAGE)
 

@@ -25,7 +25,7 @@ from masbot.config.utils import Path
 
 class ImageThumbnail(QtGui.QListWidget):
 
-    thumbnail_clicked = QtCore.Signal(str)
+    thumbnail_clicked = QtCore.Signal(str, str)
     add_item_signal = QtCore.Signal(str)    # 內部用 (非GUI thread 要新增item時用的)
 
     def __init__(self, thumbnail_id):
@@ -87,7 +87,10 @@ class ImageThumbnail(QtGui.QListWidget):
     def __thumbnail_clicked(self, thumbnail_id):
         index = self.thumbnail[thumbnail_id][1]     # 1 是index
         self.item(index).setSelected(True)          # 設定選擇的label (在listwidget上這個item會反白)
-        self.thumbnail_clicked.emit(thumbnail_id)
+        
+        file_path = self.thumbnail[thumbnail_id][0].orig_image_path
+        
+        self.thumbnail_clicked.emit(thumbnail_id, file_path)
     
     def change_image(self, image_data):        
         (image_path, id_, name) = image_data
@@ -96,8 +99,11 @@ class ImageThumbnail(QtGui.QListWidget):
         
         if not self.thumbnail.get(id_):
             self.add_item_signal.emit(id_)  # 新增一個image label
-        else:            
-            self.thumbnail[id_][0].change_image(image_path) # 0 是 ImageLabel
+        else:
+            if isinstance(image_path, str):
+                self.thumbnail[id_][0].change_image(image_path) # 0 是 ImageLabel
+            else:
+                self.thumbnail[id_][0].change_qimage(qimage)
             self.thumbnail[id_][2].setText(name)            # 2 是 名稱
         
     def change_qimage(self, qimage, id_):

@@ -108,11 +108,11 @@ class Point(QSplitter):
         self.addWidget(self.init_s_axis_group())
         self.addWidget(self.init_t_axis_group())
         
-        self.setOrientation(QtCore.Qt.Vertical)
+        self.setOrientation(QtCore.Qt.Vertical)        
         
         total = sum([table.data_count() for table in self.point_table])
         
-        if total > 0:
+        if total>0:
             size_rate = [ int(700 * table.data_count() /total) for table in self.point_table ]
             self.setSizes(size_rate)
             

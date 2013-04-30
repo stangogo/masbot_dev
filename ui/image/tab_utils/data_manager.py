@@ -7,7 +7,7 @@ last edited: August 2013
 """
 import sys
 
-camera_data = [{'name': '上攝影機模組',
+camera_data = [{'name': '1',
                 'rate': 0.00625,
                 'gain': 100,
                 'gain_min': 0,
@@ -20,7 +20,7 @@ camera_data = [{'name': '上攝影機模組',
                 'FPS': 30,
                 'light': ['積分球', '背光源', '同軸']
                 }, 
-               {'name': '下攝影機模組',
+               {'name': '2',
                 'rate': 0.00703,
                 'gain': 200,
                 'gain_min': 0,
@@ -33,7 +33,7 @@ camera_data = [{'name': '上攝影機模組',
                 'FPS': 30,
                 'light': ['積分球', '環形', '背光源', '環形2']
                 }, 
-               {'name': '監控模組',
+               {'name': '3',
                 'rate': 0.00662,
                 'gain': 233,
                 'gain_min': 0,
@@ -46,7 +46,7 @@ camera_data = [{'name': '上攝影機模組',
                 'FPS': 30,
                 'light': ['背光源', '環形2']
                 }, 
-               {'name': 'Tray盤定位模組',
+               {'name': '4',
                 'rate': 0.00730,
                 'gain': 443,
                 'gain_min': 0,
@@ -59,7 +59,7 @@ camera_data = [{'name': '上攝影機模組',
                 'FPS': 30,
                 'light': ['積分球', '同軸', '圈圈', '背光源']
                 }, 
-               {'name': 'USB影像裝置',
+               {'name': '5',
                 'rate': 1,
                 'gain': 11,
                 'gain_min': 0,
@@ -75,19 +75,19 @@ camera_data = [{'name': '上攝影機模組',
 
 
 identification_data = [{'name': 'BARREL_DETECT',
-                        'camera': 'USB影像裝置',                                            
+                        'camera': '1',                                            
                         'light': ['積分球', '環形', '同軸', '圈圈', '背光源', '環形2'],
                         'IPI_file': 'IPQC_9598A1'
                         }
                        ,
                        {'name': 'TRAY_DETECT',
-                        'camera': 'Tray盤定位模組',
+                        'camera': '3',
                         'light': ['積分球', '背光源'],                        
                         'IPI_file': 'IPQC_30003A2'
                         }
                        ,
                        {'name': 'CAMERA_CHECK',
-                        'camera': '上攝影機模組',         
+                        'camera': '4',         
                         'light': ['積分球', '同軸'],
                         'IPI_file': 'IPQC_40019A2'
                         }

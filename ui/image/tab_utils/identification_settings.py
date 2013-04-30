@@ -382,17 +382,21 @@ class IdentificationSettings(QWidget):
                 UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([path, None, '', ImagePreviewMode.Locked])
             else:
                 id_ = self.camera_label.text()          # 顯示固定Camera(特定ID)的檔案
-                UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit([path, id_, '', ImagePreviewMode.FixedId])
+                UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit(['', id_, '', ImagePreviewMode.Correct])
         except:
             pass
 
+    def disable_correct_mode(self):
+        self.adjust_btn.setChecked(False)
+        self.correction_click()
+
     def correction_click(self): # '校正'按鈕
-        self.setCorrectionMode(self.sender().isChecked())
+        self.setCorrectionMode(self.adjust_btn.isChecked())
         
-        if self.sender().isChecked():   # '校正'鈕按下 ; 
+        if self.adjust_btn.isChecked():   # '校正'鈕按下 ; 
             self.preview_file_checked()     # 根據 '顯示檔案' 決定
         else:
-            UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit(['', None, '', ImagePreviewMode.Unlocked])
+            UISignals.GetSignal(SigName.IMG_THUMBNAIL).emit(['', None, '', ImagePreviewMode.FixedId])
 
         
     def setCorrectionMode(self, correction_mode):
