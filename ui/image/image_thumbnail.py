@@ -56,7 +56,6 @@ class ImageThumbnail(QtGui.QListWidget):
     
         img_label.clicked.connect(self.__thumbnail_clicked)
         img_label.set_height(70)
-        #img_label.update_pixmap("{0}//Sunset.jpg".format(Path.imgs_dir()), 70)  # 預設圖片跟大小
         img_text = QtGui.QLabel(text)
         img_text.setContentsMargins(0,0,0,0)
         
@@ -82,38 +81,31 @@ class ImageThumbnail(QtGui.QListWidget):
         self.setItemWidget(item, frame)
         
         if not self.thumbnail.get(id_):
-            self.thumbnail[id_] = [img_label, index, text_label]    # 1. label, 2. index, 3.name
+            self.thumbnail[id_] = { 'image_label':img_label, 'index': index, 'name_label':text_label}    # 1. label, 2. index, 3.name
+            # self.thumbnail[id_] = [img_label, index, text_label]    # 1. label, 2. index, 3.name
         
     def __thumbnail_clicked(self, thumbnail_id):
-        index = self.thumbnail[thumbnail_id][1]     # 1 是index
+        index = self.thumbnail[thumbnail_id]['index']     # 1 是index
         self.item(index).setSelected(True)          # 設定選擇的label (在listwidget上這個item會反白)
         
-        file_path = self.thumbnail[thumbnail_id][0].orig_image_path
+        file_path = self.thumbnail[thumbnail_id]['image_label'].orig_image_path
         
         self.thumbnail_clicked.emit(thumbnail_id, file_path)
     
     def change_image(self, image_data):        
-        (image_path, id_, name) = image_data
+        (image, id_, name) = image_data
         if not id_ :
             return
         
         if not self.thumbnail.get(id_):
             self.add_item_signal.emit(id_)  # 新增一個image label
         else:
-            if isinstance(image_path, str):
-                self.thumbnail[id_][0].change_image(image_path) # 0 是 ImageLabel
+            if isinstance(image, str):
+                self.thumbnail[id_]['image_label'].change_image(image) # 0 是 ImageLabel
             else:
-                self.thumbnail[id_][0].change_qimage(qimage)
-            self.thumbnail[id_][2].setText(name)            # 2 是 名稱
+                self.thumbnail[id_]['image_label'].change_qimage(image)
+            self.thumbnail[id_]['name_label'].setText(name)            # 2 是 名稱
         
-    def change_qimage(self, qimage, id_):
-        if not id_ :
-            return
-        
-        if not self.thumbnail.get(id_):
-            self.add_item_signal.emit(id_)            
-        else:
-            self.thumbnail[id_][0].change_qimage(qimage)    
 
 def main():
     app = QtGui.QApplication(sys.argv)

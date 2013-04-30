@@ -1,3 +1,7 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+
 # Title          : PixelmapLabel.py
 # Description    : Present a pixel map. Default height is 400.
 #                  Using signal-slot to change the image
@@ -17,8 +21,8 @@ class PixelMapLabel(QtGui.QLabel):
         
     height = 500
     clicked = QtCore.Signal(str)                # can be other types (list, dict, object...)        
-    __change_image = QtCore.Signal(str, int)    #¤º³¡°T¸¹, ³qª¾§ó·s¹Ï¤ù©M¤j¤p; str: ¹ÏÀÉ¸ô®|, int: Åã¥Ü¤j¤p (height)
-    __change_qimage = QtCore.Signal(QtGui.QImage, int)    #¤º³¡°T¸¹, ³qª¾§ó·s¹Ï¤ù©M¤j¤p; str: ¹ÏÀÉ¸ô®|, int: Åã¥Ü¤j¤p (height)
+    __change_image = QtCore.Signal(str, int)    #å…§éƒ¨è¨Šè™Ÿ, é€šçŸ¥æ›´æ–°åœ–ç‰‡å’Œå¤§å°; str: åœ–æª”è·¯å¾‘, int: é¡¯ç¤ºå¤§å° (height)
+    __change_qimage = QtCore.Signal(QtGui.QImage, int)    #å…§éƒ¨è¨Šè™Ÿ, é€šçŸ¥æ›´æ–°åœ–ç‰‡å’Œå¤§å°; str: åœ–æª”è·¯å¾‘, int: é¡¯ç¤ºå¤§å° (height)
     
     def __init__(self, id_):
         super(PixelMapLabel, self).__init__()
@@ -34,6 +38,16 @@ class PixelMapLabel(QtGui.QLabel):
         self.height = height
         #self.image_reader.setScaledSize(QtCore.QSize(int(height*4/3), height))
     
+        
+    def del_file(self, image_path):
+        """ åœ¨preview image label è£¡ , é€™å€‹å‡½å¼è¢«ç¹¼æ‰¿, ä¸ç æª”"""
+        
+        if not self.orig_image_path == None and not self.orig_image_path == image_path:
+            try:
+                os.remove(self.orig_image_path)
+            except:
+                pass 
+            
     def update_pixmap(self, image_path, height=0):
         if not os.path.exists(image_path):
             return
@@ -43,19 +57,16 @@ class PixelMapLabel(QtGui.QLabel):
         
         pixmap = QtGui.QPixmap(image_path).scaledToHeight(self.height)
         self.setPixmap(pixmap)
+                
+        self.del_file(image_path)        
         
-        if not self.orig_image_path == None and not self.orig_image_path == image_path:
-            try:
-                os.remove(self.orig_image_path)
-            except:
-                pass
-            
         self.orig_image_path = image_path
-        
+       
+    
     def update_qimage(self, qimage, height=0):
         if height != 0:
             self.set_height(height) 
-            
+        
         self.setPixmap(QtGui.QPixmap.fromImage(qimage).scaledToHeight(self.height))        
         self.orig_image_path = qimage
         

@@ -48,7 +48,7 @@ class CameraModule(Bulletin):
 #-------------------------------------------------------------------------------------------------
 #camera_inf =  {
         #'camera_set': {
-            #'display_text': '上光源模組',
+            #'display_text': '上���模�,
             #'shutter_value': 800,
             #'port': 0,
             #'camera_type': '1394IIDC',
@@ -61,25 +61,25 @@ class CameraModule(Bulletin):
         #},
         #'camera_job': {
             #'CAMERA_CHECK': {
-                #'display_text': '成品檢查',
+                #'display_text': '?����查',
                 #'dll_name': 'camera_check',
                 #'light': ['top_camera_ISL']
             #},
             #'IPQC': {
-                #'display_text': '成品檢查',
+                #'display_text': '?����查',
                 #'dll_name': 'IPI_9552A1',
                 #'light': ['top_camera_ISL']
             #},
             #'BARREL': {
-                #'display_text': '自裝鈑定位',
+                #'display_text': '?�����?,
                 #'dll_name': 'camera_check',
                 #'light': ['top_camera_ISL', 'top_camera_RL']
             #}
         #},
         #'light': {
-            #'top_camera_RL': ['ADLink', 102, '環形光源'],
-            #'top_camera_ISL': ['ADLink', 100, '積分球光源'],
-            #'top_camera_CL': ['ADLink', 101, '同軸光源']
+            #'top_camera_RL': ['ADLink', 102, '?�形?��],
+            #'top_camera_ISL': ['ADLink', 100, '積����?],
+            #'top_camera_CL': ['ADLink', 101, '?�軸?��]
         #}
     #}
 #from time import clock
