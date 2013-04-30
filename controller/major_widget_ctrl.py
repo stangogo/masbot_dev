@@ -6,9 +6,11 @@ import threading, sys, ctypes
 from time import sleep, clock
 from imp import reload
 from masbot.config.utils import SigName, UISignals
-from masbot.controller.wake_actor import *      # UI ��}���|����rom masbot.device.device_manager import DeviceManager
-import masbot.flow.main_flow    # UI ��}���|����rom masbot.controller.image_tools import *
+from masbot.controller.wake_actor import *
+from masbot.device.device_manager import DeviceManager
+from masbot.controller.image_tools import *
 
+import masbot.flow.main_flow
 
 class MajorWidgetCtrl:
 
@@ -202,10 +204,6 @@ class MajorWidgetCtrl:
         slot = UISignals.GetSignal(SigName.QIMAGE_THUMBNAIL)
         Imgtool = ImageTool()
         sleep(1)
-        #ecref = ctypes.pythonapi.Py_DecRef
-        #decref.argtypes = [ctypes.py_object]
-        #decref.restype = None        
-        #gc.enable()
         while True:
             impath = []
             for i in range(len(camera_info)):
