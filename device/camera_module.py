@@ -12,9 +12,9 @@ import logging
 from re import compile
 from masbot.config.global_settings import *
 from masbot.device.bulletin import Bulletin
-#if hardware_simulation:
-#    from masbot.device.camera.camera_fake import Camera
-#else:
+if hardware_simulation:
+    from masbot.device.camera.camera_fake import Camera
+else:
 from masbot.device.camera.camera import Camera
     
 class CameraModule(Bulletin):    
@@ -48,7 +48,7 @@ class CameraModule(Bulletin):
 #-------------------------------------------------------------------------------------------------
 #camera_inf =  {
         #'camera_set': {
-            #'display_text': 'ä¸Šå…‰æºæ¨¡çµ„',
+            #'display_text': 'ä¸Šå?æºæ¨¡çµ?,
             #'shutter_value': 800,
             #'port': 0,
             #'camera_type': '1394IIDC',
@@ -61,25 +61,25 @@ class CameraModule(Bulletin):
         #},
         #'camera_job': {
             #'CAMERA_CHECK': {
-                #'display_text': 'æˆå“æª¢æŸ¥',
+                #'display_text': '?å?æª¢æŸ¥',
                 #'dll_name': 'camera_check',
                 #'light': ['top_camera_ISL']
             #},
             #'IPQC': {
-                #'display_text': 'æˆå“æª¢æŸ¥',
+                #'display_text': '?å?æª¢æŸ¥',
                 #'dll_name': 'IPI_9552A1',
                 #'light': ['top_camera_ISL']
             #},
             #'BARREL': {
-                #'display_text': 'è‡ªè£éˆ‘å®šä½',
+                #'display_text': '?ªè??‘å?ä½?,
                 #'dll_name': 'camera_check',
                 #'light': ['top_camera_ISL', 'top_camera_RL']
             #}
         #},
         #'light': {
-            #'top_camera_RL': ['ADLink', 102, 'ç’°å½¢å…‰æº'],
-            #'top_camera_ISL': ['ADLink', 100, 'ç©åˆ†çƒå…‰æº'],
-            #'top_camera_CL': ['ADLink', 101, 'åŒè»¸å…‰æº']
+            #'top_camera_RL': ['ADLink', 102, '?°å½¢?‰æ?'],
+            #'top_camera_ISL': ['ADLink', 100, 'ç©å??ƒå?æº?],
+            #'top_camera_CL': ['ADLink', 101, '?Œè»¸?‰æ?']
         #}
     #}
 #from time import clock
