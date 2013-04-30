@@ -15,7 +15,7 @@ from masbot.device.bulletin import Bulletin
 if hardware_simulation:
     from masbot.device.camera.camera_fake import Camera
 else:
-from masbot.device.camera.camera import Camera
+    from masbot.device.camera.camera import Camera
     
 class CameraModule(Bulletin):    
     def __init__(self, camera_info, board={}):
@@ -48,7 +48,7 @@ class CameraModule(Bulletin):
 #-------------------------------------------------------------------------------------------------
 #camera_inf =  {
         #'camera_set': {
-            #'display_text': 'ä¸Šå?æºæ¨¡çµ?,
+            #'display_text': 'ä¸Šï¿½ï¿½ï¿½æ¨¡ï¿½,
             #'shutter_value': 800,
             #'port': 0,
             #'camera_type': '1394IIDC',
@@ -61,25 +61,25 @@ class CameraModule(Bulletin):
         #},
         #'camera_job': {
             #'CAMERA_CHECK': {
-                #'display_text': '?å?æª¢æŸ¥',
+                #'display_text': '?ï¿½ï¿½ï¿½ï¿½æŸ¥',
                 #'dll_name': 'camera_check',
                 #'light': ['top_camera_ISL']
             #},
             #'IPQC': {
-                #'display_text': '?å?æª¢æŸ¥',
+                #'display_text': '?ï¿½ï¿½ï¿½ï¿½æŸ¥',
                 #'dll_name': 'IPI_9552A1',
                 #'light': ['top_camera_ISL']
             #},
             #'BARREL': {
-                #'display_text': '?ªè??‘å?ä½?,
+                #'display_text': '?ï¿½ï¿½ï¿½ï¿½ï¿½?,
                 #'dll_name': 'camera_check',
                 #'light': ['top_camera_ISL', 'top_camera_RL']
             #}
         #},
         #'light': {
-            #'top_camera_RL': ['ADLink', 102, '?°å½¢?‰æ?'],
-            #'top_camera_ISL': ['ADLink', 100, 'ç©å??ƒå?æº?],
-            #'top_camera_CL': ['ADLink', 101, '?Œè»¸?‰æ?']
+            #'top_camera_RL': ['ADLink', 102, '?ï¿½å½¢?ï¿½ï¿½],
+            #'top_camera_ISL': ['ADLink', 100, 'ç©ï¿½ï¿½ï¿½ï¿½?],
+            #'top_camera_CL': ['ADLink', 101, '?ï¿½è»¸?ï¿½ï¿½]
         #}
     #}
 #from time import clock

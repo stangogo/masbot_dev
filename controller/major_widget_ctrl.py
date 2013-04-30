@@ -6,10 +6,8 @@ import threading, sys, ctypes
 from time import sleep, clock
 from imp import reload
 from masbot.config.utils import SigName, UISignals
-from masbot.controller.wake_actor import *      # UI Â÷¶}¤£·|µ²§ô
-from masbot.device.device_manager import DeviceManager
-import masbot.flow.main_flow    # UI Â÷¶}¤£·|µ²§ô
-from masbot.controller.image_tools import *
+from masbot.controller.wake_actor import *      # UI ï¿½ï¿½}ï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½rom masbot.device.device_manager import DeviceManager
+import masbot.flow.main_flow    # UI ï¿½ï¿½}ï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½rom masbot.controller.image_tools import *
 
 
 class MajorWidgetCtrl:
@@ -220,7 +218,7 @@ class MajorWidgetCtrl:
                     msg = [Qim, actor_unit['camera_set']['camera_name'], actor_unit['camera_set']['display_text']]
                     slot.emit(msg)
                     
-            #sleep(0.05)
+            sleep(0.05)
 
     def __login_out(self):
         #self.__main_flow.stop()

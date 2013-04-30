@@ -181,14 +181,14 @@ for col in range(col_info.count()):
 
 light_info = {}
 while result.next():
-    list_value = []
+    list_value = {}
     light_name = ''
     for i, col in enumerate(col_names):
         cell_value = result.value(i)
         if col == 'light_name':
             light_name = cell_value
         else:
-            list_value.append(cell_value)
+            list_value.update({col:cell_value})
     light_info.update({light_name:list_value})
     
 # extract camera job dic from db

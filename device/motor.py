@@ -228,7 +228,7 @@ class Motor(Bulletin):
             axis_id = self.__axis_list[0]['axis_id']
             speed = -10 * self.__axis_list[0]['proportion']
             ret = self.__motion.home_search(axis_id, speed, 0.2, 0)
-        elif motor_type == 'step_rotation':
+        elif motor_type == 'step_circle':
             pre_move_distance = 30
             ret = self.rel_move(pre_move_distance)
             if ret:

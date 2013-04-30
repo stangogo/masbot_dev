@@ -78,15 +78,16 @@ class Camera(Channel):
         self.set_parameter('shutter_value', cam_info['shutter_value'])
         
     def get_parameter(self, para_name):
-        if para_name in self.__para_enum.keys():
-            return self.__para_set.get(para_name, None)
-        elif para_name == 'camera_mode':
-            return self.__camera_mode
-        elif para_name == 'color_type':
-            return self.__color_type
+        if isinstance(para_name, str):
+            if para_name in self.__para_enum.keys():
+                return self.__para_set.get(para_name, None)
+            elif para_name == 'camera_mode':
+                return self.__camera_mode
+            elif para_name == 'color_type':
+                return self.__color_type
         
     def set_parameter(self, para_name, value):
-        if para_name in self.__para_enum.keys():
+        if para_name in self.__para_enum.keys() and isinstance(para_name, str) and isinstance(value, int):
             if para_name in ['gain_value','shutter_value','reverse_type']:
                 ret = self.run(self.__grabber.set_camera_parameter, self.__port, self.__para_enum[para_name], value)
                 if ret:
