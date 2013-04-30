@@ -110,13 +110,14 @@ class Camera(Channel):
             self.__logger.warning("Camera:{} device grab image occurred error ({})".format(self.__owner, self.get_error_msg(ret)))
             return None
         else:
-            if channel == 1:
-                im = Image.frombuffer('L', [width,height], pData, 'raw', 'L', 0, 1)
-            elif channel == 3:
-                im = Image.frombuffer('RGB', [width,height], pData, 'raw', 'RGB', 0, 1)  
-            image_path = 'R:\\{0}_{1:06d}.bmp'.format(self.__owner,(int(clock()*100000)%100000))
-            im.save(image_path)
-            return image_path
+            return [pData, width, height, channel]
+            #if channel == 1:
+            #    im = Image.frombuffer('L', [width,height], pData, 'raw', 'L', 0, 1)
+            #elif channel == 3:
+            #    im = Image.frombuffer('RGB', [width,height], pData, 'raw', 'RGB', 0, 1)  
+            #image_path = 'R:\\{0}_{1:06d}.bmp'.format(self.__owner,(int(clock()*100000)%100000))
+            #im.save(image_path)
+            #return image_path
         
     def get_error_msg(self, error_type):
         cstrp = c_char_p(0)

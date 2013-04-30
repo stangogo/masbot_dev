@@ -103,7 +103,7 @@ class ImageThumbnail(QtGui.QListWidget):
             if isinstance(image_path, str):
                 self.thumbnail[id_][0].change_image(image_path) # 0 是 ImageLabel
             else:
-                self.thumbnail[id_][0].change_qimage(qimage)
+                self.thumbnail[id_][0].change_qimage(image_path)
             self.thumbnail[id_][2].setText(name)            # 2 是 名稱
         
     def change_qimage(self, qimage, id_):

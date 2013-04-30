@@ -58,7 +58,8 @@ class PixelMapLabel(QtGui.QLabel):
             
         self.setPixmap(QtGui.QPixmap.fromImage(qimage).scaledToHeight(self.height))        
         self.orig_image_path = qimage
-        
+        #print('before ui',sys.getrefcount(qimage))
+        #del(qimage)
     @QtCore.Slot(str)
     def change_image(self, image_path):
         self.__change_image.emit(image_path, 0)

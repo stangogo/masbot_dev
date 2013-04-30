@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import threading
+import threading, sys, ctypes
 from time import sleep, clock
 from imp import reload
-  
 from masbot.config.utils import SigName, UISignals
 from masbot.controller.wake_actor import *
 from masbot.device.device_manager import DeviceManager
 #from masbot.flow.main_flow import MainFlow
 import masbot.flow.main_flow
+from masbot.controller.image_tools import *
+
 
 class MajorWidgetCtrl:
 
@@ -181,19 +182,26 @@ class MajorWidgetCtrl:
                 return ret
 
     def __update_image_thumbnail(self):
-        slot = UISignals.GetSignal(SigName.IMG_THUMBNAIL)
+        slot = UISignals.GetSignal(SigName.QIMAGE_THUMBNAIL)
+        Imgtool = ImageTool()
         sleep(1)
+        #ecref = ctypes.pythonapi.Py_DecRef
+        #decref.argtypes = [ctypes.py_object]
+        #decref.restype = None        
+        #gc.enable()
         while True:
             impath = []
             for i in range(len(camera_info)):
                 #s1 = clock()
                 actor_unit = camera_info[i]
-                impath = actor[actor_unit['camera_set']['camera_name']].send('snapshot')
+                data = actor[actor_unit['camera_set']['camera_name']].send('snapshot')
+                Qim = Imgtool.QImagefromData(data)
                 #print('%.5f'%(clock()-s1))
-                msg = [impath, actor_unit['camera_set']['camera_name'], actor_unit['camera_set']['display_text']]
-                slot.emit(msg)
-                
-            sleep(0.05)
+                if Qim:
+                    msg = [Qim, actor_unit['camera_set']['camera_name'], actor_unit['camera_set']['display_text']]
+                    slot.emit(msg)
+                    
+            #sleep(0.05)
 
     def __login_out(self):
         #self.__main_flow.stop()
