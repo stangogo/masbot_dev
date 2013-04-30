@@ -66,13 +66,16 @@ class DIOButton(QtGui.QPushButton):
         
         off_img = "font: 10px;background-color: transparent ; border-image: url({0}/Grey Ball.png);".format(imgs_dir)
         off_img = off_img.replace('\\', '/' )
+        #off_img = 'background-color:lightgray; border: 1px solid #C4C4C3; border-radius: 13px;'
         
         if do :
             do_on_img = "font: 10px;background-color: transparent ; border-image: url({0}/Green Ball.png);".format(imgs_dir)
+            #do_on_img = 'font: 10px;background-color: lightgreen;  border: 1px solid #C4C4C3; border-radius: 13px;'
             do_on_img = do_on_img.replace('\\', '/' )                    
             self.on_style = "QPushButton{%s}" % do_on_img
         else :
             di_on_img = " font: 10px; background-color: transparent ; border-image: url({0}/Red Ball.png);".format(imgs_dir)
+            #di_on_img = 'font: 10px;background-color: orange;  border: 1px solid #C4C4C3; border-radius: 13px;'
             di_on_img = di_on_img.replace('\\', '/' )            
             self.on_style = "QPushButton{%s}" % di_on_img
             
