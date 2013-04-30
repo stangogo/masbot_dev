@@ -118,12 +118,12 @@ class LPLink(Motion, Channel):
         """
         pass
         
-    def relative_move(self, axis_map, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
+    def relative_move(self, axis_map, timeout, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
         """ single/multiple axis move relatively
         """
         pass
 
-    def absolute_move(self, axis_map, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
+    def absolute_move(self, axis_map, timeout, speed, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
         """ single/multiple axis move absolutely
         """
         pass

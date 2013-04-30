@@ -117,7 +117,7 @@ class LPLink(Motion):
     def emg_stop(self, axis):
         return 0
         
-    def relative_move(self, axis_map, speed, Tacc=0.2, Tdec=0.2, SVacc=0.75, SVdec=0.75):
+    def relative_move(self, axis_map, timeout, speed, Tacc=0.2, Tdec=0.2, SVacc=0.75, SVdec=0.75):
         simulate_count = 5
         for axis in axis_map:
             self.__motion_status[axis['axis_id']] = 14
@@ -127,7 +127,7 @@ class LPLink(Motion):
             self.__motion_status[axis['axis_id']] = 0
         return 0
 
-    def absolute_move(self, axis_map, speed, Tacc=0.2, Tdec=0.2, SVacc=0.75, SVdec=0.75):
+    def absolute_move(self, axis_map, timeout, speed, Tacc=0.2, Tdec=0.2, SVacc=0.75, SVdec=0.75):
         now_position = [0] * 8
         for axis in axis_map:
             now_position[axis['axis_id']] = self.__axis_pulse[axis['axis_id']]
