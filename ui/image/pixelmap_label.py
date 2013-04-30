@@ -66,7 +66,7 @@ class PixelMapLabel(QtGui.QLabel):
     def update_qimage(self, qimage, height=0):
         if height != 0:
             self.set_height(height) 
-            
+        
         self.setPixmap(QtGui.QPixmap.fromImage(qimage).scaledToHeight(self.height))        
         self.orig_image_path = qimage
         

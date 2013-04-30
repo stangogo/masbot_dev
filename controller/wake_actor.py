@@ -22,6 +22,7 @@ for rec in piston_info:
 for rec in motor_info:
     actor_name = rec['key']
     actor[actor_name] = MotorActor.start(rec)
+    
 
 for rec in camera_info:
     actor[rec['camera_set']['camera_name']] = CameraActor.start(rec)

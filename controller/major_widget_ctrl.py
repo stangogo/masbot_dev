@@ -7,34 +7,40 @@ from time import sleep, clock
 from imp import reload
   
 from masbot.config.utils import SigName, UISignals
-from masbot.controller.wake_actor import *
+from masbot.controller.wake_actor import *      # UI 離開不會結束
 from masbot.device.device_manager import DeviceManager
 #from masbot.flow.main_flow import MainFlow
-import masbot.flow.main_flow
+import masbot.flow.main_flow    # UI 離開不會結束
 
 class MajorWidgetCtrl:
 
     def __init__(self):
+     
         self.__logger = logging.getLogger(__name__)
         self.__proxy_switch = 1
         self.__servo_status = 0
+        UISignals.GetSignal(SigName.MAIN_CLOSE).connect(self.__ui_close)
         UISignals.GetSignal(SigName.MAIN_START).connect(self.__servo_on_off)
         UISignals.GetSignal(SigName.FROM_AXIS_TABLE).connect(self.__move_single_axis)
         UISignals.GetSignal(SigName.MAIN_PLAY).connect(self.__play_flow)
         UISignals.GetSignal(SigName.MAIN_LOG_IN).connect(self.__login_out)
         UISignals.GetSignal(SigName.DO_OUT).connect(self.__do_clicked)
         
+        self.__b_ui_close = False
+        
         DM = DeviceManager()
         self.__device_proxy = DM._get_device_proxy()
         timer = threading.Timer(1, self.__update_ui)
         timer.daemon = True
         timer.start()
+        
         image_thumbnail_timer = threading.Thread(target=self.__update_image_thumbnail)
         image_thumbnail_timer.daemon = True
         image_thumbnail_timer.start()   
         
         # initail the flow actor
         self.__main_flow = masbot.flow.main_flow.MainFlow().start()
+        
         
     def set_proxy_switch(self, on_off=0):
         self.__proxy_switch = on_off
@@ -49,6 +55,18 @@ class MajorWidgetCtrl:
         
     def __do_clicked(self, do_port, on_off):
         self.__device_proxy['8158'].DO(do_port, on_off)
+        
+        
+    def __ui_close(self):
+        """ terminate all running thread, actor, and flow.
+        """
+        self.__b_ui_close = True
+        print('main ui is closed')
+        
+        self.__main_flow.stop()
+        for value in actor.values():
+            value.stop()
+        
         
     def __servo_on_off(self, on):
         if self.__servo_status == 0:
@@ -74,6 +92,9 @@ class MajorWidgetCtrl:
 
     def __update_ui(self):
         while True:
+            if self.__b_ui_close:
+                break
+            
             if self.__proxy_switch:
                 self.__refresh_axis_widget()
                 self.__refresh_dio_widget()
@@ -181,9 +202,12 @@ class MajorWidgetCtrl:
                 return ret
 
     def __update_image_thumbnail(self):
-        slot = UISignals.GetSignal(SigName.IMG_THUMBNAIL)
+        slot = UISignals.GetSignal(SigName.IMG_THUMBNAIL)        
         sleep(1)
         while True:
+            if self.__b_ui_close:
+                break            
+
             impath = []
             for i in range(len(camera_info)):
                 #s1 = clock()

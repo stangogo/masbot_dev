@@ -138,20 +138,6 @@ class ImageWidget(QtGui.QWidget):
         if id_:                             # id_ 為空或Nonoe - 顯示手動選擇的影像檔案            
             self.img_thumbnail.change_image([path, id_, name])
        
-    #def qimage_thumbnail_income(self, image_data):
-        #if len(image_data) == 4:
-            #(qimage, id_, name, mode) = image_data
-        #else:
-            #(qimage, id_, name) = image_data
-            #mode = ImagePreviewMode.FixedId
-        
-        #self.preview_image.set_mode(mode)
-        #self.preview_image.set_image(path, id_)
-        
-        
-        #if id_:                             # id_ 為空或Nonoe - 顯示手動選擇的影像檔案            
-            #self.img_thumbnail.change_image([path, id_, name])
-       
        
     def play_button_on(self, play_btn_on):
         self.image_utils_tab.set_run_time_mode(play_btn_on)

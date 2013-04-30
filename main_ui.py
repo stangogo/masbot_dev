@@ -11,7 +11,7 @@ last edited: Mar. 2013
 import sys
 import os
 import logging
-
+from time import sleep
 import tkinter
 from datetime import datetime
 
@@ -44,6 +44,11 @@ class MainUI(QtGui.QMainWindow):
         
         self.init_ui()
         self._init_controller()
+        
+    def __del__(self):
+        UISignals.GetSignal(SigName.MAIN_CLOSE).emit()
+        
+        
         
     def init_ui(self):
         
@@ -89,7 +94,10 @@ class MainUI(QtGui.QMainWindow):
         
 
     def _init_controller(self):
-        self._major_widget_instance = MajorWidgetCtrl()
+        try:
+            self._major_widget_instance = MajorWidgetCtrl()
+        except:
+            pass
         
     def switch_dio_image(self):        
         if self.right_widget.isHidden():
