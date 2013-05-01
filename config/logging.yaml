@@ -119,6 +119,25 @@ handlers:
         maxBytes: 10485760 # 10MB
         backupCount: 20
         encoding: utf8
+        
+    widget_controller_handler:       # Henry
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        formatter: simple
+        filename: log/widget_controller_info.log
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
+        
+    camera_actor_handler:       # Henry
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        formatter: simple
+        filename: log/camera_actor.log
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
+        
 loggers:
     masbot.device.motor:
         level: DEBUG
@@ -173,7 +192,17 @@ loggers:
     masbot.device.image_dll_handler:     #Henry
         level: DEBUG
         handlers: [console, image_dll_handler]
-        propagate: false    
+        propagate: false
+        
+    masbot.controller.major_widget_ctrl:     #Henry
+        level: DEBUG
+        handlers: [console, widget_controller_handler]
+        propagate: false
+        
+    masbot.actor.camera_actor:     #Henry
+        level: DEBUG
+        handlers: [console, camera_actor_handler]
+        propagate: false
 root:
     level: DEBUG
     handlers: [console]

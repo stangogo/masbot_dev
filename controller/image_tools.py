@@ -20,7 +20,7 @@ class ImageTool():
         pass
     def QImagefromData(self, data_list):
         try:     
-            if not isinstance(data_list, str):
+            if isinstance(data_list, list):
                 if data_list[3] == 1:
                     im = Image.frombuffer('L', [data_list[1],data_list[2]], data_list[0], 'raw', 'L', 0, 1)
                     image_path = 'R:\\tmp1_{0:06d}.bmp'.format((int(clock()*100000)%100000))

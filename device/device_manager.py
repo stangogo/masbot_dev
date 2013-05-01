@@ -173,13 +173,17 @@ class DeviceManager(object):
     def __allocate_camera_module(self, actor_info, actor_type):
         require = {}
         require_DO = {}
+        io_cards = {}
+        all_card = self._get_device_proxy()
         for key, val in actor_info['light'].items():
-            if isinstance(val['port'], int):
+            if isinstance(val['port'], int) and val['module_type'] in all_card:
                 module_name = '{}_DO'.format(val['module_type'])
+                io_cards.update({val['module_type']:all_card.get(val['module_type'])})
                 if module_name in require_DO:                    
                     require_DO[module_name].append(val['port'])
                 else:
-                    require_DO.update({module_name:[val['port']]})        
+                    require_DO.update({module_name:[val['port']]}) 
+                
         for module in require_DO:
             require.update({module:require_DO.get(module)}) 
         try:
@@ -196,7 +200,7 @@ class DeviceManager(object):
         ret = self.__resource_check(camera_module, require)
         if ret:
             return ret
-        return CameraModule(actor_info, self.__bulletin) 
+        return CameraModule(actor_info, io_cards, self.__bulletin) 
     
     def __resource_check(self, actor_name, require):
         for resource_type, resource_list in require.items():
