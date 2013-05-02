@@ -4,7 +4,7 @@
 # Description    : waking all the actors
 # Author         : Stan Liu
 # Date           : 20130424
-# Dependency     : PistonActor, MotorActor
+# Dependency     : Gather the information of all type actor 
 # usage          : 
 # notes          : 
 
