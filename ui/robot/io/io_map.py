@@ -25,7 +25,7 @@ class IOMap(QtGui.QWidget):
         
         
     def init_ui(self, card_num):
-        do_grid = QtGui.QGridLayout()        
+        do_grid = QtGui.QGridLayout()
         do_grid.setVerticalSpacing(0)   # row的間距
         do_grid.setHorizontalSpacing(0)  # column的間距
         
