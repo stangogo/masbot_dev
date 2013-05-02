@@ -30,6 +30,7 @@ else:
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
 from masbot.device.camera_module import CameraModule
+from masbot.controller.display_controller import DisplayController
 
 class DeviceManager(object):
     _instance = None
@@ -43,6 +44,7 @@ class DeviceManager(object):
     def __initial(self):
         self.__logger = logging.getLogger(__name__)
         self.__bulletin = {}
+        self.__disp_ctr = DisplayController()
         self.__adlink8154 = ADLink8154(io_card_info['8154'])
         self.__adlink8158 = ADLink8158(io_card_info['8158'])
         self.__lplink = LPLink(io_card_info['LPLink'])
@@ -204,7 +206,7 @@ class DeviceManager(object):
         ret = self.__resource_check(camera_module, require)
         if ret:
             return ret
-        return CameraModule(actor_info, io_cards, self.__bulletin) 
+        return CameraModule(actor_info, io_cards, self.__disp_ctr, self.__bulletin) 
     
     def __resource_check(self, actor_name, require):
         for resource_type, resource_list in require.items():
