@@ -216,8 +216,8 @@ class MajorWidgetCtrl:
     def __initial_image_control(self):
         slot = UISignals.GetSignal(SigName.QIMAGE_THUMBNAIL)
         self.__image_diplay_thread = []
-        self.__display_on_off = False
-        
+        self.__display_on_off = False      
+                
         for count in camera_info:
             actor_name = count['camera_set'].get('camera_name', None)
             actor_disp = count['camera_set'].get('display_text', 'No name')
@@ -226,7 +226,10 @@ class MajorWidgetCtrl:
                 thd.daemon = True
                 thd.start()                  
                 self.__image_diplay_thread.append(thd)   
-                
+        test_thread = threading.Thread(target=self.test_inspection)
+        test_thread.daemon = True
+        test_thread.start()      
+        
     def __realtime_display_image(self, switch):
         if switch == 'on':
             self.__display_on_off = True
@@ -235,15 +238,19 @@ class MajorWidgetCtrl:
         else:
             pass
     
-    def __update_image_thumbnail(self, slot, actor_name, display_text):        
-        Imgtool = ImageTool()
+    def __update_image_thumbnail(self, slot, actor_name, display_text):
         sleep(1)
         while not self.__b_ui_close:
             if self.__display_on_off:
                 data = actor[actor_name].send('snapshot')
-                Qim = Imgtool.QImagefromData(data)
+                Qim = QImagefromData(data)
                 if Qim:
                     msg = [Qim, actor_name, display_text]
                     slot.emit(msg)
-                    
-            sleep(0.07)    
+            sleep(0.07)
+            
+    def test_inspection(self):
+        sleep(3)
+        for i in range(1000):
+            sleep(1)
+            actor['top_camera'].send('inspect',job_name='BARREL')
