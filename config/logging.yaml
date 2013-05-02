@@ -48,6 +48,15 @@ handlers:
         backupCount: 20
         encoding: utf8
     
+    lplink_file_handler:
+        class: logging.handlers.RotatingFileHandler
+        level: DEBUG
+        formatter: simple
+        filename: log/lplink.log
+        maxBytes: 10485760 # 10MB
+        backupCount: 20
+        encoding: utf8
+    
     bulletin_file_handler:
         class: logging.handlers.RotatingFileHandler
         level: DEBUG
@@ -154,6 +163,16 @@ loggers:
         handlers: [console, adlink_file_handler]
         propagate: false
 
+    masbot.device.motion.lplink:
+        level: DEBUG
+        handlers: [console, lplink_file_handler]
+        propagate: false
+
+    masbot.device.motion.lplink_fake:
+        level: DEBUG
+        handlers: [console, lplink_file_handler]
+        propagate: false
+    
     masbot.device.bulletin:
         level: DEBUG
         handlers: [console, bulletin_file_handler]
