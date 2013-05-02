@@ -7,133 +7,120 @@ last edited: Mar. 2013
 """
 
 import sys
-from PySide import QtGui, QtCore
+from PySide import QtCore
+from PySide.QtGui import *
 
 from masbot.config.utils import Path, SigName, UISignals
 from masbot.ui.control.dio_button import *
 from masbot.ui import preaction
 
-class IOMap(QtGui.QWidget):
+class IOMap(QWidget):
     
     def __init__(self, card_num):
-        super(IOMap, self).__init__()
-        
-        self.init_ui(card_num)
-        
-        UISignals.GetSignal(SigName.DI_IN).connect(self.di_changed)
-        UISignals.GetSignal(SigName.DO_IN).connect(self.do_changed)
+        super(IOMap, self).__init__()        
+        self.init_ui()
+        UISignals.GetSignal(SigName.DIO_STATUS).connect(self.dio_changed)
         
         
-    def init_ui(self, card_num):
-        do_grid = QtGui.QGridLayout()
-        do_grid.setVerticalSpacing(0)   # row的間距
-        do_grid.setHorizontalSpacing(0)  # column的間距
-        
-        di_grid = QtGui.QGridLayout()
-        di_grid.setVerticalSpacing(0)   # row的間距
-        di_grid.setHorizontalSpacing(0)  # column的間距                 
-                
-        col_len = 20    
-        #card_num = 10        
-        #io_num = col_len*card_num
-        io_num = 32 * card_num
+        dio_8154 = {'type':'8154', 'di':[0 for x in range(0, 60)], 'do':[0 for x in range(0, 50)]}
+        dio_8158 = {'type':'8158', 'di':[0 for x in range(0, 40)], 'do':[0 for x in range(0, 60)]}
+        dio_LPLink = {'type':'LPLink', 'di':[0 for x in range(0, 64)], 'do':[0 for x in range(0, 32)]}
+        dio_LPMax = {'type':'LPMax', 'di':[0 for x in range(0, 32)], 'do':[0 for x in range(0, 48)]}
 
-        self.do_list = []
-        self.di_list = []
+        self.dio_status(dio_8154)
+        self.dio_status(dio_8158)
+        self.dio_status(dio_LPLink)
+        self.dio_status(dio_LPMax)
         
-        for i in range(0, io_num):
+        
+        
+    def init_ui(self):        
+        self.card = {}              # 包含: 'type':     (str),              'do_layout':(Grid layout), 
+                                    #       'di_layout':(Grid layout),      'do_list':(list of DO Button), 
+                                    #       'di_list':  (list of DI Button)
+        self.v_layout = QVBoxLayout()
+        self.v_layout.setAlignment(QtCore.Qt.AlignVCenter)
+
+        self.setLayout(self.v_layout)
+        self.setWindowTitle('IO Map')
+        self.show()
+        
+    def dio_status(self, dio_status):
+        card_type = dio_status['type']
+        
+        if card_type in self.card:
+            do_grid = self.card[card_type]['do_grid']
+            di_grid = self.card[card_type]['di_grid']
+            do_list = self.card[card_type]['do_list']
+            di_list = self.card[card_type]['di_list']
+        else:            
+            card = {}
+            do_grid = card['do_grid'] = QGridLayout()
+            di_grid = card['di_grid'] = QGridLayout()
+            do_grid.setVerticalSpacing(1)       # row的間距
+            do_grid.setHorizontalSpacing(1)     # column的間距
+            di_grid.setVerticalSpacing(1)       # row的間距
+            di_grid.setHorizontalSpacing(1)     # column的間距
+            
+            do_list = card['do_list'] = []
+            di_list = card['di_list'] = []
+            self.card[card_type] = card
+            
+            groupbox = QGroupBox(card_type)
+            hbox = QHBoxLayout()
+            hbox.addLayout(do_grid)
+            hbox.addLayout(di_grid)
+            hbox.setAlignment(do_grid, QtCore.Qt.AlignTop)
+            hbox.setAlignment(di_grid, QtCore.Qt.AlignTop)
+            hbox.setContentsMargins(2,5,2,2)
+            groupbox.setLayout(hbox)
+            
+            self.v_layout.addWidget(groupbox)
+        
+        do = dio_status['do']
+        di = dio_status['di']
+                
+        col_len = 10 
+        do_num = len(do)
+        di_num = len(di)
+
+        for i in range(0, max(do_num, di_num)):
             row = (int)(i/col_len)
             column = i % col_len
             
-            a = int(column/5)*5 + int(column/5) -1
-            
-            if a == column:
-                di_grid.setColumnMinimumWidth(i % col_len, 8)
-                do_grid.setColumnMinimumWidth(i % col_len, 8)
-            
-            do_btn = DIOButton(i, True)
-            do_btn.clicked.connect(self.do_clicked)
-            self.do_list.append(do_btn)
-            self.di_list.append(DIOButton(i, False))
-            do_grid.addWidget(self.do_list[i], row + 1, column + int(column /5))
-            di_grid.addWidget(self.di_list[i], row + 1, column + int(column /5))
-
-        do_title = DIOLabel('DO', True)
-        do_title.on_off(True)
-        do_title.setToolTip('顯示目前DO狀況, 按DO可手動控制作動')
-        do_title.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        do_title.setFixedWidth(30)
-        do_title.setFixedHeight(30)
-       
-        do_underscore = QtGui.QLabel()
-        do_underscore.setObjectName("DO_underscope");
+            #a = int(column/5)*5 + int(column/5) -1
+            #if a == column: 
+            if column > 0 and column % 5 == 0:                        
+                di_grid.setColumnMinimumWidth(i % col_len, 5)
+                do_grid.setColumnMinimumWidth(i % col_len, 5)
                 
-        do_underscore.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        do_underscore.setFixedWidth(550)
-        do_underscore.setFixedHeight(1)
+            if i < do_num:
+                if i< len(do_list):
+                    do_list[i].on_off(do[i])
+                else:
+                    do_btn = DIOButton(i, True)
+                    do_btn.clicked.connect(self.do_clicked)
+                    do_grid.addWidget(do_btn, row + 1, column + int(column /5))
+                    do_list.append(do_btn)
+            
+            if i <di_num:
+                if i < len(di_list):
+                    di_list[i].on_off(di[i])
+                else:
+                    di_label = DIOButton(i, False)
+                    di_grid.addWidget(di_label, row + 1, column + int(column /5))                
+                    di_list.append(di_label)
 
-        di_title = DIOLabel('DI', False)        
-        di_title.setToolTip('顯示目前DI狀況')
-        di_title.on_off(True)
-        #di_title.setStyleSheet('QLabel{ font-size: 12pt;  font-family:Segoe UI; background-color: rgb(232, 113, 6)}')
-        #di_title.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        di_title.setFixedWidth(30)
-        di_title.setFixedHeight(30)
-        
-        di_underscore = QtGui.QLabel()
-        di_underscore.setObjectName("DI_underscope");        
-        di_underscore.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        di_underscore.setFixedWidth(550)
-        di_underscore.setFixedHeight(1)
-        
-        self.v_layout = QtGui.QVBoxLayout()
-        
-        self.v_layout.addWidget(do_title, 0)
-        self.v_layout.addWidget(do_underscore, 0)
-        
-        self.v_layout.addLayout(do_grid, 10)
-        
-        self.v_layout.addWidget(di_title, 0)
-        self.v_layout.addWidget(di_underscore, 0)
-        
-        self.v_layout.addLayout(di_grid, 10)
-        self.v_layout.setAlignment(QtCore.Qt.AlignVCenter)
-        #self.v_layout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
-
-        self.setLayout(self.v_layout)
-                
-        self.setWindowTitle('IO Map')
-        self.show()
     def do_clicked(self):
         sender = self.sender()
         UISignals.GetSignal(SigName.DO_OUT).emit(sender.io_num, sender.nOn)
             
-    def do_di_changed(self, new_status, old_list, On):
-        if new_status == None:
-            return
-        
-        if len(new_status) > 1:
-            for i in range(0, len(new_status)):
-                old_list[i].on_off(new_status[i])
-        elif len(new_status) == 1:
-            if new_status[0] >= len(old_list):
-                print("out of range: max - {0}".format(len(old_list)))
-            else :
-                old_list[new_status[0]].on_off(On)
-            
-    def do_changed(self, do_new, On):
-        """
-        do_new: list for setting DO status. if the length = 1, it means the index of DO, and "on" is status 
-        if the lenght > 1, each element means the status and index of list is the nubmer of DO
-        """
-        self.do_di_changed(do_new, self.do_list, On)
-    
-    def di_changed(self, di_new, On):
-        self.do_di_changed(di_new, self.di_list, On)
-            
+    def dio_changed(self, dict_status):
+        self.dio_status(dict_status)            
+
 def main():
     
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     ex = IOMap(8)
     app.exec_()
 

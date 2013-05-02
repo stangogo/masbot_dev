@@ -110,7 +110,9 @@ class ImageWidget(QtGui.QWidget):
         v_layout = QtGui.QVBoxLayout(self)
         v_layout.addWidget(self.img_thumbnail)
         v_layout.addWidget(self.preview_image)        
-        v_layout.addWidget(self.image_utils_tab)        
+        v_layout.addWidget(self.image_utils_tab)     
+        
+        v_layout.setAlignment(self.preview_image, QtCore.Qt.AlignLeft)
         
         self.setLayout(v_layout)
              

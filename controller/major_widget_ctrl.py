@@ -148,8 +148,8 @@ class MajorWidgetCtrl:
             status = self.__device_proxy[module_type].DI(i)
             di_status.append(status)
             
-        do_slot.emit(do_status, 1)
-        di_slot.emit(di_status, 1)
+        #do_slot.emit(do_status, 1)
+        #di_slot.emit(di_status, 1)
         
     def __move_single_axis(self, axis_name, offset):
         # check if the device proxy status

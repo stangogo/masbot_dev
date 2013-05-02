@@ -19,8 +19,8 @@ from masbot.ui.robot.io.IO_table_template import IOTableTemplate
 class NozzleTable(IOTableTemplate):
     def __init__(self, data_table_name, order_by, horizontal):
         super(NozzleTable, self).__init__(data_table_name, order_by, horizontal)
-        UISignals.GetSignal(SigName.DI_IN).connect(self.di_changed)
-        UISignals.GetSignal(SigName.DO_IN).connect(self.do_changed)        
+        #UISignals.GetSignal(SigName.DI_IN).connect(self.di_changed)
+        #UISignals.GetSignal(SigName.DO_IN).connect(self.do_changed)        
         self.horizontalHeader().hide()   
    
     def do_clicked(self, io_num, on_off, row, column, table):   

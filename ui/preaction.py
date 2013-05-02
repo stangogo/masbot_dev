@@ -28,23 +28,15 @@ class SigAgent(QtCore.QObject):
     @ bool : button is clicked to trigger play / pause (true/false) system
     """    
     
-    di_in = QtCore.Signal(list, int)
+    dio_status = QtCore.Signal(dict)
     """
-    external DI signals - the index of list is the port number of DI, 
-                          and the value means on or off. If the number
-                          of list only one. The value presents the port
-                          number of DI and bool is the status.
-    @ list: DI port status
-    @ int : on or off (1 or 0)
+    DIO status - 
+    @ dict : there are there elements
+            ex: 'type':'8154'               - 8154 card
+                'di':[0,0,0,1,1,0]          - 6 DI port: off, off, off, on, on, off
+                'd0':[1,0,0,0,1,0,1,0,0]    - 9 DO port: on, off, off, off, on, off, on, off, off
     
-    #"""
-    
-    do_in = QtCore.Signal(list, int)
-    """ external DO signal 
-    @ list: DO port staus
-    @ int : on or off (1 or 0)
-    
-    #"""
+    """    
     
     do_out = QtCore.Signal(int, int)
     """ 提供 DIOButton, ButtonForTable clicked時, 輸出DO port 和 on-off的接口
@@ -90,8 +82,9 @@ sig_agent = SigAgent()
 UISignals.RegisterSignal(sig_agent.main_close, SigName.MAIN_CLOSE)
 UISignals.RegisterSignal(sig_agent.main_start, SigName.MAIN_START)
 UISignals.RegisterSignal(sig_agent.main_play, SigName.MAIN_PLAY)
-UISignals.RegisterSignal(sig_agent.di_in, SigName.DI_IN)
-UISignals.RegisterSignal(sig_agent.do_in, SigName.DO_IN)
+#UISignals.RegisterSignal(sig_agent.di_in, SigName.DI_IN)
+#UISignals.RegisterSignal(sig_agent.do_in, SigName.DO_IN)
+UISignals.RegisterSignal(sig_agent.dio_status, SigName.DIO_STATUS)
 UISignals.RegisterSignal(sig_agent.do_out, SigName.DO_OUT)
 UISignals.RegisterSignal(sig_agent.into_single_axis, SigName.ENTER_AXIS_TABLE)
 UISignals.RegisterSignal(sig_agent.out_single_axis, SigName.FROM_AXIS_TABLE)

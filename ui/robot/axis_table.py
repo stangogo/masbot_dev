@@ -141,21 +141,48 @@ class AxisTable(QtGui.QTableWidget):
         self.verticalHeader().sectionClicked.connect(self.vertical_header_clicked)
         
         self.setWindowTitle('Axis Operation')
+
+    def create_ctrl_button(self, direction):
+        if direction == 'RL':
+            directions = ['arrow_right', 'arrow_left', '右移', '左移']
+        elif direction == 'LR':
+            directions = ['arrow_left', 'arrow_right', '左移', '右移']
+        elif direction =='UD':
+            directions = ['arrow_up', 'arrow_down', '上移', '下移']
+        elif direction =='DU':
+            directions = ['arrow_down', 'arrow_up', '下移', '上移']
+        elif direction =='Z_UD':
+            directions = ['sq_br_up', 'sq_br_down', 'z軸上', 'z軸下']
+        elif direction =='Z_DU':
+            directions = ['sq_br_down', 'sq_br_up', 'z軸下', 'z軸上']
+        elif direction =='CW':
+            directions = ['reload', 'CCW', '順時鐘轉', '逆時鐘轉']
+        elif direction =='CCW':
+            directions = ['CCW', 'reload', '逆時鐘轉', '順時鐘轉']
+
+        add, minus, add_hint, minus_hint= directions
+        
+        btn_add = AxisButton(QtGui.QIcon("{0}/{1}.png".format(Path.imgs_dir(), add)), "")
+        btn_add.setToolTip(add_hint)
+        btn_minus = AxisButton(QtGui.QIcon("{0}/{1}.png".format(Path.imgs_dir(), minus)), "")        
+        btn_minus.setToolTip(minus_hint)
+        
+        return [btn_add, btn_minus]
         
     def fill_table(self, query):
-        query.exec_("select key from single_axis")
+        query.exec_("select key, icon from single_axis")
         index = 0
         for i in range(0, self.columnCount()):
-            btn_add = AxisButton(QtGui.QIcon("{0}/up.png".format(Path.imgs_dir())), "")
-            btn_minus = AxisButton(QtGui.QIcon("{0}/down.png".format(Path.imgs_dir())), "")
+            
             btn_scale = ScaleComboBox()
             display_checkbox = DisplayCheck()
-            
-            btn_add.column = btn_minus.column= btn_scale.column = display_checkbox.column = i
             if query.next():
+                btn_add, btn_minus = self.create_ctrl_button(query.value(1))
                 btn_add.axis = btn_minus.axis = btn_scale.axis = display_checkbox.axis = query.value(0)
-                self.column_dict[btn_add.axis] = index
+                self.column_dict[btn_add.axis] = index            
                 index += 1
+                
+                btn_add.column = btn_minus.column= btn_scale.column = display_checkbox.column = i
             
             btn_add.clicked.connect(self.add_clicked)
             btn_minus.clicked.connect(self.minus_clicked)

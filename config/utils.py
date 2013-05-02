@@ -67,12 +67,17 @@ class SigName:
         # @axis_name(str), @value(int)
     
     """ DIO agent"""
-    DO_IN = 'DIO_AGENT_DO_IN'
-        # Signals of DO from outside - 
-        # @DO status (list), @on/off (int 1/0)
-    DI_IN = 'DIO_AGENT_DI_IN'
-        # Signals of DI from outside - 
-        # @DI status (list), @on/off (int 1/0)
+    DIO_STATUS = 'DIO_STATUS'
+        # DIO status are provided by pysical situation - 
+        # @DIO status on card (dict), there elements, each one is dict: [ 'type': type_name, 'di':[di status], 'do':[do_status] ] 
+        # ex:   'type':'8154'             - 8154 card
+        #       'di':[0,0,0,1,1,0]        - 6 DI port: off, off, off, on, on, off
+        #       'do':[1,0,0,0,1,0,1,0,0]  - 9 DO port: on, off, off, off, on, off, on, off, off
+        
+    DO_IN = 'DO_IN'
+    
+    DI_IN = 'DI_IN'
+        
     DO_OUT = 'DIO_AGENT_DO_OUT'
         # Send DO signal out - 
         # @DO number (int), @on/off (int 1/0)

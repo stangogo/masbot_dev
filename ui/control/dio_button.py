@@ -10,6 +10,13 @@ from PySide import QtGui, QtCore
 
 from masbot.config.utils import Path, SigName, UISignals
 
+class DIOColor():
+    green = 'font: 11px; background-color:qradialgradient(cx:0, cy:0, radius: 1, fx:0.3, fy:0.3, stop:0 white, stop:1 green); border: 1px solid #C4C4C3; border-radius: $size$px;'
+    orange = 'font: 11px; background-color:qradialgradient(cx:0, cy:0, radius: 1, fx:0.3, fy:0.3, stop:0 white, stop:1 orange); border: 1px solid #C4C4C3; border-radius: $size$px;'
+    gray_green = 'font: 11px; background-color:qradialgradient(cx:0, cy:0, radius: 1, fx:0.3, fy:0.3, stop:0 white, stop:1 gray); border: 1px solid green; border-radius: $size$px;'
+    gray_orange = 'font: 11px; background-color:qradialgradient(cx:0, cy:0, radius: 1, fx:0.3, fy:0.3, stop:0 white, stop:1 gray); border: 1px solid orange; border-radius: $size$px;'
+    
+
 class DIOButton(QtGui.QPushButton):
     """
     提供客製化DIO的按鈕, 自行變化背景圖按被按下的時候
@@ -28,18 +35,23 @@ class DIOButton(QtGui.QPushButton):
         self.io_num = io_num
         
         self.set_style(do)
-        self.on_off(False)
         if io_num >= 0:
             self.setText("%d" % io_num)
                 
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)                
-        self.set_size(26, 26)
+        self.set_size(24)
         
+        self.on_off(False)
         self.setAutoFillBackground(True)
                 
-    def set_size(self, width, height):
-        self.setFixedWidth(width)
-        self.setFixedHeight(height)       
+    def set_size(self, edge):
+        self.setFixedWidth(edge)
+        self.setFixedHeight(edge)       
+        
+        # 強迫更新stylesheet
+        self.nOn = not self.nOn 
+        self.on_off(not self.nOn)
+        
         
     def on_clicked(self):        
         self.on_off(not self.nOn)
@@ -49,11 +61,11 @@ class DIOButton(QtGui.QPushButton):
             return    
         self.nOn = on
         if on:                  #light on
-            self.setStyleSheet(self.on_style)
+            self.setStyleSheet(self.on_style.replace('$size$', '{0}'.format(int(self.size().width()/2))) )
             if not self.isChecked() and self.isCheckable():
                 self.setChecked(True)
         else:
-            self.setStyleSheet(self.off_style)
+            self.setStyleSheet(self.off_style.replace('$size$', '{0}'.format(int(self.size().width()/2))) )
             if self.isChecked() and self.isCheckable():
                 self.setChecked(False)
             
@@ -61,25 +73,95 @@ class DIOButton(QtGui.QPushButton):
         """
         設定DO 或 DI 的背景和文字style.
         """
-        
-        imgs_dir = Path.imgs_dir()
-        
-        off_img = "font: 10px;background-color: transparent ; border-image: url({0}/Grey Ball.png);".format(imgs_dir)
-        off_img = off_img.replace('\\', '/' )
-        #off_img = 'background-color:lightgray; border: 1px solid #C4C4C3; border-radius: 13px;'
+        #imgs_dir = Path.imgs_dir()
+        #off_img = "font: 10px;background-color: transparent ; border-image: url({0}/Grey Ball.png);".format(imgs_dir)
+        #off_img = off_img.replace('\\', '/' )
         
         if do :
-            do_on_img = "font: 10px;background-color: transparent ; border-image: url({0}/Green Ball.png);".format(imgs_dir)
-            #do_on_img = 'font: 10px;background-color: lightgreen;  border: 1px solid #C4C4C3; border-radius: 13px;'
-            do_on_img = do_on_img.replace('\\', '/' )                    
-            self.on_style = "QPushButton{%s}" % do_on_img
-        else :
-            di_on_img = " font: 10px; background-color: transparent ; border-image: url({0}/Red Ball.png);".format(imgs_dir)
-            #di_on_img = 'font: 10px;background-color: orange;  border: 1px solid #C4C4C3; border-radius: 13px;'
-            di_on_img = di_on_img.replace('\\', '/' )            
-            self.on_style = "QPushButton{%s}" % di_on_img
+            # do_on_img = "font: 10px;background-color: transparent ; border-image: url({0}/Green Ball.png);".format(imgs_dir)
+            on_img = DIOColor.green #'background-color:qradialgradient(cx:0, cy:0, radius: 1, fx:0.3, fy:0.3, stop:0 white, stop:1 green); border: 1px solid #C4C4C3; border-radius: 13px;'
+            off_img = DIOColor.gray_green
+            # do_on_img = do_on_img.replace('\\', '/' )                    
             
+            
+            
+        else :
+            #di_on_img = " font: 10px; background-color: transparent ; border-image: url({0}/Red Ball.png);".format(imgs_dir)
+            on_img = DIOColor.orange # 'background-color:qradialgradient(cx:0, cy:0, radius: 1, fx:0.3, fy:0.3, stop:0 white, stop:1 orange); border: 1px solid #C4C4C3; border-radius: 13px;'
+            #di_on_img = di_on_img.replace('\\', '/' )            
+            off_img = DIOColor.gray_orange
+            #self.on_style = "QPushButton{%s}" % on_img
+        
+        self.on_style = "QPushButton{%s}" % on_img
         self.off_style = "QPushButton{%s}"% off_img 
+
+class DIOLabel(QtGui.QLabel):
+    nOn = 1
+    io_num = -1
+    # key = ""            #屬誰
+    action =""          #動作; blow, suck, up/down ...etc.    
+    
+    def __init__(self, text, do):
+        super(DIOLabel, self).__init__()
+        
+        self.set_style(do)
+        self.setText(text)
+        self.on_off(False)
+
+        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.set_size(24)
+        self.setAutoFillBackground(True)
+        
+        
+    def set_size(self, edge):
+        self.setFixedWidth(edge)
+        self.setFixedHeight(edge)          
+        
+        # 強迫更新stylesheet
+        self.nOn = not self.nOn
+        self.on_off(not self.nOn)
+
+    def set_style(self, do):
+        self.setAlignment(QtCore.Qt.AlignCenter)
+        
+        imgs_dir = Path.imgs_dir()
+        if do :
+            on_img = DIOColor.green            
+            off_img = DIOColor.gray_green
+        else :
+            on_img = DIOColor.orange
+            off_img = DIOColor.gray_orange
+            
+            
+        #off_img = "background-color: transparent ; border-image: url({0}/Grey Ball.png);".format(imgs_dir)
+        #off_img = off_img.replace('\\', '/' )
+        
+        self.on_style = "QLabel{%s}" % on_img
+        
+        self.off_style = "QLabel{%s}"% off_img 
+    
+    def set_properties(self, key, action):
+        # self.key = key
+        self.action = action    
+    
+    def on_off(self, on):
+        if on == self.nOn:
+            return
+        
+        self.nOn = on
+        if on:      #用邊長的一半做border的radius, 可做出圓形的效果
+            self.setStyleSheet(self.on_style.replace('$size$', '{0}'.format(int(self.size().width()/2))) )
+        else: 
+            self.setStyleSheet(self.off_style.replace('$size$', '{0}'.format(int(self.size().width()/2))) )
+
+    #def on_clicked(self):
+        #self.nOn = not self.nOn
+        #self.on_off(self.nOn)
+
+    #def mousePressEvent(self, event):    
+        #self.clicked.emit("emit the signal")
+        #self.on_clicked()
+
 
 
 
@@ -148,70 +230,4 @@ class ButtonForTable(QtGui.QPushButton):
             self.setStyleSheet('QPushButton{background-color:white}')
         
         #self.signals.emit(self.io_num, on, self.row, self.column, self.table)
-
-class DIOLabel(QtGui.QLabel):
-    nOn = 1
-    io_num = -1
-    # key = ""            #屬誰
-    action =""          #動作; blow, suck, up/down ...etc.    
-    
-    #clicked = QtCore.Signal(str) # can be other types (list, dict, object...)
-    
-    def __init__(self, text, do):
-        super(DIOLabel, self).__init__()
-        
-        self.set_style(do)
-        self.setText(text)
-        self.on_off(False)
-
-        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.set_size(26, 26)
-        self.setAutoFillBackground(True)
-        
-        
-    def set_size(self, width, height):
-        self.setFixedWidth(width)
-        self.setFixedHeight(height)          
-
-    def set_style(self, do):
-        self.setAlignment(QtCore.Qt.AlignCenter)
-        
-        imgs_dir = Path.imgs_dir()
-        if do :
-            do_on_img = "background-color: transparent ; border-image: url({0}/Green Ball.png);".format(imgs_dir)
-            do_on_img = do_on_img.replace('\\', '/' )                    
-            self.on_style = "QLabel{%s}" % do_on_img
-            
-        else :
-            di_on_img = "background-color: transparent ; border-image: url({0}/Red Ball.png);".format(imgs_dir)
-            di_on_img = di_on_img.replace('\\', '/' )            
-            self.on_style = "QLabel{%s}" % di_on_img
-            
-            
-        off_img = "background-color: transparent ; border-image: url({0}/Grey Ball.png);".format(imgs_dir)
-        off_img = off_img.replace('\\', '/' )
-        self.off_style = "QLabel{%s}"% off_img 
-    
-    def set_properties(self, key, action):
-        # self.key = key
-        self.action = action    
-    
-    def on_off(self, on):
-        if on == self.nOn:
-            return
-        
-        self.nOn = on
-        if on:
-            self.setStyleSheet(self.on_style)
-        else: 
-            self.setStyleSheet(self.off_style)
-
-    #def on_clicked(self):
-        #self.nOn = not self.nOn
-        #self.on_off(self.nOn)
-
-    #def mousePressEvent(self, event):    
-        #self.clicked.emit("emit the signal")
-        #self.on_clicked()
-
 

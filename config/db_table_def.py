@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
  Title          : db_table_def.py
@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS single_axis(
     electric_brake INTEGER,
     scope_min REAL DEFAULT -999,
     scope_max REAL DEFAULT 999,
+    icon TEXT,
     individual INTEGER DEFAULT 1,
     PRIMARY KEY(key)
 );
