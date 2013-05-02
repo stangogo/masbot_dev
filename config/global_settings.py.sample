@@ -3,9 +3,18 @@
 # Title          : global_settings.py
 # Description    : global configuration
 # Author         : Stan Liu
-# Date           : 20130307
+# Date           : 20130502
 # Dependency     : 
 # usage          : import global_settings
 # notes          : 
 
-hardware_simulation = True
+hardware_simulation = {
+    
+'8154' : True,
+'8158' : True,
+'LPLink' : True,
+'LPMax' : True,
+'camera' : True,
+'image_dll': False,
+
+}

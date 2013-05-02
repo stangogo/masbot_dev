@@ -119,9 +119,9 @@ class ADLink(Motion):
     def emg_stop(self, axis):
         return 0
         
-    def relative_move(self, axis_map, timeout, speed, Tacc=0.2, Tdec=0.2, SVacc=0.75, SVdec=0.75):
+    def relative_move(self, axis_list, speed, timeout=5000, Tacc=0.2, Tdec=0.2, SVacc=-1, SVdec=-1):
         simulate_count = 10
-        for axis in axis_map:
+        for axis in axis_list:
             self.__motion_status[axis['axis_id']] = 14
             for count in range(simulate_count):
                 self.__axis_pulse[axis['axis_id']] += axis['pulse'] / simulate_count
@@ -129,13 +129,13 @@ class ADLink(Motion):
             self.__motion_status[axis['axis_id']] = 0
         return 0
 
-    def absolute_move(self, axis_map, timeout, speed, Tacc=0.2, Tdec=0.2, SVacc=0.75, SVdec=0.75):
+    def absolute_move(self, axis_list, speed, timeout=5000, Tacc=0.3, Tdec=0.3, SVacc=-1, SVdec=-1):
         now_position = [0] * 8
-        for axis in axis_map:
+        for axis in axis_list:
             now_position[axis['axis_id']] = self.__axis_pulse[axis['axis_id']]
 
         simulate_count = 10
-        for axis in axis_map:
+        for axis in axis_list:
             self.__motion_status[axis['axis_id']] = 14
             for count in range(simulate_count):
                 shift_position = axis['pulse'] - now_position[axis['axis_id']]

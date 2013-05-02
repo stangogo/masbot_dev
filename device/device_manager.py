@@ -14,18 +14,23 @@ from re import compile
 from masbot.config.global_settings import *
 from masbot.config.gather_data import *
 # hardware detecttion
-if hardware_simulation:
+if hardware_simulation.get('8154', True):
     from masbot.device.motion.adlink_fake import ADLink as ADLink8154
-    from masbot.device.motion.adlink_fake import ADLink as ADLink8158
-    from masbot.device.motion.lplink_fake import LPLink
 else:
     from masbot.device.motion.adlink import ADLink8154
+if hardware_simulation.get('8158', True):
+    from masbot.device.motion.adlink_fake import ADLink as ADLink8158
+else:
     from masbot.device.motion.adlink import ADLink8158
-    #from masbot.device.motion.lplink import LPLink
+if hardware_simulation.get('LPLink', True):    
     from masbot.device.motion.lplink_fake import LPLink
+else:
+    from masbot.device.motion.lplink_fake import LPLink
+    
 from masbot.device.piston import Piston
 from masbot.device.motor import Motor
 from masbot.device.camera_module import CameraModule
+from masbot.controller.display_controller import DisplayController
 
 class DeviceManager(object):
     _instance = None
@@ -39,6 +44,7 @@ class DeviceManager(object):
     def __initial(self):
         self.__logger = logging.getLogger(__name__)
         self.__bulletin = {}
+        self.__disp_ctr = DisplayController()
         self.__adlink8154 = ADLink8154(io_card_info['8154'])
         self.__adlink8158 = ADLink8158(io_card_info['8158'])
         self.__lplink = LPLink(io_card_info['LPLink'])
@@ -200,7 +206,7 @@ class DeviceManager(object):
         ret = self.__resource_check(camera_module, require)
         if ret:
             return ret
-        return CameraModule(actor_info, io_cards, self.__bulletin) 
+        return CameraModule(actor_info, io_cards, self.__disp_ctr, self.__bulletin) 
     
     def __resource_check(self, actor_name, require):
         for resource_type, resource_list in require.items():
