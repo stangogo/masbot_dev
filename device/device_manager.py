@@ -18,7 +18,6 @@ if hardware_simulation:
     from masbot.device.motion.adlink_fake import ADLink as ADLink8154
     from masbot.device.motion.adlink_fake import ADLink as ADLink8158
     from masbot.device.motion.lplink_fake import LPLink
-    #from masbot.device.camera.camera_fake import Camera
 else:
     from masbot.device.motion.adlink import ADLink8154
     from masbot.device.motion.adlink import ADLink8158
@@ -172,8 +171,21 @@ class DeviceManager(object):
         return Motor(actor_info, io_card, self.__bulletin)
     
     def __allocate_camera_module(self, actor_info, actor_type):
-        #output_pattern = compile('^output[0-9]$')
-        #input_pattern = compile('^input[0-9]$')        
+        require = {}
+        require_DO = {}
+        io_cards = {}
+        all_card = self._get_device_proxy()
+        for key, val in actor_info['light'].items():
+            if isinstance(val['port'], int) and val['module_type'] in all_card:
+                module_name = '{}_DO'.format(val['module_type'])
+                io_cards.update({val['module_type']:all_card.get(val['module_type'])})
+                if module_name in require_DO:                    
+                    require_DO[module_name].append(val['port'])
+                else:
+                    require_DO.update({module_name:[val['port']]}) 
+                
+        for module in require_DO:
+            require.update({module:require_DO.get(module)}) 
         try:
             mod_type = actor_info['camera_set']['camera_type']
         except:
@@ -184,30 +196,12 @@ class DeviceManager(object):
             camera_module = 'Camera_USB2'
         else:
             camera_module = None
-        #do_module = "{}_DO".format(mod_type)
-        #di_module = "{}_DI".format(mod_type)
-        #require = {do_module: [], di_module: []}
-        require = {camera_module:[actor_info['camera_set']['port']]}#do_module: [], di_module: []}
-        #for key, val in actor_info.items():
-        #    if output_pattern.match(key) and isinstance(val, int):
-        #        require[do_module].append(val)
-        #    elif input_pattern.match(key) and isinstance(val, int):
-        #        require[di_module].append(val)
+        require.update({camera_module:[actor_info['camera_set']['port']]}) 
         ret = self.__resource_check(camera_module, require)
         if ret:
             return ret
-        #if mod_type == 'ADLink':
-            #io_card = self.__adlink
-        #elif mod_type == 'LPLink':
-            #io_card = self.__lplink
-        #elif mod_type == 'LPMax':
-            #io_card = None
-            #io_card = self.__lpmax
-        #else:
-            #msg = "unknown module type: {}".format(mod_type)
-            #self.__logger.critical(msg)
-            #return msg
-        return CameraModule(actor_info, self.__bulletin)        
+        return CameraModule(actor_info, io_cards, self.__bulletin) 
+    
     def __resource_check(self, actor_name, require):
         for resource_type, resource_list in require.items():
             for port in resource_list:

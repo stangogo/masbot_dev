@@ -2,20 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import threading
+import threading, sys, ctypes
 from time import sleep, clock
 from imp import reload
-  
 from masbot.config.utils import SigName, UISignals
-from masbot.controller.wake_actor import *      # UI 離開不會結束
+from masbot.controller.wake_actor import *
 from masbot.device.device_manager import DeviceManager
-#from masbot.flow.main_flow import MainFlow
-import masbot.flow.main_flow    # UI 離開不會結束
+from masbot.controller.image_tools import *
+
+import masbot.flow.main_flow
 
 class MajorWidgetCtrl:
 
     def __init__(self):
-     
         self.__logger = logging.getLogger(__name__)
         self.__proxy_switch = 1
         self.__servo_status = 0
@@ -30,17 +29,14 @@ class MajorWidgetCtrl:
         
         DM = DeviceManager()
         self.__device_proxy = DM._get_device_proxy()
+        self.__initial_image_control()        
+        
         timer = threading.Timer(1, self.__update_ui)
         timer.daemon = True
-        timer.start()
-        
-        image_thumbnail_timer = threading.Thread(target=self.__update_image_thumbnail)
-        image_thumbnail_timer.daemon = True
-        image_thumbnail_timer.start()   
+        timer.start()       
         
         # initail the flow actor
-        self.__main_flow = masbot.flow.main_flow.MainFlow().start()
-        
+        self.__main_flow = masbot.flow.main_flow.MainFlow().start()        
         
     def set_proxy_switch(self, on_off=0):
         self.__proxy_switch = on_off
@@ -49,10 +45,14 @@ class MajorWidgetCtrl:
         if play:
             self.set_proxy_switch(0)
             self.__main_flow.send('start', wait=False)
+            self.__realtime_display_image('off')
+            self.__logger.debug('start_flow button is pressed by user')
         else:
             self.__main_flow.send('pause', wait=False)
             self.set_proxy_switch(1)
-        
+            self.__realtime_display_image('on')
+            self.__logger.debug('pause_flow button is pressed by user')
+            
     def __do_clicked(self, do_port, on_off):
         self.__device_proxy['8158'].DO(do_port, on_off)
         
@@ -61,12 +61,11 @@ class MajorWidgetCtrl:
         """ terminate all running thread, actor, and flow.
         """
         self.__b_ui_close = True
-        print('main ui is closed')
+        self.__logger.debug('main ui is closed by user')
         
         self.__main_flow.stop()
         for value in actor.values():
             value.stop()
-        
         
     def __servo_on_off(self, on):
         if self.__servo_status == 0:
@@ -80,6 +79,7 @@ class MajorWidgetCtrl:
                     return ret
                 servo_on_ok_list.append(actor_key)
             self.__servo_status = 1
+            self.__logger.debug('servo_on button is pressed by user')
             return 0
         else:
             self.__servo_status = 0
@@ -88,6 +88,7 @@ class MajorWidgetCtrl:
                 ret = actor[actor_key].send('servo_off')
                 if ret:
                     return ret
+            self.__logger.debug('servo_off button is pressed by user')
             return 0
 
     def __update_ui(self):
@@ -200,29 +201,49 @@ class MajorWidgetCtrl:
                 rel_position_list[index] = offset
                 ret = actor[actor_name].send('rel_move', position=rel_position_list)
                 return ret
-
-    def __update_image_thumbnail(self):
-        slot = UISignals.GetSignal(SigName.IMG_THUMBNAIL)        
-        sleep(1)
-        while True:
-            if self.__b_ui_close:
-                break            
-
-            impath = []
-            for i in range(len(camera_info)):
-                #s1 = clock()
-                actor_unit = camera_info[i]
-                impath = actor[actor_unit['camera_set']['camera_name']].send('snapshot')
-                #print('%.5f'%(clock()-s1))
-                msg = [impath, actor_unit['camera_set']['camera_name'], actor_unit['camera_set']['display_text']]
-                slot.emit(msg)
-                
-            sleep(0.05)
-
+            
     def __login_out(self):
         #self.__main_flow.stop()
         self.__play_flow(0)
         del(self.__main_flow)
         reload(masbot.flow.main_flow)
         self.__main_flow = masbot.flow.main_flow.MainFlow().start()
+    '''    
+    ###############################################################
+    #####################  image widget part ######################
+    ###############################################################
+    '''
+    def __initial_image_control(self):
+        slot = UISignals.GetSignal(SigName.QIMAGE_THUMBNAIL)
+        self.__image_diplay_thread = []
+        self.__display_on_off = False
         
+        for count in camera_info:
+            actor_name = count['camera_set'].get('camera_name', None)
+            actor_disp = count['camera_set'].get('display_text', 'No name')
+            if actor_name:
+                thd = threading.Thread(target=self.__update_image_thumbnail, args=[slot,actor_name,actor_disp])
+                thd.daemon = True
+                thd.start()                  
+                self.__image_diplay_thread.append(thd)   
+                
+    def __realtime_display_image(self, switch):
+        if switch == 'on':
+            self.__display_on_off = True
+        elif switch == 'off':
+            self.__display_on_off = False
+        else:
+            pass
+    
+    def __update_image_thumbnail(self, slot, actor_name, display_text):        
+        Imgtool = ImageTool()
+        sleep(1)
+        while not self.__b_ui_close:
+            if self.__display_on_off:
+                data = actor[actor_name].send('snapshot')
+                Qim = Imgtool.QImagefromData(data)
+                if Qim:
+                    msg = [Qim, actor_name, display_text]
+                    slot.emit(msg)
+                    
+            sleep(0.07)    

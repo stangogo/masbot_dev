@@ -12,24 +12,46 @@ import logging
 from re import compile
 from masbot.config.global_settings import *
 from masbot.device.bulletin import Bulletin
-if hardware_simulation:
-    from masbot.device.camera.camera_fake import Camera
-else:
-    from masbot.device.camera.camera import Camera
+#if hardware_simulation:
+    #from masbot.device.camera.camera_fake import Camera
+#else:
+from masbot.device.camera.camera import Camera
     
 class CameraModule(Bulletin):    
-    def __init__(self, camera_info, board={}):
-        owner = camera_info['camera_set']['camera_name']
-        super(CameraModule, self).__init__(owner, board)
-        self.__logger = logging.getLogger(__name__)    
-        self.__cam_info = camera_info
-        #self.__io_card = io_card
-        self.__initial()  
-        
-    #def __del__(self): 
-        
+    def __init__(self, camera_info, io_cards, board={}):
+        self.__owner = camera_info['camera_set']['camera_name']
+        super(CameraModule, self).__init__(self.__owner, board)
+        self.__logger = logging.getLogger(__name__)
+        try:
+            self.__camset_info = camera_info.get('camera_set',None)
+            self.__job_info = camera_info.get('camera_job',None)
+            self.__light_info = camera_info.get('light',None)
+            self.__io_cards = io_cards
+            self.__initial()              
+        except:
+            self.__logger.error('Gather camera module infomation error')   
+                
     def __initial(self):      
-        self.__camera = Camera(self.__cam_info.get('camera_set'))      
+        self.__camera = Camera(self.__camset_info) 
+        
+    def lights_switch(self, light_change):
+        if isinstance(light_change[1], str) and light_change[1] == 'on':
+            state = 1
+        else:
+            state = 0
+        light_name = light_change[0]
+        if light_name in self.__light_info:
+            asg_io_card = self.__io_cards.get(self.__light_info[light_name]['module_type'], None)
+            if asg_io_card:             
+                return asg_io_card.DO(self.__light_info[light_name]['port'], state)
+            else:
+                msg = "{} module do not have authority to access io card.".format(self.__owner)
+                self.__logger.error(msg)
+                return msg                
+        else:
+            msg = '{} is not in {} module.'.format(light_name,self.__owner)
+            self.__logger.error(msg)
+            return msg     
         
     def get_parameter(self, para_name):
         return self.__camera.get_parameter(para_name)
@@ -43,63 +65,3 @@ class CameraModule(Bulletin):
     def close_camera(self):
         return self.__camera.close_camera()
             
-#-------------------------------------------------------------------------------------------------
-#-----------------------------------------test----------------------------------------------------
-#-------------------------------------------------------------------------------------------------
-#camera_inf =  {
-        #'camera_set': {
-            #'display_text': '上光源模組',
-            #'shutter_value': 800,
-            #'port': 0,
-            #'camera_type': '1394IIDC',
-            #'pixel_size': 0.00725,
-            #'reverse_type': 0,
-            #'camera_name': 'top_camera',
-            #'color_type': 'gray',
-            #'gain_value': 100,
-            #'camera_mode': '7:0:0'
-        #},
-        #'camera_job': {
-            #'CAMERA_CHECK': {
-                #'display_text': '成品檢查',
-                #'dll_name': 'camera_check',
-                #'light': ['top_camera_ISL']
-            #},
-            #'IPQC': {
-                #'display_text': '成品檢查',
-                #'dll_name': 'IPI_9552A1',
-                #'light': ['top_camera_ISL']
-            #},
-            #'BARREL': {
-                #'display_text': '自裝鈑定位',
-                #'dll_name': 'camera_check',
-                #'light': ['top_camera_ISL', 'top_camera_RL']
-            #}
-        #},
-        #'light': {
-            #'top_camera_RL': ['ADLink', 102, '環形光源'],
-            #'top_camera_ISL': ['ADLink', 100, '積分球光源'],
-            #'top_camera_CL': ['ADLink', 101, '同軸光源']
-        #}
-    #}
-#from time import clock
-#from time import sleep
-#from threading import Thread
-#cam = CameraModule(camera_inf)
-#print(cam.get_parameter('gain_value'))
-#print(cam.get_parameter('shutter_value'))
-#print(cam.get_parameter('channel'))
-#print(cam.get_parameter('shutter_max'))
-#print(cam.set_parameter('shutter_value', 1000))
-#print(cam.get_parameter('shutter_value'))
-#print(cam.set_parameter('reverse_type',3))
-#def run ():
-    #for i in range(10):
-        #s1 = clock()
-        #im = cam.grab_image()
-        #s2 = clock()
-        #print(s2-s1)
-        #sleep(0.1)
-    #print(cam.close_camera())
-#grab = Thread(target = run)
-#grab.start()
